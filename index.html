@@ -387,24 +387,25 @@ svg{display:block}
 .ltip{background:var(--ink);color:var(--ink-fg);border:1.4px solid var(--accent);
   border-radius:999px;font-size:11px;font-weight:800;
   padding:3px 9px;box-shadow:0 2px 0 var(--sh);white-space:nowrap}
-.lleg{display:flex;align-items:center;gap:4px;background:var(--card2);border:1.6px solid var(--accent);
-  border-radius:999px;padding:4px 9px;font-size:11px;font-weight:800;color:var(--fg);
+/* 지도 위 칩은 두 테마 모두 어둡게 — 밝은 지도 위에서 대비가 살아야 한다 */
+.lleg{display:flex;align-items:center;gap:4px;background:var(--ink);border:1.6px solid var(--accent);
+  border-radius:999px;padding:4px 9px;font-size:11px;font-weight:800;color:var(--ink-fg);
   box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 .lleg svg{width:13px;height:13px}
-.lval{display:inline-flex;align-items:center;gap:6px;background:var(--card2);
+.lval{display:inline-flex;align-items:center;gap:6px;background:var(--ink);
   border:1.8px solid var(--accent);border-radius:999px;padding:4px 11px 4px 4px;font-size:11.5px;
-  font-weight:800;color:var(--accent-tx);box-shadow:0 2px 0 var(--sh);white-space:nowrap}
+  font-weight:800;color:var(--accent);box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 .lval img{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:0 0 26px}
 .lval .lvi{width:26px;height:26px;border-radius:50%;background:var(--accent);display:grid;
   place-items:center;font-size:13px;flex:0 0 26px}
 .lval.on{background:var(--accent);color:var(--on-accent)}
-.lval.on .lvi{background:var(--card2)}
+.lval.on .lvi{background:var(--ink)}
 .sheethint{display:block;font-size:11px;color:var(--dim);font-weight:600;margin-top:2px}
 .lcenter{width:18px;height:18px;border-radius:50%;background:var(--accent);border:3px solid var(--ink);
   box-shadow:0 0 0 3px rgba(212,255,0,.3)}
 .lmark{width:26px;height:26px;border-radius:50%;background:var(--point);border:3px solid #fff;
   box-shadow:0 3px 8px var(--sh)}
-.lval.dimmed{opacity:.45;border-color:var(--dim);color:var(--sub)}
+.lval.dimmed{opacity:.6;border-color:var(--dim);color:var(--ink-fg)}
 
 /* ── 위치 지정 — 중앙 고정 핀 ── */
 .pickwrap{position:fixed;inset:0;height:100dvh;max-width:480px;margin:0 auto;display:flex;flex-direction:column;
