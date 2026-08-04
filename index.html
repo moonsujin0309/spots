@@ -5,22 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>스팟스 — 주말 데이트 코스</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<!-- 실제 지도: Leaflet + CARTO 다크 타일. 키·도메인 등록 불필요.
-     외부 요청이 막힌 환경(아티팩트)에서는 로드에 실패하고 아래 SVG 개요도로 자동 폴백된다. -->
+<!-- 지도는 카카오 지도 SDK를 스크립트에서 동적으로 붙인다(JS 키 + 도메인 등록 필요).
+     로드에 실패하면 SVG 개요도로 자동 폴백된다. -->
 <style>
+/* ═══ 테마 ═══
+   포인트 컬러(일렉트릭 라임 #d4ff00 + 핫 핑크 #ff007a)는 두 테마에서 그대로 유지한다.
+   기본은 라이트. 다크로 돌리려면 <html data-theme="dark"> — 프로필에 토글이 있다.
+
+   ⚠️ 라임은 밝은 바탕에서 '글자색'으로 쓰면 안 보인다. 그래서 토큰을 둘로 나눴다.
+      --accent    = 채우기(버튼·칩 배경). 위 글자는 항상 --on-accent(검정)
+      --accent-tx = 글자·아이콘용. 라이트에서는 어둡게 눌러서 읽히게 한다
+   지도 위 핀·이름표(--ink)는 두 테마 모두 어둡게 둔다. 밝은 지도 위에 얹는 스티커라
+   어두워야 대비가 산다. */
 :root{
-  /* Neon Cyber-Y2K — 딥 바이올렛 블랙 위 일렉트릭 라임 + 핫 핑크. 단일 다크 테마로 고정한다 */
+  --bg:#f4f3fa; --card:#ffffff; --card2:#f0eef8; --fg:#17142a; --sub:#5d5780; --dim:#8d87a8;
+  --line:#e6e2f2;
+  --accent:#d4ff00; --on-accent:#141200; --accent-2:#eef9c0; --accent-dk:#a8cc00; --accent-tx:#5a7300;
+  --point:#ff007a; --point-ink:#ffffff; --point-2:#ffe4f0; --point-dk:#c2005c;
+  --warn:#e11d48; --warn-2:#ffe4e9; --warn-dk:#9c0b2a;
+  --ok:#141200; --ok-2:#d4ff00; --chip:#efedf7; --chip-2:#e3dff2;
+  --img-line:rgba(23,20,42,.10);
+  --ink:#14121f; --ink-fg:#f6f4ff; --g-dk:#c6c1da;
+  --veil:#17142a; --veil-fg:#ffffff;
+  --sh:rgba(31,26,58,.18);
+  --e1:0 2px 0 rgba(31,26,58,.13);
+  --e2:0 2px 0 rgba(31,26,58,.13), 0 10px 26px -12px rgba(31,26,58,.4);
+  --gloss:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0) 42%);
+  --r-xl:24px; --r-l:18px; --r-m:12px; --r-s:9px;
+  --ease:cubic-bezier(.2,0,0,1);
+}
+/* Neon Cyber-Y2K — 딥 바이올렛 블랙 위 일렉트릭 라임 + 핫 핑크 */
+:root[data-theme="dark"]{
   --bg:#0f0e17; --card:#191627; --card2:#201c33; --fg:#f6f4ff; --sub:#a29cc4; --dim:#6d6790;
   --line:#2b2545;
-  --accent:#d4ff00; --on-accent:#141200; --accent-2:#26300a; --accent-dk:#93b300;
+  --accent:#d4ff00; --on-accent:#141200; --accent-2:#26300a; --accent-dk:#93b300; --accent-tx:#d4ff00;
   --point:#ff007a; --point-ink:#ffffff; --point-2:#380a2b; --point-dk:#a30050;
-  --warn:#ff4d6d; --warn-2:#3d1425;
+  --warn:#ff4d6d; --warn-2:#3d1425; --warn-dk:#8f0b26;
   --ok:#141200; --ok-2:#d4ff00; --chip:#231e3a; --chip-2:#2f294c;
   --img-line:rgba(255,255,255,.12);
-  --r-xl:24px; --r-l:18px; --r-m:12px; --r-s:9px;
+  --ink:#0b0a12; --ink-fg:#f6f4ff; --g-dk:#14111f;
+  --veil:rgba(18,20,26,.94); --veil-fg:#ffffff;
+  --sh:rgba(0,0,0,.55);
   --e1:0 2px 0 rgba(0,0,0,.5);
   --e2:0 2px 0 rgba(0,0,0,.55), 0 10px 26px -12px rgba(0,0,0,.9);
-  --ease:cubic-bezier(.2,0,0,1);
   --gloss:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,0) 42%);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -61,7 +88,7 @@ svg{display:block}
 .cond .lab{font-size:11.5px;color:var(--dim);width:46px;flex:0 0 46px;font-weight:600}
 .cond input[type=date],.cond input[type=time]{flex:1;min-width:0;background:var(--chip);border:0;
   border-radius:var(--r-m);padding:11px 10px;color:var(--fg);font-weight:600;font-size:14px}
-.now{flex:0 0 auto;background:var(--accent-2);color:var(--accent);font-weight:700;font-size:12.5px;
+.now{flex:0 0 auto;background:var(--accent-2);color:var(--accent-tx);font-weight:700;font-size:12.5px;
   border-radius:var(--r-m);padding:11px 12px;white-space:nowrap;min-height:42px}
 .seg{display:flex;gap:6px;flex:1}
 .seg button{flex:1;background:var(--chip);border-radius:var(--r-m);padding:11px 4px;font-size:13px;
@@ -101,11 +128,11 @@ svg{display:block}
   background:rgba(0,0,0,.42);backdrop-filter:blur(6px);display:grid;place-items:center;pointer-events:none;color:#fff;z-index:5;
   transition:background-color .2s var(--ease)}
 .area .st svg{width:12px;height:12px}
-.area.fav .nm{color:var(--accent)}
+.area.fav .nm{color:var(--accent-tx)}
 .area.fav .st{background:var(--point);color:var(--point-ink)}
 
 .sec{padding:26px 20px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.sec .kick{font-size:11.5px;font-weight:800;color:var(--accent)}
+.sec .kick{font-size:11.5px;font-weight:800;color:var(--accent-tx)}
 .sec h2{margin-top:3px;font-size:19px;font-weight:800;letter-spacing:-.042em;line-height:1.28}
 .sec p{margin:4px 0 0;font-size:12.5px;color:var(--sub)}
 .sec .more{flex:0 0 auto;font-size:12.5px;color:var(--sub);font-weight:700;padding:8px 0 2px;white-space:nowrap}
@@ -126,7 +153,7 @@ svg{display:block}
 .rc .ph{height:146px;border-radius:0}
 .rc.big .ph{height:206px}
 .rc .ov{position:absolute;inset:auto 0 0 0;padding:52px 12px 12px;
-  background:linear-gradient(transparent,rgba(0,0,0,.5) 55%,rgba(0,0,0,.78));
+  background:linear-gradient(transparent,var(--sh) 55%,rgba(0,0,0,.78));
   display:flex;gap:5px;flex-wrap:wrap;align-items:flex-end;z-index:3}
 .pill{font-size:10.5px;font-weight:700;color:#fff;background:rgba(255,255,255,.16);
   backdrop-filter:blur(10px);border-radius:999px;padding:4.5px 9px;display:inline-flex;align-items:center;gap:4px;
@@ -190,7 +217,7 @@ svg{display:block}
 .kv .v small{font-weight:600;font-size:11.5px;color:var(--sub)}
 .tipbox{margin-top:14px;padding-top:13px;box-shadow:inset 0 1px 0 var(--line);font-size:12.5px;
   color:var(--sub);display:flex;gap:9px;font-weight:600;line-height:1.55}
-.tipbox svg{width:14px;height:14px;flex:0 0 14px;color:var(--accent);margin-top:2px}
+.tipbox svg{width:14px;height:14px;flex:0 0 14px;color:var(--accent-tx);margin-top:2px}
 
 .jr{margin:12px 20px 0;background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:15px 0 12px}
 .jr h3{margin:0 16px 12px;font-size:13px;font-weight:800;color:var(--sub)}
@@ -214,7 +241,7 @@ svg{display:block}
 .map svg.mp{width:100%;height:238px}
 .map .ft{font-size:11.5px;color:var(--sub);padding:11px 15px;box-shadow:inset 0 1px 0 var(--line);font-weight:600}
 .maplink{display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;
-  font-size:13.5px;font-weight:800;color:var(--accent);background:var(--accent-2);
+  font-size:13.5px;font-weight:800;color:var(--accent-tx);background:var(--accent-2);
   box-shadow:inset 0 1px 0 var(--line);min-height:48px}
 .maplink svg{width:15px;height:15px}
 
@@ -256,7 +283,7 @@ svg{display:block}
   box-shadow:inset 0 1px 0 var(--line);display:flex;padding:7px 0 max(7px,env(safe-area-inset-bottom));z-index:40}
 .tabs button{flex:1;padding:6px 0;font-size:10.5px;color:var(--dim);display:grid;gap:3px;
   justify-items:center;text-align:center;font-weight:700;position:relative;min-height:48px}
-.tabs button.on{color:var(--accent)}
+.tabs button.on{color:var(--accent-tx)}
 .tabs .ib{width:30px;height:26px;display:grid;place-items:center;border-radius:999px;
   transition:background-color .2s var(--ease)}
 .tabs button.on .ib{background:var(--accent-2)}
@@ -265,7 +292,7 @@ svg{display:block}
   background:var(--accent);box-shadow:0 0 0 2px var(--card)}
 
 .step{margin:16px 20px 0}
-.step .no{font-size:11.5px;font-weight:800;color:var(--accent)}
+.step .no{font-size:11.5px;font-weight:800;color:var(--accent-tx)}
 .step h3{margin:2px 0 10px;font-size:16.5px;font-weight:800;letter-spacing:-.042em}
 .box{background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:14px}
 .srch{display:flex;align-items:center;gap:10px;background:var(--chip);border-radius:var(--r-m);padding:12px 14px}
@@ -273,16 +300,16 @@ svg{display:block}
 .srch input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--fg);font-weight:600}
 .recent{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
 .recent button{background:var(--chip);border-radius:999px;padding:7px 12px;font-size:12px;color:var(--sub);font-weight:600}
-.recent button.on{background:var(--accent);color:#fff;font-weight:700}
+.recent button.on{background:var(--accent);color:var(--on-accent);font-weight:700}
 .custom{margin-top:12px;padding:13px;background:var(--accent-2);border-radius:var(--r-m)}
-.custom .ttl2{font-size:13.5px;font-weight:800;letter-spacing:-.03em;color:var(--accent)}
+.custom .ttl2{font-size:13.5px;font-weight:800;letter-spacing:-.03em;color:var(--accent-tx)}
 .custom .sm2{font-size:11.5px;color:var(--sub);margin-top:2px;font-weight:600}
 .crow{display:flex;gap:7px;margin-top:10px}
 .crow select{flex:1;min-width:0;background:var(--card);border:0;border-radius:var(--r-s);
   padding:10px 8px;font-size:12.5px;color:var(--fg);font-weight:600}
 .crow .mini{flex:0 0 auto}
 .mapbtn{display:flex;align-items:center;gap:8px;width:100%;margin-top:11px;background:var(--accent-2);
-  color:var(--accent);border-radius:var(--r-m);padding:13px;font-size:13.5px;font-weight:800;min-height:48px}
+  color:var(--accent-tx);border-radius:var(--r-m);padding:13px;font-size:13.5px;font-weight:800;min-height:48px}
 .mapbtn svg{width:16px;height:16px;flex:0 0 16px}
 .mapbtn .ar2{margin-left:auto;font-size:11.5px;font-weight:600;opacity:.8}
 /* 외부 지도 검색 연결 */
@@ -332,18 +359,18 @@ svg{display:block}
 .rank{padding:10px 20px 0;display:grid;gap:2px}
 .rk{display:flex;align-items:center;gap:11px;padding:11px 4px;min-height:46px}
 .rknum{flex:0 0 18px;font-size:14px;font-weight:800;color:var(--dim);text-align:center}
-.rknum.top{color:var(--accent)}
+.rknum.top{color:var(--accent-tx)}
 .rkt{flex:1;min-width:0;font-size:14px;font-weight:700;letter-spacing:-.03em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rkv{font-size:11.5px;color:var(--dim);font-weight:700}
-.hitlab{font-size:11.5px;font-weight:800;color:var(--accent);margin:2px 0 6px}
+.hitlab{font-size:11.5px;font-weight:800;color:var(--accent-tx);margin:2px 0 6px}
 
 /* ── Leaflet 지도 ── */
-.lmap{height:280px;width:100%;background:#0b0a12;z-index:1}
+.lmap{height:280px;width:100%;background:var(--ink);z-index:1}
 /* 카카오 지도는 밝은 바탕이라, 위에 얹는 핀·칩은 진한 테두리로 대비를 준다 */
 .lmk{display:flex;flex-direction:column;align-items:center;gap:5px}
-.lpin{width:48px;height:48px;border-radius:50%;background:#0b0a12;position:relative;
-  box-shadow:0 3px 0 rgba(0,0,0,.6);display:grid;place-items:center;overflow:visible}
+.lpin{width:48px;height:48px;border-radius:50%;background:var(--ink);position:relative;
+  box-shadow:0 3px 0 var(--sh);display:grid;place-items:center;overflow:visible}
 .lpin::after{content:"";position:absolute;inset:3px;border-radius:50%;
   box-shadow:inset 0 0 0 3px var(--accent)}
 .lpin.bad::after{box-shadow:inset 0 0 0 3px var(--warn)}
@@ -354,29 +381,29 @@ svg{display:block}
   width:42px;height:42px;border-radius:50%;display:grid;place-items:center;letter-spacing:-.05em}
 .lpin b{position:absolute;top:-5px;right:-5px;width:22px;height:22px;border-radius:50%;
   background:var(--accent);color:var(--on-accent);font-size:11px;display:grid;place-items:center;
-  border:2px solid #0b0a12}
+  border:2px solid var(--ink)}
 .lpin.bad b{background:var(--warn);color:#fff}
 .lpin.been b{background:var(--dim);color:#fff}
-.ltip{background:#0b0a12;color:var(--fg);border:1.4px solid var(--accent);
+.ltip{background:var(--ink);color:var(--ink-fg);border:1.4px solid var(--accent);
   border-radius:999px;font-size:11px;font-weight:800;
-  padding:3px 9px;box-shadow:0 2px 0 rgba(0,0,0,.5);white-space:nowrap}
+  padding:3px 9px;box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 .lleg{display:flex;align-items:center;gap:4px;background:var(--card2);border:1.6px solid var(--accent);
   border-radius:999px;padding:4px 9px;font-size:11px;font-weight:800;color:var(--fg);
-  box-shadow:0 2px 0 rgba(0,0,0,.5);white-space:nowrap}
+  box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 .lleg svg{width:13px;height:13px}
 .lval{display:inline-flex;align-items:center;gap:6px;background:var(--card2);
   border:1.8px solid var(--accent);border-radius:999px;padding:4px 11px 4px 4px;font-size:11.5px;
-  font-weight:800;color:var(--accent);box-shadow:0 2px 0 rgba(0,0,0,.55);white-space:nowrap}
+  font-weight:800;color:var(--accent-tx);box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 .lval img{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:0 0 26px}
 .lval .lvi{width:26px;height:26px;border-radius:50%;background:var(--accent);display:grid;
   place-items:center;font-size:13px;flex:0 0 26px}
 .lval.on{background:var(--accent);color:var(--on-accent)}
 .lval.on .lvi{background:var(--card2)}
 .sheethint{display:block;font-size:11px;color:var(--dim);font-weight:600;margin-top:2px}
-.lcenter{width:18px;height:18px;border-radius:50%;background:var(--accent);border:3px solid #0b0a12;
+.lcenter{width:18px;height:18px;border-radius:50%;background:var(--accent);border:3px solid var(--ink);
   box-shadow:0 0 0 3px rgba(212,255,0,.3)}
 .lmark{width:26px;height:26px;border-radius:50%;background:var(--point);border:3px solid #fff;
-  box-shadow:0 3px 8px rgba(0,0,0,.6)}
+  box-shadow:0 3px 8px var(--sh)}
 .lval.dimmed{opacity:.45;border-color:var(--dim);color:var(--sub)}
 
 /* ── 위치 지정 — 중앙 고정 핀 ── */
@@ -394,18 +421,18 @@ svg{display:block}
 .centerpin{position:absolute;left:50%;top:50%;transform:translate(-50%,-100%);z-index:500;
   pointer-events:none;display:grid;justify-items:center;transition:transform .18s var(--ease)}
 .pickmapbox.moving .centerpin{transform:translate(-50%,-110%)}
-.cpdot{width:26px;height:26px;border-radius:50%;background:var(--accent);border:4px solid #0b0a12;
+.cpdot{width:26px;height:26px;border-radius:50%;background:var(--accent);border:4px solid var(--ink);
   box-shadow:0 0 0 3px rgba(212,255,0,.35)}
-.cpstem{width:3px;height:16px;background:#0b0a12;border-radius:2px;margin-top:-2px}
-.centerpin::after{content:"";width:12px;height:4px;border-radius:50%;background:rgba(0,0,0,.55);
+.cpstem{width:3px;height:16px;background:var(--ink);border-radius:2px;margin-top:-2px}
+.centerpin::after{content:"";width:12px;height:4px;border-radius:50%;background:var(--sh);
   margin-top:2px;transition:transform .18s var(--ease)}
 .pickmapbox.moving .centerpin::after{transform:scale(.6)}
 .pklocate{position:absolute;right:14px;bottom:14px;width:46px;height:46px;border-radius:50%;
-  background:var(--card);box-shadow:var(--e2);display:grid;place-items:center;z-index:500;color:var(--accent)}
+  background:var(--card);box-shadow:var(--e2);display:grid;place-items:center;z-index:500;color:var(--accent-tx)}
 .pklocate svg{width:20px;height:20px}
 .picksheet{flex:0 0 auto;background:var(--card);border-radius:22px 22px 0 0;padding:16px 18px;
-  padding-bottom:calc(16px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px -8px rgba(0,0,0,.6)}
-.pickaddr{font-size:13px;font-weight:800;color:var(--accent)}
+  padding-bottom:calc(16px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px -8px var(--sh)}
+.pickaddr{font-size:13px;font-weight:800;color:var(--accent-tx)}
 
 /* ── 3D 스티커 마감 — 카드 광택, 네온 외곽, 눌리는 버튼 ── */
 .rc,.card,.box,.map,.stp,.jr,.nearsheet,.empty{position:relative}
@@ -415,27 +442,27 @@ svg{display:block}
 .rc,.card,.box,.map,.stp,.jr{box-shadow:var(--e2), inset 0 0 0 1px rgba(255,255,255,.06)}
 .rc .body,.stp .in{position:relative;z-index:3}
 /* 알약·배지는 에나멜 핀처럼 두께를 준다 */
-.pill{box-shadow:0 2px 0 rgba(0,0,0,.55)}
+.pill{box-shadow:0 2px 0 var(--sh)}
 .pill.hot{box-shadow:0 2px 0 var(--point-dk)}
-.pill.bad{box-shadow:0 2px 0 #8f0b26}
-.tg{box-shadow:0 1.5px 0 rgba(0,0,0,.5)}
-.tg.bad{box-shadow:0 1.5px 0 #8f0b26}
+.pill.bad{box-shadow:0 2px 0 var(--warn-dk)}
+.tg{box-shadow:0 1.5px 0 var(--sh)}
+.tg.bad{box-shadow:0 1.5px 0 var(--warn-dk)}
 /* 주 버튼 — 아래로 두께가 보이고 누르면 내려앉는다 */
 .big{box-shadow:0 4px 0 var(--accent-dk), 0 10px 22px -10px rgba(255,0,122,.6);
   transition-property:transform,box-shadow,opacity;transition-duration:.12s}
 .big:active{transform:translateY(3px) scale(1);box-shadow:0 1px 0 var(--accent-dk)}
-.big.g{box-shadow:0 4px 0 #14111f}
-.big.g:active{box-shadow:0 1px 0 #14111f}
+.big.g{box-shadow:0 4px 0 var(--g-dk)}
+.big.g:active{box-shadow:0 1px 0 var(--g-dk)}
 .mini.p{box-shadow:0 2px 0 var(--accent-dk)}
 .seg button.on,.chip2.on,.kmchip.on,.tline button.on,.ppl button.on{box-shadow:0 2px 0 var(--accent-dk)}
 .sw.on{box-shadow:0 2px 0 var(--accent-dk)}
 .research{box-shadow:0 3px 0 var(--accent-dk), 0 10px 22px -8px rgba(255,0,122,.55)}
-.opt.on{box-shadow:inset 0 0 0 2px var(--accent), 0 2px 0 rgba(0,0,0,.5)}
+.opt.on{box-shadow:inset 0 0 0 2px var(--accent), 0 2px 0 var(--sh)}
 /* 형광 위 글자는 항상 검정 */
 .bar.o{box-shadow:0 3px 0 var(--point-dk);font-weight:800}
-.locbtn svg{color:var(--accent)}
+.locbtn svg{color:var(--accent-tx)}
 .srchbtn{background:var(--card);box-shadow:var(--e1), inset 0 0 0 1px rgba(255,255,255,.07)}
-.av{box-shadow:0 2px 0 rgba(0,0,0,.5)}
+.av{box-shadow:0 2px 0 var(--sh)}
 .apinote{padding:16px 4px;color:var(--sub);font-size:13px;font-weight:600}
 .apinote.err{color:var(--warn)}
 /* 주변 — 지도 + 하단 시트 */
@@ -448,7 +475,7 @@ svg{display:block}
 .locbtn,.kmchip{flex:0 0 auto;background:var(--card);box-shadow:var(--e2);border-radius:999px;
   padding:10px 14px;font-size:12.5px;font-weight:700;min-height:40px;display:flex;
   align-items:center;gap:5px;white-space:nowrap}
-.locbtn svg{width:14px;height:14px;color:var(--accent)}
+.locbtn svg{width:14px;height:14px;color:var(--accent-tx)}
 .kmchip.on{background:var(--accent);color:var(--on-accent)}
 /* 시트 위에 떠 있어야 해서 화면 기준으로 고정한다 (시트에 가리면 안 됨) */
 .research{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(42dvh + 12px);z-index:30;
@@ -474,7 +501,7 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .keyrow input{flex:1;min-width:0;background:var(--chip);border:0;border-radius:var(--r-m);
   padding:12px;color:var(--fg);font-weight:600;outline:none}
 .opt .ot{display:block;font-size:14.5px;font-weight:800;letter-spacing:-.03em}
-.opt.on .ot{color:var(--accent)}
+.opt.on .ot{color:var(--accent-tx)}
 .opt .od{display:block;font-size:12px;color:var(--sub);font-weight:600;margin-top:3px;line-height:1.5}
 /* 따라가기 */
 .nowleg{display:flex;align-items:center;gap:9px;margin:12px 20px 0;background:var(--chip);
@@ -484,13 +511,13 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .nowleg b{color:var(--fg)}
 .nowcard{margin-top:12px}
 .nowcard .ph{width:72px;height:72px;border-radius:var(--r-m);flex:0 0 72px}
-.nowtime{font-size:12.5px;font-weight:800;color:var(--accent)}
+.nowtime{font-size:12.5px;font-weight:800;color:var(--accent-tx)}
 .nowname{font-size:20px;font-weight:800;letter-spacing:-.042em;margin-top:2px;line-height:1.25}
 .playbar{position:fixed;bottom:calc(62px + env(safe-area-inset-bottom));left:0;right:0;max-width:480px;
   margin:0 auto;display:flex;gap:8px;padding:10px 20px;z-index:35}
 .pb{flex:1;background:var(--card);border-radius:var(--r-l);padding:15px 8px;text-align:center;
   font-size:14px;font-weight:800;box-shadow:var(--e2);min-height:50px}
-.pb.now{flex:0 0 86px;background:var(--accent);color:#fff}
+.pb.now{flex:0 0 86px;background:var(--accent);color:var(--on-accent)}
 .pb.off{opacity:.35}
 #app:has(.playbar){padding-bottom:160px}
 #pickmap text{pointer-events:none}
@@ -499,11 +526,11 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .ri .ph{width:46px;height:46px;border-radius:var(--r-m);flex:0 0 46px}
 .ri .nm{font-size:14.5px;font-weight:700;letter-spacing:-.032em}
 .ri .mt{font-size:11.5px;color:var(--sub);margin-top:2px;font-weight:600}
-.ri .add{font-size:19px;color:var(--accent);font-weight:700;padding:0 6px}
+.ri .add{font-size:19px;color:var(--accent-tx);font-weight:700;padding:0 6px}
 .ri.addnew{background:var(--accent-2);border-radius:var(--r-m);padding:10px 12px;margin-bottom:6px}
-.ri.addnew .nm{color:var(--accent)}
+.ri.addnew .nm{color:var(--accent-tx)}
 .ri .plus{flex:0 0 46px;width:46px;height:46px;border-radius:var(--r-m);background:var(--card);
-  display:grid;place-items:center;font-size:20px;font-weight:700;color:var(--accent)}
+  display:grid;place-items:center;font-size:20px;font-weight:700;color:var(--accent-tx)}
 .ri .plus svg{width:19px;height:19px}
 .catsel{background:var(--chip);border:0;border-radius:6px;padding:2px 4px;font-size:11px;
   color:var(--sub);font-weight:700}
@@ -535,18 +562,18 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   box-shadow:inset 0 0 0 1.5px var(--accent)}
 .pk.first .no2{width:26px;height:26px;flex:0 0 26px;font-size:13px}
 .meetbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;
-  color:var(--accent);margin-bottom:3px}
+  color:var(--accent-tx);margin-bottom:3px}
 .meetbadge svg{width:12px;height:12px}
-.photo{color:var(--accent);font-weight:700;font-size:11px;text-decoration:underline;text-underline-offset:2px}
-.photo.has{color:var(--accent)}
+.photo{color:var(--accent-tx);font-weight:700;font-size:11px;text-decoration:underline;text-underline-offset:2px}
+.photo.has{color:var(--accent-tx)}
 .meet{display:flex;align-items:center;gap:9px;margin-top:11px;background:var(--accent-2);
-  border-radius:var(--r-m);padding:12px 13px;font-size:13.5px;font-weight:600;color:var(--accent);line-height:1.5}
+  border-radius:var(--r-m);padding:12px 13px;font-size:13.5px;font-weight:600;color:var(--accent-tx);line-height:1.5}
 .meet svg{width:16px;height:16px;flex:0 0 16px}
 .meet b{font-weight:800}
 .shot{display:flex;align-items:center;gap:9px;font-size:12.5px;background:var(--chip);
   border-radius:var(--r-m);padding:11px 12px;margin-top:11px;font-weight:700;color:var(--sub);min-height:44px}
 .shot svg{width:16px;height:16px}
-.shot .go{color:var(--accent)}
+.shot .go{color:var(--accent-tx)}
 .ta{width:100%;background:var(--chip);border:0;border-radius:var(--r-m);padding:13px;color:var(--fg);
   resize:none;outline:none;min-height:66px;font-weight:600}
 .big{display:block;width:calc(100% - 40px);margin:14px 20px 0;background:var(--accent);color:var(--on-accent);
@@ -571,7 +598,7 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .empty .ic svg{width:21px;height:21px}
 .hint{margin:12px 20px 0;font-size:11.5px;color:var(--dim);line-height:1.7}
 #toast{position:fixed;left:50%;bottom:104px;transform:translate(-50%,14px) scale(.96);
-  background:rgba(18,20,26,.94);color:#fff;font-size:13px;font-weight:700;padding:12px 18px;
+  background:var(--veil);color:var(--veil-fg);font-size:13px;font-weight:700;padding:12px 18px;
   border-radius:999px;z-index:60;opacity:0;pointer-events:none;backdrop-filter:blur(10px);
   transition-property:opacity,transform;transition-duration:.24s;transition-timing-function:var(--ease)}
 #toast.on{opacity:1;transform:translate(-50%,0) scale(1)}
@@ -850,7 +877,8 @@ function durRange(a,b){
   return lo===hi?`약 ${lo}시간`:`${lo}~${hi}시간`;
 }
 // 인원: 7은 '6+'(6명 이상)를 뜻한다. 비용 계산엔 6을 쓴다.
-const PEOPLE=[1,2,3,4,5,6,7];
+// 7은 '6명 이상'을 뜻하는 값이다. 6은 6+에 흡수시켜 칸을 줄였다.
+const PEOPLE=[1,2,3,4,5,7];
 const plabel=n=>n===7?"6+":String(n);
 const peopleN=n=>n===7?6:n;
 // 총 예상 비용 = 장소 비용×인원 + 교통비 (대중교통은 인당, 차는 1대 기준)
@@ -1118,7 +1146,7 @@ function condBar(){
       <button class="flat ${S.transport==="transit"?"on":""}" onclick="S.transport='transit';render()">${IC.subway}대중교통</button>
       <button class="flat ${S.transport==="car"?"on":""}" onclick="S.transport='car';render()">${IC.car}차</button>
     </div></div>
-    <div class="r"><span class="lab">몇 명</span><div class="ppl">
+    <div class="r"><span class="lab">인원</span><div class="ppl">
       ${PEOPLE.map(n=>`<button class="flat ${S.people===n?"on":""}" onclick="S.people=${n};render()">${plabel(n)}</button>`).join("")}
     </div></div></div>`;
 }
@@ -2068,8 +2096,21 @@ function profileView(){
         <div><div class="k">저장한 코스</div><div class="v">${S.saved.size}개</div></div>
         <div><div class="k">다녀온 곳</div><div class="v">${S.visited.size}곳</div></div>
         <div><div class="k">즐겨찾기 지역</div><div class="v">${S.favs.size}곳</div></div>
-      </div></div>`;
+      </div></div>
+    <div class="card rise" style="margin-top:10px">
+      <div class="r"><span class="lab">화면 테마</span><div class="seg">
+        <button class="flat ${theme()==="light"?"on":""}" onclick="setTheme('light')">밝게</button>
+        <button class="flat ${theme()==="dark"?"on":""}" onclick="setTheme('dark')">어둡게</button>
+      </div></div></div>`;
 }
+/* 테마 — 기본은 밝게. 고른 값은 브라우저에 기억시킨다. */
+const theme=()=>document.documentElement.dataset.theme==="dark"?"dark":"light";
+function setTheme(v){
+  document.documentElement.dataset.theme=v==="dark"?"dark":"";
+  try{ localStorage.setItem("spots.theme",v); }catch(_){}
+  render();
+}
+try{ if(localStorage.getItem("spots.theme")==="dark") document.documentElement.dataset.theme="dark"; }catch(_){}
 
 /* ═════ 실제 지도 (카카오 지도 SDK) ═════
    가게 이름 라벨이 뜨는 게 목적이라 카카오를 쓴다. JS 키 + 도메인 등록이 필요하고,
@@ -2080,11 +2121,17 @@ const LM={};
 const LL=(lat,lng)=>new kakao.maps.LatLng(lat,lng);
 function killMap(id){
   const m=LM[id];
-  if(m){ (m.__ov||[]).forEach(o=>o.setMap(null)); delete LM[id]; }
+  if(m){ (m.__ov||[]).forEach(o=>o.setMap(null)); if(m.__ro) m.__ro.disconnect(); delete LM[id]; }
 }
 function baseMap(el,center,level){
   const m=new kakao.maps.Map(el,{center:LL(center.lat,center.lng),level});
   m.__ov=[];                       // 이 지도에 붙은 오버레이·선 — 정리할 때 쓴다
+  /* 카카오 지도는 만들 때의 크기를 기억한다. 모바일은 주소창 때문에 dvh가 나중에 확정돼서
+     그 전에 만들어지면 작은(정사각형) 상태로 굳는다. 크기가 변할 때마다 다시 그린다. */
+  if(window.ResizeObserver){
+    const ro=new ResizeObserver(()=>{ const c=m.getCenter(); m.relayout(); m.setCenter(c); });
+    ro.observe(el); m.__ro=ro;
+  }
   return m;
 }
 /* CustomOverlay를 만들어 목록에 등록한다. content를 문자열이 아니라 엘리먼트로 넘겨야
