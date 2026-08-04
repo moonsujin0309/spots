@@ -1795,7 +1795,7 @@ let apiTimer=null;
    JS 키는 페이지에 노출돼도 되는 종류다 — 카카오 콘솔에 등록한 도메인에서만 동작하기 때문.
    REST 키는 절대 여기 넣지 말 것(공개 저장소라 즉시 노출된다).
    키가 비어 있거나 SDK 로드에 실패하면 조용히 Photon으로 넘어간다. 검색은 막히면 안 되는 흐름이다. */
-const KAKAO_JS_KEY="";   // ← 카카오 개발자 콘솔 > 앱 > 앱 키 > JavaScript 키를 여기 붙여넣기
+const KAKAO_JS_KEY="720a1d6f204aebbc7734cb4e6d7968ce";   // ← 카카오 개발자 콘솔 > 앱 > 앱 키 > JavaScript 키를 여기 붙여넣기
 let kakaoReady=false;
 (function loadKakao(){
   if(!KAKAO_JS_KEY) return;                       // 키 없으면 Photon 그대로
