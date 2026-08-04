@@ -7,8 +7,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <!-- 실제 지도: Leaflet + CARTO 다크 타일. 키·도메인 등록 불필요.
      외부 요청이 막힌 환경(아티팩트)에서는 로드에 실패하고 아래 SVG 개요도로 자동 폴백된다. -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 :root{
   /* Neon Cyber-Y2K — 딥 바이올렛 블랙 위 일렉트릭 라임 + 핫 핑크. 단일 다크 테마로 고정한다 */
@@ -342,11 +340,8 @@ svg{display:block}
 
 /* ── Leaflet 지도 ── */
 .lmap{height:280px;width:100%;background:#0b0a12;z-index:1}
-.leaflet-container{background:#0b0a12;font-family:inherit}
-.leaflet-control-attribution{background:rgba(11,10,18,.72)!important;color:var(--dim)!important;
-  font-size:9.5px!important;padding:1px 6px!important}
-.leaflet-control-attribution a{color:var(--sub)!important}
-.lwrap{background:none!important;border:0!important}
+/* 카카오 지도는 밝은 바탕이라, 위에 얹는 핀·칩은 진한 테두리로 대비를 준다 */
+.lmk{display:flex;flex-direction:column;align-items:center;gap:5px}
 .lpin{width:48px;height:48px;border-radius:50%;background:#0b0a12;position:relative;
   box-shadow:0 3px 0 rgba(0,0,0,.6);display:grid;place-items:center;overflow:visible}
 .lpin::after{content:"";position:absolute;inset:3px;border-radius:50%;
@@ -362,10 +357,9 @@ svg{display:block}
   border:2px solid #0b0a12}
 .lpin.bad b{background:var(--warn);color:#fff}
 .lpin.been b{background:var(--dim);color:#fff}
-.ltip{background:#0b0a12!important;color:var(--fg)!important;border:1.4px solid var(--accent)!important;
-  border-radius:999px!important;font-size:11px!important;font-weight:800!important;
-  padding:3px 9px!important;box-shadow:0 2px 0 rgba(0,0,0,.5)!important;white-space:nowrap}
-.ltip::before{display:none!important}
+.ltip{background:#0b0a12;color:var(--fg);border:1.4px solid var(--accent);
+  border-radius:999px;font-size:11px;font-weight:800;
+  padding:3px 9px;box-shadow:0 2px 0 rgba(0,0,0,.5);white-space:nowrap}
 .lleg{display:flex;align-items:center;gap:4px;background:var(--card2);border:1.6px solid var(--accent);
   border-radius:999px;padding:4px 9px;font-size:11px;font-weight:800;color:var(--fg);
   box-shadow:0 2px 0 rgba(0,0,0,.5);white-space:nowrap}
@@ -461,6 +455,8 @@ svg{display:block}
   background:var(--accent);color:var(--on-accent);border-radius:999px;padding:12px 18px;font-size:13px;
   font-weight:800;box-shadow:var(--e2);display:flex;align-items:center;gap:7px;min-height:46px}
 .research svg{width:15px;height:15px}
+/* button.flat:active의 transform:none이 가운데 정렬(translateX)까지 지워서 눌릴 때 옆으로 튄다 */
+button.research:active{transform:translateX(-50%);opacity:.6}
 .nearwhere{position:absolute;left:50%;transform:translateX(-50%);top:calc(62px + env(safe-area-inset-top));
   background:var(--card);box-shadow:var(--e2);border-radius:999px;padding:7px 14px;
   font-size:12.5px;font-weight:800;z-index:7;pointer-events:none;white-space:nowrap}
@@ -1416,14 +1412,14 @@ async function reverseName(lat,lng){
 function pickRefresh(){
   const m=LM.pick; if(!m) return;
   const c=m.getCenter();
-  S.pickPt={lat:c.lat,lng:c.lng};
+  S.pickPt={lat:c.getLat(),lng:c.getLng()};
   const a=nearestArea(S.pickPt);
   const el=document.getElementById("pickAddr");
   if(el) el.textContent=a.n+" 근처 · 주소 확인 중…";
   clearTimeout(revTimer);
   revTimer=setTimeout(async()=>{
     try{
-      const {name,addr}=await reverseName(c.lat,c.lng);
+      const {name,addr}=await reverseName(S.pickPt.lat,S.pickPt.lng);
       const e2=document.getElementById("pickAddr");
       if(e2) e2.textContent=(addr||a.n+" 근처");
       const nm=document.getElementById("newName");
@@ -1435,7 +1431,7 @@ async function pickJump(q){
   if(!q.trim()||!LM.pick) return;
   try{
     const hits=await placeSearch(q);
-    if(hits.length){ LM.pick.flyTo([hits[0].lat,hits[0].lng],16,{duration:.9});
+    if(hits.length){ flyTo(LM.pick,hits[0].lat,hits[0].lng,4);
       const nm=document.getElementById("newName"); if(nm&&!nm.dataset.touched) nm.value=hits[0].n; }
     else toast("그 이름으로는 못 찾았어요. 지도를 옮겨서 맞춰주세요");
   }catch(_){ toast("검색을 못 했어요. 지도를 옮겨서 맞춰주세요"); }
@@ -1443,7 +1439,7 @@ async function pickJump(q){
 function pickLocate(){
   if(!navigator.geolocation||!LM.pick){ toast("이 환경에서는 위치를 못 받아요"); return; }
   navigator.geolocation.getCurrentPosition(
-    p=>{ LM.pick.flyTo([p.coords.latitude,p.coords.longitude],17,{duration:.9}); },
+    p=>{ flyTo(LM.pick,p.coords.latitude,p.coords.longitude,3); },
     ()=>toast("위치 권한이 없어요"),{enableHighAccuracy:true,timeout:8000});
 }
 function placeHere(){
@@ -1795,14 +1791,16 @@ let apiTimer=null;
    JS 키는 페이지에 노출돼도 되는 종류다 — 카카오 콘솔에 등록한 도메인에서만 동작하기 때문.
    REST 키는 절대 여기 넣지 말 것(공개 저장소라 즉시 노출된다).
    키가 비어 있거나 SDK 로드에 실패하면 조용히 Photon으로 넘어간다. 검색은 막히면 안 되는 흐름이다. */
+let booted=false;
 const KAKAO_JS_KEY="720a1d6f204aebbc7734cb4e6d7968ce";   // ← 카카오 개발자 콘솔 > 앱 > 앱 키 > JavaScript 키를 여기 붙여넣기
 let kakaoReady=false;
 (function loadKakao(){
   if(!KAKAO_JS_KEY) return;                       // 키 없으면 Photon 그대로
   const s=document.createElement("script");
   s.src="https://dapi.kakao.com/v2/maps/sdk.js?appkey="+KAKAO_JS_KEY+"&libraries=services&autoload=false";
-  s.onload=()=>{ try{ kakao.maps.load(()=>{ kakaoReady=true; }); }catch(e){} };
-  s.onerror=()=>{};                               // 도메인 미등록·키 오류 → 그냥 Photon
+  // SDK는 비동기로 뜬다. 준비되면 한 번 다시 그려야 지도가 SVG 폴백에서 실제 지도로 바뀐다.
+  s.onload=()=>{ try{ kakao.maps.load(()=>{ kakaoReady=true; if(booted) render(); }); }catch(e){} };
+  s.onerror=()=>{};                               // 도메인 미등록·키 오류 → 그냥 Photon + SVG
   document.head.appendChild(s);
 })();
 /* 카카오 카테고리 → 우리 분류
@@ -2073,50 +2071,75 @@ function profileView(){
       </div></div>`;
 }
 
-/* ═════ 실제 지도 (Leaflet + CARTO 다크 타일) ═════
-   키·도메인 등록이 필요 없다. 외부 요청이 막힌 환경에서는 L이 정의되지 않아
-   기존 SVG 개요도로 자동 폴백된다. */
-const hasL=()=>typeof L!=="undefined";
-const TILE="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-const TATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+/* ═════ 실제 지도 (카카오 지도 SDK) ═════
+   가게 이름 라벨이 뜨는 게 목적이라 카카오를 쓴다. JS 키 + 도메인 등록이 필요하고,
+   SDK가 아직 안 떴거나 실패하면(아티팩트처럼 외부 요청이 막힌 곳) SVG 개요도로 폴백한다.
+   ⚠️ 카카오는 Leaflet의 zoom 대신 level을 쓴다 — 숫자가 클수록 넓게 보인다(반대). */
+const hasL=()=>kakaoReady;
 const LM={};
-function killMap(id){ if(LM[id]){ LM[id].remove(); delete LM[id]; } }
-function baseMap(el,opts){
-  const m=L.map(el,Object.assign({zoomControl:false,attributionControl:true},opts||{}));
-  L.tileLayer(TILE,{attribution:TATTR,subdomains:"abcd",maxZoom:20}).addTo(m);
+const LL=(lat,lng)=>new kakao.maps.LatLng(lat,lng);
+function killMap(id){
+  const m=LM[id];
+  if(m){ (m.__ov||[]).forEach(o=>o.setMap(null)); delete LM[id]; }
+}
+function baseMap(el,center,level){
+  const m=new kakao.maps.Map(el,{center:LL(center.lat,center.lng),level});
+  m.__ov=[];                       // 이 지도에 붙은 오버레이·선 — 정리할 때 쓴다
   return m;
+}
+/* CustomOverlay를 만들어 목록에 등록한다. content를 문자열이 아니라 엘리먼트로 넘겨야
+   내부에 onclick을 직접 붙일 수 있다. */
+function addOv(m,list,lat,lng,html,opt){
+  const el=document.createElement("div");
+  el.innerHTML=html;
+  const o=new kakao.maps.CustomOverlay(Object.assign(
+    {position:LL(lat,lng),content:el,xAnchor:.5,yAnchor:.5,clickable:true},opt||{}));
+  o.setMap(m); list.push(o);
+  return el.firstElementChild||el;
+}
+function addLine(m,list,pts,color,weight,opacity){
+  const o=new kakao.maps.Polyline({path:pts.map(p=>LL(p[0],p[1])),strokeColor:color,
+    strokeWeight:weight,strokeOpacity:opacity==null?1:opacity,strokeStyle:"solid"});
+  o.setMap(m); list.push(o); return o;
+}
+// Leaflet의 flyTo 대체 — 레벨을 먼저 맞추고 부드럽게 이동한다
+function flyTo(m,lat,lng,level){
+  if(level!=null&&m.getLevel()!==level) m.setLevel(level,{animate:{duration:250}});
+  m.panTo(LL(lat,lng));
 }
 function pinHTML(s,i,focus){
   const bad=["closed","early","late"].includes(s.status);
   const cls=(bad?" bad":(s.been?" been":""))+(focus>=0&&focus!==i?" dim":"");
   const src=PHOTO[s.place.img];
-  return `<div class="lpin${cls}">${src?`<img src="${src}" alt="">`:`<span class="lface">✦·✦</span>`}<b>${i+1}</b></div>`;
+  return `<div class="lmk"><div class="lpin${cls}">${src?`<img src="${src}" alt="">`:`<span class="lface">✦·✦</span>`}<b>${i+1}</b></div>
+    <div class="ltip">${s.place.n}</div></div>`;
 }
 // 루트 지도 — 네온 라인 + 사진 핀 + 구간 칩
 function mountRouteMap(id,stops,focus){
   const el=document.getElementById(id); if(!el||!hasL()) return;
   killMap(id);
-  const m=baseMap(el,{scrollWheelZoom:true});
   const pts=stops.map(s=>[s.place.lat,s.place.lng]);
-  L.polyline(pts,{color:"#0b0a12",weight:14,lineCap:"round",lineJoin:"round",opacity:.9}).addTo(m);
-  L.polyline(pts,{color:"#d4ff00",weight:8,lineCap:"round",lineJoin:"round"}).addTo(m);
-  L.polyline(pts,{color:"#fff",weight:2,opacity:.35,lineCap:"round"}).addTo(m);
+  const m=baseMap(el,{lat:pts[0][0],lng:pts[0][1]},5);
+  LM[id]=m;
+  addLine(m,m.__ov,pts,"#0b0a12",14,.9);
+  addLine(m,m.__ov,pts,"#d4ff00",8);
+  addLine(m,m.__ov,pts,"#ffffff",2,.35);
   stops.forEach((s,i)=>{
-    L.marker(pts[i],{icon:L.divIcon({className:"lwrap",html:pinHTML(s,i,focus),
-      iconSize:[48,48],iconAnchor:[24,24]}),zIndexOffset:100}).addTo(m)
-      .bindTooltip(s.place.n,{permanent:true,direction:"bottom",className:"ltip",offset:[0,18]});
+    // 핀(48px) + 이름표가 세로로 쌓여 있어, 동그란 핀의 중심이 좌표에 오도록 위쪽으로 맞춘다
+    addOv(m,m.__ov,pts[i][0],pts[i][1],pinHTML(s,i,focus),{yAnchor:.32,zIndex:100});
     if(s.leg&&stops[i+1]){
-      const a=pts[i],b=pts[i+1], mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+      const a=pts[i],b=pts[i+1];
       const icons=s.leg.mode==="mix"?["subway","bus"]:[s.leg.mode];
-      L.marker(mid,{icon:L.divIcon({className:"lwrap",
-        html:`<div class="lleg">${icons.map(k=>IC[MODE[k].ic]).join("")}<b>${s.leg.min}분</b></div>`,
-        iconSize:[68,26],iconAnchor:[34,13]})}).addTo(m);
+      addOv(m,m.__ov,(a[0]+b[0])/2,(a[1]+b[1])/2,
+        `<div class="lleg">${icons.map(k=>IC[MODE[k].ic]).join("")}<b>${s.leg.min}분</b></div>`,{zIndex:60});
     }
   });
-  m.fitBounds(L.latLngBounds(pts).pad(.3));
-  LM[id]=m; setTimeout(()=>m.invalidateSize(),60);
+  const bd=new kakao.maps.LatLngBounds();
+  pts.forEach(p=>bd.extend(LL(p[0],p[1])));
+  setTimeout(()=>{ m.relayout(); m.setBounds(bd,60,40,70,40); },60);
 }
-const zoomForKm=km=>({1:15,3:14,5:13,10:12}[km]||14);
+// 반경(km) → 카카오 레벨. 숫자가 클수록 넓다.
+const zoomForKm=km=>({1:5,3:6,5:7,10:8}[km]||6);
 // 주변 지도 — Leaflet이 팬·줌을 직접 처리하므로 별도 드래그 코드가 필요 없다
 let nearReady=false;
 /* ═════ 주변 — 지도는 유지한 채 내용만 갱신한다 ═════
@@ -2127,9 +2150,9 @@ function locate(){
   toast("현재 위치를 찾는 중…");
   navigator.geolocation.getCurrentPosition(
     p=>{
-      const ll=[p.coords.latitude,p.coords.longitude];
-      S.nearCenter={lat:ll[0],lng:ll[1]}; S.nearLabel="내 위치"; S.nearMoved=false;
-      if(LM.near) LM.near.flyTo(ll,zoomForKm(S.nearKm),{duration:1});
+      S.nearCenter={lat:p.coords.latitude,lng:p.coords.longitude};
+      S.nearLabel="내 위치"; S.nearMoved=false;
+      if(LM.near) flyTo(LM.near,S.nearCenter.lat,S.nearCenter.lng,zoomForKm(S.nearKm));
       else render();
       setTimeout(nearRefresh,1050);
     },
@@ -2139,32 +2162,33 @@ function locate(){
 function setNearKm(k){
   S.nearKm=k;
   document.querySelectorAll(".kmchip").forEach(b=>b.classList.toggle("on",b.dataset.km==String(k)));
-  if(LM.near) LM.near.flyTo([S.nearCenter.lat,S.nearCenter.lng],zoomForKm(k),{duration:.7});
+  if(LM.near) flyTo(LM.near,S.nearCenter.lat,S.nearCenter.lng,zoomForKm(k));
   setTimeout(nearRefresh,760);
 }
 // 지도는 그대로 두고 원·핀·목록만 다시 그린다
-let nearLayer=null;
+let nearOv=[];
 function nearRefresh(){
   const m=LM.near;
   if(m){
-    if(nearLayer) m.removeLayer(nearLayer);
-    nearLayer=L.layerGroup().addTo(m);
-    L.circle([S.nearCenter.lat,S.nearCenter.lng],{radius:S.nearKm*1000,color:"#d4ff00",
-      weight:1.5,dashArray:"7 7",fillColor:"#d4ff00",fillOpacity:.06}).addTo(nearLayer);
-    L.marker([S.nearCenter.lat,S.nearCenter.lng],{icon:L.divIcon({className:"lwrap",
-      html:`<div class="lcenter"></div>`,iconSize:[18,18],iconAnchor:[9,9]}),zIndexOffset:200}).addTo(nearLayer);
+    nearOv.forEach(o=>o.setMap(null)); nearOv=[];
+    const circle=new kakao.maps.Circle({center:LL(S.nearCenter.lat,S.nearCenter.lng),
+      radius:S.nearKm*1000,strokeColor:"#d4ff00",strokeWeight:2,strokeOpacity:.9,strokeStyle:"dash",
+      fillColor:"#d4ff00",fillOpacity:.06});
+    circle.setMap(m); nearOv.push(circle);
+    addOv(m,nearOv,S.nearCenter.lat,S.nearCenter.lng,`<div class="lcenter"></div>`,{zIndex:200});
     nearList().forEach(({r})=>{
       const p=PLACES[r.stops[0].p], hp=heroPlace(r);
       const c=computeRoute(r,iso()), lb=durRange(c.totalLo,c.totalHi), src=PHOTO[hp.img];
       const thumb=src?`<img src="${src}" alt="">`:`<span class="lvi">${CAT_EMO[hp.c]||"📍"}</span>`;
-      L.marker([p.lat,p.lng],{icon:L.divIcon({className:"lwrap",
-        html:`<div class="lval${S.nearSel===r.id?" on":""}">${thumb}<b>${lb}</b></div>`,
-        iconSize:[96,40],iconAnchor:[48,20]})}).addTo(nearLayer)
-        .on("click",()=>{ S.nearSel=r.id; nearRefresh(); });
+      const node=addOv(m,nearOv,p.lat,p.lng,
+        `<div class="lval${S.nearSel===r.id?" on":""}">${thumb}<b>${lb}</b></div>`,{zIndex:120});
+      node.addEventListener("click",()=>{ S.nearSel=r.id; nearRefresh(); });
     });
   }
   const box=document.getElementById("nearsheetInner");
   if(box) box.innerHTML=nearSheetInner();
+  // innerHTML로 다시 그리면 손잡이가 새 요소로 바뀌어 드래그 리스너가 날아간다. 매번 다시 붙인다.
+  const sg=document.getElementById("sheetgrab"); if(sg) sheetDrag(sg);
   const btn=document.querySelector(".research");
   if(btn) btn.style.display=S.nearMoved?"flex":"none";
   const w=document.querySelector(".nearwhere");
@@ -2207,38 +2231,36 @@ function nearbyView(){
 }
 function mountNearMap(){
   const el=document.getElementById("nearmap"); if(!el||!hasL()) return;
-  killMap("near"); nearReady=false; nearLayer=null;
-  const m=baseMap(el,{scrollWheelZoom:true});
-  m.setView([S.nearCenter.lat,S.nearCenter.lng],zoomForKm(S.nearKm));
+  killMap("near"); nearReady=false; nearOv=[];
+  const m=baseMap(el,S.nearCenter,zoomForKm(S.nearKm));
   LM.near=m;
-  m.on("moveend",()=>{
+  kakao.maps.event.addListener(m,"idle",()=>{
     if(!nearReady) return;
     const c=m.getCenter();
-    S.nearCenter={lat:c.lat,lng:c.lng};
+    S.nearCenter={lat:c.getLat(),lng:c.getLng()};
     const w=document.querySelector(".nearwhere");
     if(w) w.textContent=nearestArea(S.nearCenter).n+" 일대";
     S.nearMoved=true;
     const btn=document.querySelector(".research"); if(btn) btn.style.display="flex";
   });
-  setTimeout(()=>{ m.invalidateSize(); nearRefresh(); nearReady=true; },90);
+  setTimeout(()=>{ m.relayout(); m.setCenter(LL(S.nearCenter.lat,S.nearCenter.lng));
+    nearRefresh(); nearReady=true; },90);
 }
 
-// 담을 위치 찍기 — 지도를 눌러 좌표 지정
+// 담을 위치 찍기 — 지도를 움직여 가운데 핀으로 좌표 지정
 function mountPickMap(){
   const el=document.getElementById("pickmap2"); if(!el||!hasL()) return;
   killMap("pick");
-  const m=baseMap(el,{scrollWheelZoom:true});
   const c=S.pickPt||S.nearCenter;
-  m.setView([c.lat,c.lng],16);
+  const m=baseMap(el,c,4);
   LM.pick=m;
   // 이미 담은 곳들은 옅게 — 어디가 비었는지 알아보기 쉽게
   S.draft.stops.forEach(s=>{ const v=PLACES[s.p];
-    L.marker([v.lat,v.lng],{icon:L.divIcon({className:"lwrap",
-      html:`<div class="lval dimmed">${v.n}</div>`,iconSize:[90,28],iconAnchor:[45,14]})}).addTo(m); });
+    addOv(m,m.__ov,v.lat,v.lng,`<div class="lval dimmed">${v.n}</div>`); });
   const box=document.querySelector(".pickmapbox");
-  m.on("movestart",()=>box&&box.classList.add("moving"));
-  m.on("moveend",()=>{ box&&box.classList.remove("moving"); pickRefresh(); });
-  setTimeout(()=>{ m.invalidateSize(); pickRefresh(); },80);
+  kakao.maps.event.addListener(m,"dragstart",()=>box&&box.classList.add("moving"));
+  kakao.maps.event.addListener(m,"idle",()=>{ box&&box.classList.remove("moving"); pickRefresh(); });
+  setTimeout(()=>{ m.relayout(); m.setCenter(LL(c.lat,c.lng)); pickRefresh(); },80);
 }
 function mountMaps(){
   if(!hasL()) return;
@@ -2296,6 +2318,7 @@ addEventListener("scroll",()=>{
   const t=document.querySelector(".top"); if(t) t.classList.toggle("stuck",scrollY>6);
 },{passive:true});
 render();
+booted=true;
 </script>
 </body>
 </html>
