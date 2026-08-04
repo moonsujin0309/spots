@@ -467,10 +467,15 @@ svg{display:block}
 .apinote{padding:16px 4px;color:var(--sub);font-size:13px;font-weight:600}
 .apinote.err{color:var(--warn)}
 /* 주변 — 지도 + 하단 시트 */
-.nearmapbox{position:fixed;top:0;left:0;right:0;max-width:480px;margin:0 auto;height:62dvh;
+/* 높이는 시트 위치를 따라간다(syncMapH). 고정해두면 시트를 내렸을 때 아래가 빈 배경이 되고,
+   반대로 항상 크게 깔아두면 지도 중심(= 검색 기준점)이 시트 뒤로 숨어버린다.
+   top은 아이폰 상태바(노치) 아래에서 시작해야 위쪽이 잘리지 않는다. */
+.nearmapbox{position:fixed;top:env(safe-area-inset-top);left:0;right:0;max-width:480px;margin:0 auto;
+  height:calc(62dvh - env(safe-area-inset-top));
   z-index:5;overflow:hidden;touch-action:none;cursor:grab;background:var(--chip)}
 .nearmapbox:active{cursor:grabbing}
-.nearctrl{position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px;right:12px;
+/* 부모(.nearmapbox)가 이미 안전영역만큼 내려와 있으므로 여기서 또 더하면 안 된다 */
+.nearctrl{position:absolute;top:12px;left:12px;right:12px;
   display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;z-index:8}
 .nearctrl::-webkit-scrollbar{display:none}
 .locbtn,.kmchip{flex:0 0 auto;background:var(--card);box-shadow:var(--e2);border-radius:999px;
@@ -485,7 +490,7 @@ svg{display:block}
 .research svg{width:15px;height:15px}
 /* button.flat:active의 transform:none이 가운데 정렬(translateX)까지 지워서 눌릴 때 옆으로 튄다 */
 button.research:active{transform:translateX(-50%);opacity:.6}
-.nearwhere{position:absolute;left:50%;transform:translateX(-50%);top:calc(62px + env(safe-area-inset-top));
+.nearwhere{position:absolute;left:50%;transform:translateX(-50%);top:62px;
   background:var(--card);box-shadow:var(--e2);border-radius:999px;padding:7px 14px;
   font-size:12.5px;font-weight:800;z-index:7;pointer-events:none;white-space:nowrap}
 .nearsheet{position:fixed;top:58dvh;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;z-index:20;
@@ -2054,6 +2059,18 @@ function syncResearch(){
   const b=document.querySelector(".research");
   if(b) b.style.bottom=`calc(${(100-S.sheetTop).toFixed(1)}dvh + 12px)`;
 }
+/* 지도 높이를 시트 위치에 맞춘다. 시트 상단보다 4dvh 더 내려 살짝 겹치게 해서
+   시트의 둥근 모서리 뒤로 배경이 비치지 않게 한다.
+   크기가 바뀌면 baseMap의 ResizeObserver가 알아서 relayout을 돌린다.
+   grow=true면 커질 때만 반영한다 — 드래그 중엔 줄이지 않아야 빈 배경이 안 보인다. */
+let mapH=62;
+function syncMapH(grow){
+  const b=document.getElementById("nearmapbox"); if(!b) return;
+  const h=Math.min(90,Math.max(20,S.sheetTop+4));
+  if(grow&&h<=mapH) return;
+  mapH=h;
+  b.style.height=`calc(${h.toFixed(1)}dvh - env(safe-area-inset-top))`;
+}
 function sheetDrag(grab){
   if(grab.dataset.sd) return; grab.dataset.sd="1";
   const sheet=document.getElementById("nearsheet");
@@ -2067,14 +2084,14 @@ function sheetDrag(grab){
     if(!moved&&Math.abs(dy)<3) return;
     moved=true; if(e.cancelable) e.preventDefault();
     const v=Math.min(88,Math.max(8,t0+dy/innerHeight*100));
-    S.sheetTop=v; sheet.style.top=v+"dvh"; syncResearch();
+    S.sheetTop=v; sheet.style.top=v+"dvh"; syncResearch(); syncMapH(true);
   };
   const end=()=>{
     if(!on) return; on=false;
     sheet.style.transition="";
     if(!moved) return;                       // 그냥 탭한 거면 아무 것도 하지 않는다
     S.sheetTop=SHEET_SNAP.reduce((a,b)=>Math.abs(b-S.sheetTop)<Math.abs(a-S.sheetTop)?b:a);
-    sheet.style.top=S.sheetTop+"dvh"; syncResearch();
+    sheet.style.top=S.sheetTop+"dvh"; syncResearch(); syncMapH();
   };
   grab.addEventListener("pointerdown",start);
   grab.addEventListener("pointermove",move);
@@ -2335,7 +2352,7 @@ function render(){
   document.querySelectorAll(".rail,.areas").forEach(dragScroll);
   const nb=document.getElementById("nearmapbox"); if(nb&&!hasL()) nearDrag(nb);
   mountMaps();
-  const sg=document.getElementById("sheetgrab"); if(sg){ sheetDrag(sg); syncResearch(); }
+  const sg=document.getElementById("sheetgrab"); if(sg){ sheetDrag(sg); syncResearch(); syncMapH(); }
 }
 /* PC에서 마우스로 잡아끌어 가로 스크롤 — 터치는 브라우저 기본 동작을 쓴다 */
 function dragScroll(el){
