@@ -1789,7 +1789,44 @@ const OSM_CAT={cafe:"카페",bakery:"카페",restaurant:"식당",fast_food:"식�
   marketplace:"시장",mall:"복합공간",department_store:"복합공간",attraction:"복합공간",
   castle:"고궁",palace:"고궁"};
 let apiTimer=null;
-async function placeSearch(q){
+
+/* ═════ 카카오 장소 검색 ═════
+   REST 키가 아니라 지도 JS SDK의 services.Places를 쓴다.
+   JS 키는 페이지에 노출돼도 되는 종류다 — 카카오 콘솔에 등록한 도메인에서만 동작하기 때문.
+   REST 키는 절대 여기 넣지 말 것(공개 저장소라 즉시 노출된다).
+   키가 비어 있거나 SDK 로드에 실패하면 조용히 Photon으로 넘어간다. 검색은 막히면 안 되는 흐름이다. */
+const KAKAO_JS_KEY="";   // ← 카카오 개발자 콘솔 > 앱 > 앱 키 > JavaScript 키를 여기 붙여넣기
+let kakaoReady=false;
+(function loadKakao(){
+  if(!KAKAO_JS_KEY) return;                       // 키 없으면 Photon 그대로
+  const s=document.createElement("script");
+  s.src="https://dapi.kakao.com/v2/maps/sdk.js?appkey="+KAKAO_JS_KEY+"&libraries=services&autoload=false";
+  s.onload=()=>{ try{ kakao.maps.load(()=>{ kakaoReady=true; }); }catch(e){} };
+  s.onerror=()=>{};                               // 도메인 미등록·키 오류 → 그냥 Photon
+  document.head.appendChild(s);
+})();
+// 카카오 카테고리 코드 → 우리 분류
+const KK_CAT={CE7:"카페",FD6:"식당",CT1:"전시",AT4:"복합공간",MT1:"복합공간",AD5:"복합공간"};
+function kakaoSearch(q){
+  const c=S.nearCenter||AREAS[0];
+  const P=new kakao.maps.services.Places();
+  const run=opt=>new Promise((res,rej)=>{
+    P.keywordSearch(q,(data,status)=>{
+      if(status===kakao.maps.services.Status.OK) res(data);
+      else if(status===kakao.maps.services.Status.ZERO_RESULT) res([]);
+      else rej(new Error("kakao "+status));
+    },opt);
+  });
+  // 먼저 보고 있는 지역 주변에서 찾고, 없으면 범위를 풀어 전국에서 다시 찾는다
+  return run({location:new kakao.maps.LatLng(c.lat,c.lng),radius:20000,size:10})
+    .then(d=>d.length?d:run({size:10}))
+    .then(d=>d.slice(0,6).map(p=>({
+      id:"kk"+p.id, kakaoId:p.id, url:p.place_url, n:p.place_name,
+      c:KK_CAT[p.category_group_code]||"복합공간", known:!!KK_CAT[p.category_group_code],
+      lat:+p.y, lng:+p.x,
+      addr:(p.road_address_name||p.address_name||"").split(" ").slice(0,3).join(" ") })));
+}
+async function photonSearch(q){
   const c=S.nearCenter||AREAS[0];
   const url="https://photon.komoot.io/api/?q="+encodeURIComponent(q)
     +"&limit=8&lat="+c.lat+"&lon="+c.lng+"&lang=default";
@@ -1807,6 +1844,9 @@ async function placeSearch(q){
   raw.forEach(d=>{ const cur=best.get(d.n);
     if(!cur||(d.known&&!cur.known)) best.set(d.n,d); });
   return [...best.values()].slice(0,6);
+}
+function placeSearch(q){
+  return kakaoReady ? kakaoSearch(q) : photonSearch(q);
 }
 function runApiSearch(q){
   clearTimeout(apiTimer);
