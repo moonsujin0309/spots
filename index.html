@@ -1746,7 +1746,7 @@ function createView(){
         onclick="S.draft.people=${n};render()">${plabel(n)}</button>`).join("")}</div></div></div>
 
     <div class="step"><div class="no">STEP 3</div><h3>어디를 가나요?</h3><div class="box">
-      <div class="srch">${IC.search}<input id="qbox" placeholder="가고 싶은 곳 이름 · 주소 · 좌표 붙여넣기"
+      <div class="srch">${IC.search}<input id="qbox" placeholder="장소 이름 · 주소 · 좌표"
         value="${S.q.replace(/"/g,'&quot;')}" oninput="onSearch(this.value)">
         <button class="flat" onclick="S.q='';render()" style="color:var(--dim);font-weight:700;padding:4px 6px">✕</button></div>
       <div id="resZone">${searchZone()}</div>
