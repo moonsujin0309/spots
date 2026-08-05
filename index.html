@@ -22,7 +22,8 @@
   --line:#e6e2f2;
   --accent:#d4ff00; --on-accent:#141200; --accent-2:#eef9c0; --accent-dk:#a8cc00; --accent-tx:#5a7300;
   --point:#ff007a; --point-ink:#ffffff; --point-2:#ffe4f0; --point-dk:#c2005c;
-  --warn:#e11d48; --warn-2:#ffe4e9; --warn-dk:#9c0b2a;
+  /* 경고색도 브랜드 핫핑크 계열로 — 이전 크림슨(#e11d48)은 포인트색과 부딪혔다 */
+  --warn:#ff1f63; --warn-2:#ffe1ec; --warn-dk:#bd0043;
   --ok:#141200; --ok-2:#d4ff00; --chip:#efedf7; --chip-2:#e3dff2;
   --img-line:rgba(23,20,42,.10);
   --ink:#14121f; --ink-fg:#f6f4ff; --g-dk:#c6c1da;
@@ -40,7 +41,7 @@
   --line:#2b2545;
   --accent:#d4ff00; --on-accent:#141200; --accent-2:#26300a; --accent-dk:#93b300; --accent-tx:#d4ff00;
   --point:#ff007a; --point-ink:#ffffff; --point-2:#380a2b; --point-dk:#a30050;
-  --warn:#ff4d6d; --warn-2:#3d1425; --warn-dk:#8f0b26;
+  --warn:#ff5c95; --warn-2:#3d1028; --warn-dk:#a3004a;
   --ok:#141200; --ok-2:#d4ff00; --chip:#231e3a; --chip-2:#2f294c;
   --img-line:rgba(255,255,255,.12);
   --ink:#0b0a12; --ink-fg:#f6f4ff; --g-dk:#14111f;
@@ -100,7 +101,12 @@ svg{display:block}
   color:var(--sub);text-align:center;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;min-height:42px}
 .seg button.on{background:var(--accent);color:var(--on-accent)}
 .seg svg{width:15px;height:15px}
-.ppl{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none}
+/* 인원은 6칸이라 라벨과 한 줄에 두면 마지막 칸이 잘린다 — 라벨을 위로 올려 폭을 다 쓴다 */
+.cond .r.stack{display:block}
+.cond .r.stack .lab{display:block;width:auto;flex:none;margin-bottom:7px}
+/* overflow-x:auto는 세로도 같이 자른다 — 선택된 칸의 아래 그림자가 잘리지 않게 여백을 준다 */
+.ppl{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none;
+  padding:4px 2px 5px;margin:-4px -2px -5px}
 .ppl::-webkit-scrollbar{display:none}
 .ppl button{flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:var(--chip);
   font-size:13.5px;color:var(--sub);display:grid;place-items:center;font-weight:700}
@@ -285,6 +291,27 @@ svg{display:block}
 .bar{margin:12px 20px 0;border-radius:var(--r-l);padding:13px 15px;font-size:13.5px;font-weight:700;line-height:1.5}
 .bar.x{background:var(--warn-2);color:var(--warn)}
 .bar.o{background:var(--ok-2);color:var(--ok)}
+
+/* 루트 상세 하단 고정 액션 — 저장(작게) · 다녀왔어요(저장 후) · 따라가기(크게).
+   이 화면에선 탭바를 숨기므로 바닥에 붙어도 겹치지 않는다(render 참고). */
+.fab{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;z-index:45;
+  display:flex;gap:9px;align-items:center;pointer-events:none;
+  padding:14px 20px calc(12px + max(6px,env(safe-area-inset-bottom)));
+  background:linear-gradient(180deg,transparent,var(--bg) 40%)}
+.fab>*{pointer-events:auto}
+.fabpad{height:96px}
+.fb{flex:0 0 54px;width:54px;height:54px;border-radius:var(--r-l);background:var(--card);
+  color:var(--sub);display:grid;place-items:center;box-shadow:var(--e2)}
+.fb svg{width:22px;height:22px}
+.fb.on{background:var(--accent);color:var(--on-accent);box-shadow:0 3px 0 var(--accent-dk)}
+.fgo{flex:1;height:54px;background:var(--accent);color:var(--on-accent);border-radius:var(--r-l);
+  display:grid;place-items:center;font-size:15.5px;font-weight:800;letter-spacing:-.032em;
+  box-shadow:0 4px 0 var(--accent-dk),0 10px 22px -10px rgba(255,0,122,.6)}
+.fgo:active{transform:translateY(3px);box-shadow:0 1px 0 var(--accent-dk)}
+/* 리루트 — 이름 없이 아이콘+숫자만 */
+.rr{gap:6px;padding:9px 12px}
+.rr svg{width:15px;height:15px}
+.rr b{font-weight:800;font-variant-numeric:tabular-nums}
 
 .tabs{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;
   background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(16px) saturate(1.6);
@@ -581,6 +608,22 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .tacount{position:absolute;right:12px;bottom:9px;font-size:11.5px;font-weight:700;color:var(--dim);
   pointer-events:none;font-variant-numeric:tabular-nums}
 .tacount.bad{color:var(--warn)}
+/* 프로필 헤더 — 카드 위쪽에 브랜드 색 띠를 깔고 아바타를 얹는다 */
+.prof{position:relative;overflow:hidden}
+.prof::before{content:"";position:absolute;top:0;left:0;right:0;height:70px;z-index:0;
+  background:linear-gradient(112deg,var(--accent-2),var(--point-2))}
+.prof>*{position:relative;z-index:1}
+.phd{display:flex;align-items:center;gap:12px}
+.pav{width:58px;height:58px;flex:0 0 58px;border-radius:50%;background:var(--card);
+  display:grid;place-items:center;font-size:27px;box-shadow:0 0 0 3px var(--accent),var(--e1)}
+.pnm{flex:1;min-width:0}
+.pnm b{display:block;font-size:19px;font-weight:800;letter-spacing:-.035em}
+.pnm span{display:block;font-size:12px;color:var(--sub);font-weight:600;margin-top:3px}
+.pstat{display:flex;gap:8px;margin-top:8px}
+.pstat span{flex:1;display:flex;align-items:center;gap:6px;background:var(--chip);
+  border-radius:var(--r-m);padding:11px 12px;font-size:12px;font-weight:700;color:var(--sub)}
+.pstat b{margin-left:auto;font-size:14.5px;font-weight:800;color:var(--fg)}
+.pstat svg{width:14px;height:14px;flex:0 0 14px;color:var(--accent-tx)}
 /* 프로필 카운트 — 트위터처럼 숫자를 눌러 이동 */
 .cnts{display:flex;gap:6px;margin-top:14px}
 .cnt{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--chip);
@@ -694,6 +737,8 @@ const IC={
   back:S_('<path d="M15 5.5 8 12l7 6.5"/>'),
   search:S_('<circle cx="10.8" cy="10.8" r="6.6"/><path d="M15.6 15.6 20.4 20.4"/>'),
   cam:S_('<rect x="2.8" y="6.8" width="18.4" height="12.4" rx="2.8"/><circle cx="12" cy="13" r="3.3"/><path d="M8.6 6.8 10 4.6h4l1.4 2.2"/>'),
+  /* 리루트 — 리트윗처럼 두 화살표가 순환한다 */
+  reroute:S_('<path d="M5 9v6.4a2.4 2.4 0 0 0 2.4 2.4h9"/><path d="M13.6 14.8 17 17.8l-3.4 3"/><path d="M19 15V8.6a2.4 2.4 0 0 0-2.4-2.4h-9"/><path d="M10.4 9.2 7 6.2l3.4-3"/>'),
   bmk:S_('<path d="M6.4 4.6h11.2v15.2L12 15.8l-5.6 4z"/>'),
   bmkF:S_('<path d="M6.4 4.6h11.2v15.2L12 15.8l-5.6 4z"/>',1),
   share:S_('<path d="M12 15.4V4.2"/><path d="M8.2 7.6 12 3.9l3.8 3.7"/><path d="M5.4 12.6v6.2a1.6 1.6 0 0 0 1.6 1.6h10a1.6 1.6 0 0 0 1.6-1.6v-6.2"/>'),
@@ -1228,7 +1273,7 @@ function condBar(){
       <button class="flat ${S.transport==="transit"?"on":""}" onclick="S.transport='transit';render()">${IC.subway}대중교통</button>
       <button class="flat ${S.transport==="car"?"on":""}" onclick="S.transport='car';render()">${IC.car}차</button>
     </div></div>
-    <div class="r"><span class="lab">인원</span><div class="ppl">
+    <div class="r stack"><span class="lab">인원</span><div class="ppl">
       ${PEOPLE.map(n=>`<button class="flat ${S.people===n?"on":""}" onclick="S.people=${n};render()">${plabel(n)}</button>`).join("")}
     </div></div></div>`;
 }
@@ -1340,6 +1385,8 @@ function routeView(){
   const r=ROUTES.find(x=>x.id===S.routeId), c=computeRoute(r,iso()), t=TRANSPORT[r.transport];
   const d=new Date(iso()), hp=heroPlace(r), pn=peopleNote(r,c);
   const allBeen=r.stops.every(s=>S.visited.has(s.p));
+  // 내 루트는 저장할 필요가 없다. '다녀왔어요'는 저장한 뒤(또는 내 루트일 때)에만 뜬다 — 담아두고 나중에 체크하는 흐름
+  const own=r.by==="나", saved=S.saved.has(r.id), canCheck=own||saved;
   const journey=c.stops.map((s,i)=>{
     const bad=["closed","early","late"].includes(s.status);
     return `<div class="jn ${bad?"x":""} ${s.been?"been":""}">${ph(s.place.img,CT[s.place.c]||"park",s.place.n.length,"",
@@ -1365,8 +1412,9 @@ function routeView(){
         <div class="acts">
           <button class="mini lk ${S.likes.has(s.p)?"on":""}" id="lk-${s.p}" onclick="toggleLike('${s.p}')">
             ${IC.heart}<b>${likeCount(s.p)}</b></button>
-          <button class="mini" onclick="go('place','${s.p}')">이 곳이 담긴 루트</button>
-          <a class="mini" href="${kakaoPlaceURL(s.place)}" target="_blank" rel="noopener">${IC.pin}지도</a>
+          <button class="mini" onclick="go('place','${s.p}')">담긴 루트</button>
+          <a class="mini" href="${kakaoPlaceURL(s.place)}" target="_blank" rel="noopener"
+             aria-label="지도에서 보기">${IC.pin}</a>
         </div></div></div>
       ${s.leg?`<div class="hop"><div class="rl"></div>
         <div class="tx">${IC[MODE[s.leg.mode].ic]}${MODE[s.leg.mode].label} ${s.leg.min}분</div></div>`:""}`;
@@ -1382,7 +1430,7 @@ function routeView(){
         <div>${r.mood&&r.mood!==r.title?`<div class="quote">"${r.mood}"</div>`:""}
           <div class="who">${bylineHTML(r)} · ${r.plan?"아직 안 가본 계획 루트":`${r.people}명이서 다녀옴 · ${r.visits}명이 인증`}</div></div></div>
       <div class="acts" style="margin-top:10px">
-        <button class="mini p" onclick="regram('${r.id}')">${IC.share}가져오기 ${r.regrams||0}</button>
+        ${own?"":`<button class="mini rr" onclick="regram('${r.id}')" aria-label="리루트 ${r.regrams||0}">${IC.reroute}<b>${r.regrams||0}</b></button>`}
         <button class="mini ${isFollowing(r.origBy||r.by)?"o":""}" onclick="toggleFollow('${r.origBy||r.by}')">
           ${isFollowing(r.origBy||r.by)?"팔로우 중":"팔로우"}</button>
         <button class="mini" onclick="go('author','${r.origBy||r.by}')">이 사람 루트</button>
@@ -1408,14 +1456,15 @@ function routeView(){
       <div class="ft">순서대로 ${c.stops.length}곳 · 이동 ${c.distKm.toFixed(1)}km (걷는 거리 ${c.walkKm.toFixed(1)}km)${c.waits?` · 웨이팅 ${c.waits}곳(머무는 시간에 포함)`:""}</div>
       <a class="maplink" href="${c.stops.length>1?(r.transport==="car"?kakaoAllURL(c.stops,r.transport):kakaoLegURL(c.stops[0].place,c.stops[1].place,c.stops[0].leg.mode)):kakaoPlaceURL(c.stops[0].place)}"
          target="_blank" rel="noopener">${IC.pin}${r.transport==="car"?`카카오맵에서 전체 경로 (${c.stops.length}곳)`:"카카오맵에서 첫 구간 길찾기"}</a></div>
-    <button class="big" onclick="S.playRoute={...ROUTES.find(x=>x.id==='${r.id}'),date:S.date,time:S.time};S.playIdx=0;go('play')">
-      이 루트 따라가기</button>
     <div class="tl">${tl}</div>
-    <button class="big" onclick="toggleSave('${r.id}')">${S.saved.has(r.id)?"저장 취소":"이 루트 저장하기"}</button>
-    <div class="row2">
-      <button class="flat ${allBeen?"on":""}" onclick="markRouteVisited('${r.id}')">${IC.check}${allBeen?"다녀온 루트":"다녀왔어요"}</button>
-      <button class="flat" onclick="S.draft={title:'',mood:'',transport:'${r.transport}',people:${r.people},plan:0,photos:{},date:S.date,time:S.time,
-        stops:${JSON.stringify(r.stops).replace(/"/g,'&quot;')}};go('create')">${IC.pen}내 걸로 가져오기</button>
+    <div class="fabpad"></div>
+    <div class="fab">
+      ${own?"":`<button class="fb ${saved?"on":""}" onclick="toggleSave('${r.id}')"
+        aria-label="${saved?"저장 해제":"이 루트 저장"}">${saved?IC.bmkF:IC.bmk}</button>`}
+      ${canCheck?`<button class="fb ${allBeen?"on":""}" onclick="markRouteVisited('${r.id}')"
+        aria-label="${allBeen?"다녀온 표시 해제":"다녀왔어요"}">${IC.check}</button>`:""}
+      <button class="fgo" onclick="S.playRoute={...ROUTES.find(x=>x.id==='${r.id}'),date:S.date,time:S.time};S.playIdx=0;go('play')">
+        이 루트 따라가기</button>
     </div>`;
 }
 
@@ -1920,7 +1969,7 @@ function toggleFollow(n){
 function bylineHTML(r){
   return r.origBy
     ? `<button class="lnk flat" onclick="go('author','${r.origBy}')">${r.origBy}</button>
-       <span class="rg">${IC.share}${r.by}님이 가져옴</span>`
+       <span class="rg">${IC.reroute}${r.by}님이 리루트</span>`
     : `<button class="lnk flat" onclick="go('author','${r.by}')">${r.by}</button>`;
 }
 function authorView(){
@@ -1933,7 +1982,7 @@ function authorView(){
       <div class="hd2"><span class="av" style="width:46px;height:46px;font-size:21px">${av}</span>
         <div><div style="font-size:18px;font-weight:800;letter-spacing:-.032em">${name}</div>
           <div style="font-size:12px;color:var(--sub);margin-top:5px;font-weight:600">
-            루트 ${mine.length} · 가져가기 ${totalRegram}</div></div></div>
+            루트 ${mine.length} · 받은 리루트 ${totalRegram}</div></div></div>
       <button class="big" style="width:100%;margin:12px 0 0" onclick="toggleFollow('${name}')">
         ${isFollowing(name)?"팔로우 중":"팔로우"}</button></div>
     <div class="sec"><div><h2>루트 ${mine.length}</h2></div></div>
@@ -2377,10 +2426,10 @@ function profileView(){
   const mine=myRoutes();
   const regrams=mine.reduce((a,r)=>a+(r.regrams||0),0);
   return `<div class="top"><h1>내 프로필</h1></div>
-    <div class="card rise" style="margin-top:10px"><div class="hd2">
-      <span class="av" style="width:46px;height:46px;font-size:21px">🙂</span>
-      <div><div style="font-size:18px;font-weight:800;letter-spacing:-.032em">나</div>
-        <div style="font-size:12px;color:var(--sub);margin-top:5px;font-weight:600">신입 배지 · 이번 달 활동</div></div></div>
+    <div class="card prof rise" style="margin-top:10px">
+      <div class="phd"><span class="pav">🙂</span>
+        <div class="pnm"><b>나</b><span>신입 배지 · 이번 달 활동</span></div>
+        <button class="mini p" onclick="go('create')">${IC.pen}루트 만들기</button></div>
       <div class="cnts">
         <button class="cnt flat" onclick="document.getElementById('myfeed')?.scrollIntoView({behavior:'smooth'})">
           <b>${mine.length}</b><span>루트</span></button>
@@ -2388,14 +2437,14 @@ function profileView(){
         <button class="cnt flat"><b>0</b><span>팔로워</span></button>
         <button class="cnt flat" onclick="go('saved')"><b>${S.saved.size}</b><span>저장</span></button>
       </div>
-      <div class="kv" style="margin-top:12px">
-        <div><div class="k">다녀온 곳</div><div class="v">${S.visited.size}곳</div></div>
-        <div><div class="k">가져가기 받은 수</div><div class="v">${regrams}</div></div>
+      <div class="pstat">
+        <span>${IC.pin}다녀온 곳<b>${S.visited.size}</b></span>
+        <span>${IC.reroute}받은 리루트<b>${regrams}</b></span>
       </div></div>
     ${S.folLab==="팔로잉"&&S.follows.size?`<div class="sec"><div><h2>팔로잉 ${S.follows.size}</h2></div>
       <button class="more flat" onclick="S.folLab='';render()">닫기</button></div>
       <div class="chips">${[...S.follows].map(n=>`<button class="chip2 one flat" onclick="go('author','${n}')">${n}</button>`).join("")}</div>`:""}
-    <div class="sec" id="myfeed"><div><h2>내 루트 ${mine.length}</h2><p>만들거나 가져온 루트가 여기에 쌓여요</p></div></div>
+    <div class="sec" id="myfeed"><div><h2>내 루트 ${mine.length}</h2><p>직접 만들거나 리루트한 루트가 여기에 쌓여요</p></div></div>
     ${mine.length?`<div class="col">${mine.map((r,i)=>routeCard(r,"wide",i)).join("")}</div>`
       :`<div class="empty"><div class="ic">${IC.pen}</div>아직 만든 루트가 없어요.<br>가운데 '만들기'에서 첫 루트를 만들어보세요.</div>`}
     <div class="card rise" style="margin-top:10px">
@@ -2630,6 +2679,8 @@ function render(){
   const app=document.getElementById("app");
   app.className=ANIM?"anim":""; ANIM=false;
   app.innerHTML=VIEWS[S.view]();
+  // 루트 상세는 자체 하단 액션바(.fab)를 쓴다 — 탭바까지 겹치면 바닥이 두 겹이 된다
+  document.getElementById("tabs").style.display=S.view==="route"?"none":"";
   document.getElementById("tabs").innerHTML=[
     ["home",IC.home,"홈",0],["nearby",IC.pin,"주변",0],["create",IC.pen,"만들기",0],
     ["profile",IC.user,"프로필",S.saved.size]]   // 저장함은 프로필 > 저장으로 들어간다
