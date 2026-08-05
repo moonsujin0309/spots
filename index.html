@@ -604,6 +604,17 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .pleg{display:flex;align-items:center;gap:7px;margin:6px 0 6px 26px;font-size:12px;font-weight:700;color:var(--sub)}
 .pleg svg{width:14px;height:14px;color:var(--accent-tx)}
 .pleg .mini{margin-left:auto}
+/* 담은 목록 한 줄 — 만들기와 미리보기가 같은 모양을 쓴다 */
+.mrow{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
+.mrow select{background:var(--chip);border:0;border-radius:999px;padding:6px 10px;color:var(--fg);
+  font-size:12px;font-weight:700;outline:none;max-width:130px}
+.pk{margin-bottom:8px}
+.ord .rmx{color:var(--warn)}
+/* 좋아요는 스팟에 — 눌린 상태를 분명히 */
+.mini.lk{gap:5px}
+.mini.lk svg{width:14px;height:14px}
+.mini.lk.on{background:var(--point-2);color:var(--point-dk);border-color:var(--point)}
+.mini.lk.on svg{fill:var(--point);color:var(--point)}
 /* 미리보기 순서 바꾸기 — 손잡이로 끌거나 우측 화살표로 */
 .ord{position:absolute;right:9px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;
   align-items:center;gap:3px;z-index:2}
@@ -611,8 +622,8 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   font-size:11px;font-weight:800;display:grid;place-items:center}
 .ord button:disabled{opacity:.35}
 .ord .grip{width:28px;height:22px;display:grid;place-items:center;color:var(--dim);cursor:grab;touch-action:none}
-.pvrow.dragging{opacity:.6}
-.pvrow .stp .in{padding-right:40px}
+.pvrow.dragging,.pk.dragging{opacity:.6}
+.pvrow .stp .in,.pk .stp .in{padding-right:42px}
 .fldr{display:flex;align-items:center;gap:7px;margin:-4px 20px 12px;padding:9px 13px;
   background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);
   font-size:12px;font-weight:700;color:var(--sub)}
@@ -665,6 +676,7 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 const S_=(d,f)=>`<svg viewBox="0 0 24 24" fill="${f?"currentColor":"none"}" stroke="currentColor"
   stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
 const IC={
+  heart:S_('<path d="M12 20.2S3.6 15 3.6 9.3A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 8.4 1.9c0 5.7-8.4 10.9-8.4 10.9z"/>'),
   home:S_('<path d="M3.2 10.6 12 3.4l8.8 7.2"/><path d="M5.6 9.4V20h12.8V9.4"/><path d="M10 20v-5.2h4V20"/>'),
   pen:S_('<path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M15 6l3 3"/>'),
   user:S_('<circle cx="12" cy="8.2" r="3.6"/><path d="M4.6 20c.6-3.8 3.7-5.8 7.4-5.8s6.8 2 7.4 5.8"/>'),
@@ -1148,7 +1160,7 @@ const S={view:"home",routeId:null,placeId:null,listKey:null,
   favs:new Set(["seongsu","yeonnam"]),saved:new Set(),visited:new Set(),
   placeTab:"transit",q:"",cat:"",pickMode:"select",pickPt:null,fixKey:null,sq:"",rsearch:[],nearCenter:{lat:37.5443,lng:127.0557},nearKm:3,nearMoved:false,nearLabel:"성수",nearSel:null,sheetTop:58,apiHits:null,apiState:"off",playRoute:null,playIdx:0,recent:["카페","성수","전시"],
   draft:{title:"",mood:"",transport:"transit",people:2,plan:1,photos:{},date:ymd(nx),time:"11:00",stops:[]},
-  rankOpen:false, folLab:"",
+  rankOpen:false, folLab:"", likes:new Set(),
   follows:new Set(),          // 팔로우한 작성자 이름
   authorId:null,              // 작성자 화면에서 보고 있는 사람
   folders:["가보고 싶어","데이트","친구랑"],   // 저장함 폴더
@@ -1191,16 +1203,24 @@ function markRouteVisited(id){
   render();
 }
 function togglePlace(p){ S.visited.has(p)?S.visited.delete(p):S.visited.add(p); render(); }
+/* 좋아요는 '스팟'에, 저장은 '루트'에. 둘이 겹치지 않게 역할을 나눴다. */
+const likeCount=k=>Math.round((PLACES[k].pop||50)*1.4)+(S.likes.has(k)?1:0);
+const popWord=p=>p>=88?"많이들 찾는 곳":p>=72?"평이 좋은 곳":"조용한 편";
+function toggleLike(k){
+  S.likes.has(k)?S.likes.delete(k):S.likes.add(k);
+  // 화면 전체를 다시 그리면 지도가 새로 만들어져 끊긴다 — 이 버튼만 고친다
+  const b=document.getElementById("lk-"+k);
+  if(b){ b.classList.toggle("on",S.likes.has(k)); b.querySelector("b").textContent=likeCount(k); }
+  else render();
+}
 
 /* ═════ 조각 ═════ */
 function condBar(){
   return `<div class="cond">
     <div class="r"><span class="lab">언제</span>
       <input type="date" value="${S.date}" onchange="S.date=this.value;render()">
-      <input type="time" step="900" value="${S.time}" onchange="S.time=this.value;render()"></div>
-    <div class="r"><span class="lab">어디서</span>
-      <button class="now flat" onclick="hereNow()">${IC.pin}내 위치</button>
-      <span style="font-size:12.5px;font-weight:700;color:var(--sub)">${S.nearLabel==="내 위치"?"내 위치 기준":nearestArea(S.nearCenter).n+" 기준"}</span></div>
+      <input type="time" step="900" value="${S.time}" onchange="S.time=this.value;render()">
+      <button class="now flat" onclick="setNow()">지금</button></div>
     <div class="r"><span class="lab">어떻게</span><div class="seg">
       <button class="flat ${S.transport==="all"?"on":""}" onclick="S.transport='all';render()">전체</button>
       <button class="flat ${S.transport==="transit"?"on":""}" onclick="S.transport='transit';render()">${IC.subway}대중교통</button>
@@ -1218,17 +1238,8 @@ function condFolded(){
         ${IC.cal}<span class="cg">${d.getMonth()+1}월 ${d.getDate()}일(${DAYS[d.getDay()]}) ${hm(toMin(S.time))} · ${t} · ${plabel(S.people)}명</span>
         <span class="ar">조건 바꾸기</span></button>`;
 }
-/* 시각을 '지금'으로 맞추는 것보다, 지금 어디 있는지가 루트 고르는 데 훨씬 쓸모 있다. */
-function hereNow(){
-  if(!navigator.geolocation){ toast("이 브라우저는 위치를 못 받아요"); return; }
-  toast("현재 위치를 찾는 중…");
-  navigator.geolocation.getCurrentPosition(
-    p=>{ S.nearCenter={lat:p.coords.latitude,lng:p.coords.longitude};
-      S.nearLabel="내 위치"; S.nearMoved=false; render();
-      toast(`${nearestArea(S.nearCenter).n} 근처예요`); },
-    ()=>toast("위치 권한이 없어요"),
-    {enableHighAccuracy:true,timeout:8000,maximumAge:60000});
-}
+function setNow(){ const d=new Date(); S.date=ymd(d);
+  S.time=`${String(d.getHours()).padStart(2,"0")}:${String(Math.floor(d.getMinutes()/15)*15).padStart(2,"0")}`; render(); }
 
 function routeCard(r,mode,i){
   const c=computeRoute(r,iso()), t=TRANSPORT[r.transport], hp=heroPlace(r);
@@ -1334,28 +1345,29 @@ function routeView(){
       <div class="nm">${s.place.n}</div><div class="tt">${hm(s.arrive)}</div></div>
       ${s.leg?`<div class="jl">${IC[MODE[s.leg.mode].ic]}<div class="tx">${s.leg.min}분</div><div class="ln"></div></div>`:""}`;
   }).join("");
+  /* 루트 상세는 '여기가 왜 좋은지'를 읽는 화면이다.
+     도착 시각·길찾기처럼 실제로 움직일 때 필요한 정보는 '이 루트 따라가기'가 맡는다. */
   const tl=c.stops.map((s,i)=>{
-    const bad=["closed","early","late"].includes(s.status), n2=c.stops[i+1];
-    const dl=n2?kakaoLegURL(s.place,n2.place,s.leg.mode):null;
+    const bad=["closed","early","late"].includes(s.status);
     return `<div class="stp ${bad?"x":""} ${s.been?"been":""} rise" style="--d:${Math.min(i,5)*50}ms">
       ${ph(s.place.img,CT[s.place.c]||"park",s.place.n.length,"",`<span class="bd">${s.been?"✓":i+1}</span>`)}
       <div class="in"><div class="nm">${s.place.n}</div>
-        <div class="tm">${hm(s.arrive)}쯤 도착 · ${dur(s.stay)} 안팎</div>
-        <div class="tags"><span class="tg">${s.place.c}</span>
-          ${s.been?`<span class="tg ok">다녀온 곳</span>`:""}
-          ${s.status==="ok"?"":`<span class="tg ${bad?"bad":"warn"}">${s.why}</span>`}
+        <div class="tm">${s.place.c} · ${popWord(s.place.pop)} · 머무는 시간 ${dur(s.stay)} 안팎</div>
+        ${s.c?`<div class="cm">"${s.c}"</div>`:""}
+        <div class="tags">
           <span class="tg">1인 ${wonRange(s.place.cost[0],s.place.cost[1])}</span>
           ${s.place.wait?`<span class="tg">웨이팅 있음</span>`:""}
-          ${s.place.park?`<span class="tg">주차 가능</span>`:""}</div>
-        <div class="cm">${s.c}</div>
+          ${s.place.park?`<span class="tg">주차 가능</span>`:""}
+          ${s.been?`<span class="tg ok">다녀온 곳</span>`:""}
+          ${s.status==="ok"?"":`<span class="tg ${bad?"bad":"warn"}">${s.why}</span>`}</div>
         <div class="acts">
+          <button class="mini lk ${S.likes.has(s.p)?"on":""}" id="lk-${s.p}" onclick="toggleLike('${s.p}')">
+            ${IC.heart}<b>${likeCount(s.p)}</b></button>
+          <button class="mini" onclick="go('place','${s.p}')">이 곳이 담긴 루트</button>
           <a class="mini" href="${kakaoPlaceURL(s.place)}" target="_blank" rel="noopener">${IC.pin}지도</a>
-          ${dl?`<a class="mini p" href="${dl}" target="_blank" rel="noopener">${IC[MODE[s.leg.mode].ic]}${n2.place.n}까지</a>`:""}
-          <button class="mini ${s.been?"o":""}" onclick="togglePlace('${s.p}')">${IC.check}${s.been?"다녀옴":"다녀온 곳으로"}</button>
-          <button class="mini" onclick="go('place','${s.p}')">다른 루트</button>
         </div></div></div>
       ${s.leg?`<div class="hop"><div class="rl"></div>
-        <div class="tx">${IC[MODE[s.leg.mode].ic]}${MODE[s.leg.mode].label} ${s.leg.min}분 · ${s.leg.km.toFixed(1)}km</div></div>`:""}`;
+        <div class="tx">${IC[MODE[s.leg.mode].ic]}${MODE[s.leg.mode].label} ${s.leg.min}분</div></div>`:""}`;
   }).join("");
   return `<div class="hero">${ph(hp.img,CT[hp.c]||"park",r.id.charCodeAt(1)*7)}
       <div class="grad"></div>
@@ -1450,7 +1462,9 @@ function savedView(){
   const count=f=>f==="전체"?all.length:all.filter(r=>folderOf(r.id)===f).length;
   const saved=S.folderTab==="전체"?all:all.filter(r=>folderOf(r.id)===S.folderTab);
   const vp=[...S.visited].filter(k=>PLACES[k]);
-  return `<div class="top"><h1>저장함</h1><div class="note">갈 곳과 다녀온 곳을 여기서 관리해요</div></div>
+  // 탭이 아니라 프로필 > 저장으로 들어오는 화면이라 뒤로가기가 필요하다
+  return `<div class="top"><button class="mini flat" onclick="back()" style="margin-bottom:10px">${IC.back}프로필</button>
+      <h1>저장한 루트</h1><div class="note">갈 곳과 다녀온 곳을 여기서 관리해요</div></div>
     <div class="chips" style="margin-top:6px">
       ${tabs.map(f=>`<button class="chip2 one flat ${S.folderTab===f?"on":""}"
         onclick="S.folderTab='${f}';render()">${f} ${count(f)}</button>`).join("")}
@@ -1927,24 +1941,31 @@ function authorView(){
 function stopRows(){
   const d=S.draft;
   if(!d.stops.length) return `<div style="padding:12px 2px;color:var(--sub);font-size:13px;font-weight:600">위에서 장소를 검색해 담아주세요</div>`;
+  // 미리보기와 같은 카드 모양으로 맞춘다 — 2행 그리드는 좁은 화면에서 읽기 어려웠다
   return d.stops.map((s,i)=>{
-    const v=PLACES[s.p], n=(d.photos||{})[s.p]||0;
-    return `<div class="pk${i===0?" first":""}" data-i="${i}">
-      <span class="grip" onpointerdown="dragStart(event,${i})">${IC.grip}</span>
-      <span class="no2">${i+1}</span>${ph(v.img,CT[v.c]||"park",v.n.length)}
-      <div class="g">${i===0?`<div class="meetbadge">${IC.clock}${hm(toMin(d.time))} 만나서 출발</div>`:""}
-        <div class="nm">${v.n}</div></div>
-      <button class="rm flat" onclick="removeStop(${i})">✕</button>
-      <div class="meta">
-        <select onchange="S.draft.stops[${i}].stay=+this.value;render()">
-          ${[30,60,90,120,180].map(m=>`<option value="${m}" ${s.stay===m?"selected":""}>약 ${dur(m)}</option>`).join("")}</select>
-        ${v.custom?`<select class="catsel" onchange="PLACES['${s.p}'].c=this.value;render()">
-            ${CATS.map(c=>`<option ${v.c===c?"selected":""}>${c}</option>`).join("")}</select>`
-          :`<span class="sm">${v.c}</span>`}
-        ${v.approx?`<button class="flat photo" onclick="S.q='${v.n}';S.fixKey='${s.p}';go('pick')">위치 잡기</button>`:""}
-        <a class="photo" href="${kakaoPlaceURL(v)}" target="_blank" rel="noopener">지도</a>
-      </div></div>`;}).join("");
+    const v=PLACES[s.p];
+    return `<div class="pk" data-i="${i}">
+      <div class="stp">
+        ${ph(v.img,CT[v.c]||"park",v.n.length,"",`<span class="bd">${i+1}</span>`)}
+        <div class="in">
+          <div class="nm">${v.n}</div>
+          <div class="tm">${i===0?`${hm(toMin(d.time))} 만나서 출발`:`${v.c}`}${v.approx?" · 위치 미확정":""}</div>
+          <div class="mrow">
+            <select onchange="S.draft.stops[${i}].stay=+this.value;render()">
+              ${[30,60,90,120,180].map(m=>`<option value="${m}" ${s.stay===m?"selected":""}>약 ${dur(m)}</option>`).join("")}</select>
+            ${v.custom?`<select class="catsel" onchange="PLACES['${s.p}'].c=this.value;render()">
+                ${CATS.map(c=>`<option ${v.c===c?"selected":""}>${c}</option>`).join("")}</select>`:""}
+            ${v.approx?`<button class="flat photo" onclick="S.q='${v.n}';S.fixKey='${s.p}';go('pick')">위치 잡기</button>`:""}
+            <a class="photo" href="${kakaoPlaceURL(v)}" target="_blank" rel="noopener">지도</a>
+          </div></div>
+        <div class="ord">
+          <span class="grip" onpointerdown="dragStart(event,${i})">${IC.grip}</span>
+          <button ${i===0?"disabled":""} onclick="swapStop(${i},-1)">↑</button>
+          <button ${i===d.stops.length-1?"disabled":""} onclick="swapStop(${i},1)">↓</button>
+          <button class="rmx" onclick="removeStop(${i})">✕</button>
+        </div></div></div>`;}).join("");
 }
+const swapStop=(i,k)=>moveStop(i,k);
 function removeStop(i){ const p=S.draft.stops[i].p; S.draft.stops.splice(i,1);
   if(S.draft.photos) delete S.draft.photos[p]; render(); }
 function addPhoto(p){
@@ -1984,12 +2005,13 @@ function dragMove(ev){
 function renumber(list){
   [...list.querySelectorAll(".pk")].forEach((el,i)=>{
     el.dataset.i=i;
-    const n=el.querySelector(".no2"); if(n) n.textContent=i+1;
-    el.querySelector(".grip").setAttribute("onpointerdown",`dragStart(event,${i})`);
-    el.classList.toggle("first",i===0);
+    const n=el.querySelector(".bd"); if(n) n.textContent=i+1;
+    const g=el.querySelector(".grip");
+    if(g) g.setAttribute("onpointerdown",`dragStart(event,${i})`);
     const sel=el.querySelector("select");
     if(sel) sel.setAttribute("onchange",`S.draft.stops[${i}].stay=+this.value;render()`);
-    el.querySelector(".rm").setAttribute("onclick",`removeStop(${i})`);
+    const rm=el.querySelector(".rmx");
+    if(rm) rm.setAttribute("onclick",`removeStop(${i})`);
   });
 }
 function dragEnd(){
@@ -2608,7 +2630,7 @@ function render(){
   app.innerHTML=VIEWS[S.view]();
   document.getElementById("tabs").innerHTML=[
     ["home",IC.home,"홈",0],["nearby",IC.pin,"주변",0],["create",IC.pen,"만들기",0],
-    ["saved",IC.bmk,"저장함",S.saved.size],["profile",IC.user,"프로필",0]]
+    ["profile",IC.user,"프로필",S.saved.size]]   // 저장함은 프로필 > 저장으로 들어간다
     .map(([v,i,l,n])=>`<button class="flat ${S.view===v?"on":""}" onclick="go('${v}')">
       <span class="ib">${i}</span>${l}${n?`<span class="dot"></span>`:""}</button>`).join("");
   document.querySelectorAll(".rail,.areas").forEach(dragScroll);
