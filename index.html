@@ -608,7 +608,9 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .mrow{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
 .mrow select{background:var(--chip);border:0;border-radius:999px;padding:6px 10px;color:var(--fg);
   font-size:12px;font-weight:700;outline:none;max-width:130px}
-.pk{margin-bottom:8px}
+/* 담은 목록만 카드형으로 — .pk 그리드는 '다녀온 곳' 목록 등 다른 데서도 쓰므로 건드리지 않는다 */
+.pk.card1{display:block;padding:0;box-shadow:none;margin-bottom:8px;gap:0}
+.pk.card1 .stp{margin:0}
 .ord .rmx{color:var(--warn)}
 /* 좋아요는 스팟에 — 눌린 상태를 분명히 */
 .mini.lk{gap:5px}
@@ -1944,7 +1946,7 @@ function stopRows(){
   // 미리보기와 같은 카드 모양으로 맞춘다 — 2행 그리드는 좁은 화면에서 읽기 어려웠다
   return d.stops.map((s,i)=>{
     const v=PLACES[s.p];
-    return `<div class="pk" data-i="${i}">
+    return `<div class="pk card1" data-i="${i}">
       <div class="stp">
         ${ph(v.img,CT[v.c]||"park",v.n.length,"",`<span class="bd">${i+1}</span>`)}
         <div class="in">
