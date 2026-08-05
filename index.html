@@ -196,10 +196,13 @@ svg{display:block}
 .hero .ph{position:absolute;inset:0}
 .hero .grad{position:absolute;inset:0;z-index:3;
   background:linear-gradient(transparent 18%,rgba(6,8,12,.42) 52%,rgba(6,8,12,.9))}
-.hero .txt{position:absolute;inset:auto 20px 20px;color:#fff;z-index:5}
+/* 아래 요약 카드가 margin-top:-24px로 히어로를 덮는다. 제목이 그 밑에 깔리지 않게 띄운다 */
+.hero .txt{position:absolute;inset:auto 20px 36px;color:#fff;z-index:5}
 .hero h1{margin-top:9px;font-size:25px;font-weight:800;letter-spacing:-.045em;line-height:1.28;
   text-shadow:0 2px 18px rgba(0,0,0,.45)}
-.hero .nav{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;z-index:6}
+/* 뒤로가기가 아이폰 상태바 밑에 깔리지 않게 */
+.hero .nav{position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px;right:12px;
+  display:flex;justify-content:space-between;z-index:6}
 .hero .nav button{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff}
 .hero .nav span{width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.34);
   backdrop-filter:blur(10px);display:grid;place-items:center}
@@ -1789,14 +1792,13 @@ function previewView(){
         <h1>${r.title}</h1></div></div>
     <div class="card summary rise">
       <div class="hd2"><span class="av">🙂</span>
-        <div><div class="quote">"${r.mood}"</div>
-          <div class="who">나 · 아직 저장 전 미리보기</div></div></div>
+        <div><div class="who">나 · 아직 저장 전 미리보기</div></div></div>
       <div class="kv">
         <div><div class="k">총 소요</div><div class="v">${IC.clock}${durRange(c.totalLo,c.totalHi)}</div></div>
         <div><div class="k">${hm(c.startAt)} 출발이면</div><div class="v">${hm(c.endLo)}쯤 <small>종료</small></div></div>
         <div><div class="k">${plabel(r.people)}명 총액</div><div class="v">${IC.card}${wonRange(...totalCost(c,r.transport,r.people))}</div></div>
         <div><div class="k">교통비</div><div class="v">${IC[TRANSPORT[r.transport].ic]}${(r.transport==="car"?c.fare:c.fare*peopleN(r.people)).toLocaleString()}원</div></div>
-        <div><div class="k">이동 거리</div><div class="v">${IC.walk}${c.distKm.toFixed(1)}km</div></div>
+        <div><div class="k">이동 거리</div><div class="v">${IC[t.ic]}${c.distKm.toFixed(1)}km</div></div>
         <div><div class="k">걷는 거리</div><div class="v">${IC.walk}${c.walkKm.toFixed(1)}km</div></div>
       </div></div>
     <div class="bar ${c.blocked?"x":"o"}">${c.blocked
