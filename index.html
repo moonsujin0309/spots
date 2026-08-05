@@ -61,7 +61,9 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
   transition-property:transform,opacity,background-color,color;transition-duration:.16s;transition-timing-function:var(--ease)}
 button:active{transform:scale(.96)}
 button.flat:active{transform:none;opacity:.6}
-input,select,textarea{font:inherit}
+/* iOS 사파리는 입력 글자가 16px보다 작으면 포커스할 때 화면을 확대해버린다.
+   모바일 앱들이 입력만 16px로 두는 이유가 이것. 줄이면 안 된다. */
+input,select,textarea{font:inherit;font-size:16px}
 svg{display:block}
 
 .ph{position:relative;overflow:hidden;background:var(--chip)}
@@ -580,8 +582,26 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   border-radius:var(--r-m);padding:11px 12px;margin-top:11px;font-weight:700;color:var(--sub);min-height:44px}
 .shot svg{width:16px;height:16px}
 .shot .go{color:var(--accent-tx)}
-.ta{width:100%;background:var(--chip);border:0;border-radius:var(--r-m);padding:13px;color:var(--fg);
+.ta{width:100%;background:var(--chip);border:0;border-radius:var(--r-m);padding:13px 13px 28px;color:var(--fg);
   resize:none;outline:none;min-height:66px;font-weight:600}
+.tawrap{position:relative}
+.tacount{position:absolute;right:12px;bottom:9px;font-size:11.5px;font-weight:700;color:var(--dim);
+  pointer-events:none;font-variant-numeric:tabular-nums}
+.tacount.bad{color:var(--warn)}
+.fldr{display:flex;align-items:center;gap:7px;margin:-4px 20px 12px;padding:9px 13px;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);
+  font-size:12px;font-weight:700;color:var(--sub)}
+.fldr svg{width:14px;height:14px;color:var(--accent-tx)}
+.fldr select{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--fg);font-weight:800;font-size:13px}
+/* 원작자 링크 — 가져온(리그램) 루트는 원작자를 먼저 보여준다 */
+.lnk{display:inline;padding:0;font:inherit;font-weight:800;color:var(--accent-tx);
+  text-decoration:underline;text-underline-offset:2px}
+.rg{display:inline-flex;align-items:center;gap:3px;margin-left:5px;font-size:11px;font-weight:700;
+  color:var(--dim)}
+.rg svg{width:11px;height:11px}
+.foldbtn{display:block;width:calc(100% - 40px);margin:10px 20px 0;background:var(--card);
+  border:1px solid var(--line);border-radius:999px;padding:12px;text-align:center;
+  font-size:13px;font-weight:800;color:var(--accent-tx)}
 .big{display:block;width:calc(100% - 40px);margin:14px 20px 0;background:var(--accent);color:var(--on-accent);
   font-weight:800;border-radius:var(--r-l);padding:16px;text-align:center;font-size:15.5px;letter-spacing:-.032em}
 .big.g{background:var(--chip);color:var(--fg)}
@@ -1103,6 +1123,13 @@ const S={view:"home",routeId:null,placeId:null,listKey:null,
   favs:new Set(["seongsu","yeonnam"]),saved:new Set(),visited:new Set(),
   placeTab:"transit",q:"",cat:"",pickMode:"select",pickPt:null,fixKey:null,sq:"",rsearch:[],nearCenter:{lat:37.5443,lng:127.0557},nearKm:3,nearMoved:false,nearLabel:"성수",nearSel:null,sheetTop:58,apiHits:null,apiState:"off",playRoute:null,playIdx:0,recent:["카페","성수","전시"],
   draft:{title:"",mood:"",transport:"transit",people:2,plan:1,photos:{},date:ymd(nx),time:"11:00",stops:[]},
+  rankOpen:false,
+  follows:new Set(),          // 팔로우한 작성자 이름
+  authorId:null,              // 작성자 화면에서 보고 있는 사람
+  folders:["가보고 싶어","데이트","친구랑"],   // 저장함 폴더
+  folderOf:{},                // routeId → 폴더명
+  folderTab:"전체",
+  myRoutes:[],                // 내가 만들거나 리그램한 루트
   stack:[],scrollMem:{}};
 const iso=()=>`${S.date}T${S.time}:00`;
 let ANIM=true;
@@ -1110,7 +1137,7 @@ const memKey=()=>S.view+(S.routeId||"")+(S.placeId||"")+(S.listKey||"");
 function go(v,id){
   S.scrollMem[memKey()]=scrollY;
   S.stack.push({view:S.view,routeId:S.routeId,placeId:S.placeId,listKey:S.listKey});
-  if(v==="route")S.routeId=id; if(v==="place")S.placeId=id;
+  if(v==="route")S.routeId=id; if(v==="place")S.placeId=id; if(v==="author")S.authorId=id;
   S.view=v; S.condOpen=false; ANIM=true; render(); scrollTo(0,0);
 }
 function back(){
@@ -1145,8 +1172,10 @@ function condBar(){
   return `<div class="cond">
     <div class="r"><span class="lab">언제</span>
       <input type="date" value="${S.date}" onchange="S.date=this.value;render()">
-      <input type="time" step="900" value="${S.time}" onchange="S.time=this.value;render()">
-      <button class="now flat" onclick="setNow()">지금</button></div>
+      <input type="time" step="900" value="${S.time}" onchange="S.time=this.value;render()"></div>
+    <div class="r"><span class="lab">어디서</span>
+      <button class="now flat" onclick="hereNow()">${IC.pin}내 위치</button>
+      <span style="font-size:12.5px;font-weight:700;color:var(--sub)">${S.nearLabel==="내 위치"?"내 위치 기준":nearestArea(S.nearCenter).n+" 기준"}</span></div>
     <div class="r"><span class="lab">어떻게</span><div class="seg">
       <button class="flat ${S.transport==="all"?"on":""}" onclick="S.transport='all';render()">전체</button>
       <button class="flat ${S.transport==="transit"?"on":""}" onclick="S.transport='transit';render()">${IC.subway}대중교통</button>
@@ -1164,8 +1193,17 @@ function condFolded(){
         ${IC.cal}<span class="cg">${d.getMonth()+1}월 ${d.getDate()}일(${DAYS[d.getDay()]}) ${hm(toMin(S.time))} · ${t} · ${plabel(S.people)}명</span>
         <span class="ar">조건 바꾸기</span></button>`;
 }
-function setNow(){ const d=new Date(); S.date=ymd(d);
-  S.time=`${String(d.getHours()).padStart(2,"0")}:${String(Math.floor(d.getMinutes()/15)*15).padStart(2,"0")}`; render(); }
+/* 시각을 '지금'으로 맞추는 것보다, 지금 어디 있는지가 코스 고르는 데 훨씬 쓸모 있다. */
+function hereNow(){
+  if(!navigator.geolocation){ toast("이 브라우저는 위치를 못 받아요"); return; }
+  toast("현재 위치를 찾는 중…");
+  navigator.geolocation.getCurrentPosition(
+    p=>{ S.nearCenter={lat:p.coords.latitude,lng:p.coords.longitude};
+      S.nearLabel="내 위치"; S.nearMoved=false; render();
+      toast(`${nearestArea(S.nearCenter).n} 근처예요`); },
+    ()=>toast("위치 권한이 없어요"),
+    {enableHighAccuracy:true,timeout:8000,maximumAge:60000});
+}
 
 function routeCard(r,mode,i){
   const c=computeRoute(r,iso()), t=TRANSPORT[r.transport], hp=heroPlace(r);
@@ -1303,7 +1341,13 @@ function routeView(){
     <div class="card summary rise">
       <div class="hd2"><span class="av">${r.av}</span>
         <div>${r.mood&&r.mood!==r.title?`<div class="quote">"${r.mood}"</div>`:""}
-          <div class="who">${r.by} · ${r.plan?"아직 안 가본 계획 코스":`${r.people}명이서 다녀옴 · ${r.visits}명이 인증`}</div></div></div>
+          <div class="who">${bylineHTML(r)} · ${r.plan?"아직 안 가본 계획 코스":`${r.people}명이서 다녀옴 · ${r.visits}명이 인증`}</div></div></div>
+      <div class="acts" style="margin-top:10px">
+        <button class="mini p" onclick="regram('${r.id}')">${IC.share}가져오기 ${r.regrams||0}</button>
+        <button class="mini ${isFollowing(r.origBy||r.by)?"o":""}" onclick="toggleFollow('${r.origBy||r.by}')">
+          ${isFollowing(r.origBy||r.by)?"팔로우 중":"팔로우"}</button>
+        <button class="mini" onclick="go('author','${r.origBy||r.by}')">이 사람 코스</button>
+      </div>
       <div class="kv">
         <div><div class="k">총 소요</div><div class="v">${IC.clock}${durRange(c.totalLo,c.totalHi)}</div></div>
         <div><div class="k">${hm(c.startAt)} 출발이면</div><div class="v">${hm(c.endLo)}쯤 <small>종료</small></div></div>
@@ -1366,13 +1410,33 @@ function placeView(){
 }
 
 /* ═════ 저장함 ═════ */
+/* 저장한 코스를 폴더로 나눈다. 폴더를 안 정하면 '미분류'로 둔다. */
+const folderOf=id=>S.folderOf[id]||"미분류";
+function setFolder(id,f){ S.folderOf[id]=f; toast(`'${f}'에 담았어요`); render(); }
+function newFolder(){
+  const n=(prompt("새 폴더 이름")||"").trim();
+  if(!n) return;
+  if(!S.folders.includes(n)) S.folders.push(n);
+  S.folderTab=n; render();
+}
 function savedView(){
-  const saved=[...S.saved].map(id=>ROUTES.find(r=>r.id===id)).filter(Boolean);
+  const all=[...S.saved].map(id=>ROUTES.find(r=>r.id===id)).filter(Boolean);
+  const tabs=["전체",...S.folders,"미분류"];
+  const count=f=>f==="전체"?all.length:all.filter(r=>folderOf(r.id)===f).length;
+  const saved=S.folderTab==="전체"?all:all.filter(r=>folderOf(r.id)===S.folderTab);
   const vp=[...S.visited].filter(k=>PLACES[k]);
   return `<div class="top"><h1>저장함</h1><div class="note">갈 곳과 다녀온 곳을 여기서 관리해요</div></div>
-    ${saved.length?`<div class="sec"><div><h2>저장한 코스 ${saved.length}</h2><p>갈 마음 먹은 것만 모아뒀어요</p></div></div>
-      <div class="col">${saved.map((r,i)=>routeCard(r,"wide",i)).join("")}</div>`
-      :`<div class="empty"><div class="ic">${IC.bmk}</div>아직 저장한 코스가 없어요.<br>카드 오른쪽 위 북마크를 눌러 모아보세요.</div>`}
+    <div class="chips" style="margin-top:6px">
+      ${tabs.map(f=>`<button class="chip2 one flat ${S.folderTab===f?"on":""}"
+        onclick="S.folderTab='${f}';render()">${f} ${count(f)}</button>`).join("")}
+      <button class="chip2 one flat" onclick="newFolder()">+ 폴더</button></div>
+    ${saved.length?`<div class="sec"><div><h2>${S.folderTab} ${saved.length}</h2><p>갈 마음 먹은 것만 모아뒀어요</p></div></div>
+      <div class="col">${saved.map((r,i)=>`${routeCard(r,"wide",i)}
+        <div class="fldr">${IC.bmk}<span>폴더</span>
+          <select onchange="setFolder('${r.id}',this.value)">
+            ${["미분류",...S.folders].map(f=>`<option ${folderOf(r.id)===f?"selected":""}>${f}</option>`).join("")}
+          </select></div>`).join("")}</div>`
+      :`<div class="empty"><div class="ic">${IC.bmk}</div>${S.folderTab==="전체"?"아직 저장한 코스가 없어요.<br>카드 오른쪽 위 북마크를 눌러 모아보세요.":`'${S.folderTab}' 폴더가 비어 있어요.`}</div>`}
     <div class="sec"><div><h2>다녀온 곳 ${vp.length}</h2><p>여기 있는 곳은 '안 가본 곳만 보기'에서 걸러져요</p></div></div>
     ${vp.length?`<div class="col"><div class="card" style="margin:0;padding:4px 14px">
       ${vp.map(k=>{const p=PLACES[k];return `<div class="pk">${ph(p.img,CT[p.c]||"park",p.n.length)}
@@ -1621,7 +1685,7 @@ function onSearch(v){ S.q=v; runApiSearch(v); paintZone(); }
 function createView(){
   const d=S.draft;
   const pv=d.stops.length>=2?computeRoute({...d,id:"draft"},`${d.date}T${d.time}:00`):null;
-  const ready=d.stops.length>=2&&d.mood.trim();
+  const ready=d.stops.length>=2&&[...d.mood.trim()].length>=MOOD_MIN;
   // 루트를 짤 땐 아직 안 간 상태가 기본. 다녀온 표시는 저장한 뒤 루트 화면에서 한다.
   S.draft.plan=1;
   return `<div class="top"><h1>루트 만들기</h1></div>
@@ -1656,23 +1720,153 @@ function createView(){
     </div></div></div>
 
     <div class="step"><div class="no">STEP 5</div><h3>한마디로 소개하면?</h3><div class="box">
-      <textarea class="ta" placeholder="예: 숲 산책하고 어니언 빵 먹는, 딱 반나절짜리 성수 데이트"
-        oninput="S.draft.mood=this.value">${d.mood}</textarea></div></div>
+      <div class="tawrap">
+        <textarea class="ta" maxlength="${MOOD_MAX}" placeholder="예: 숲 산책하고 어니언 빵 먹는, 딱 반나절짜리 성수 데이트"
+          oninput="onMood(this.value)">${d.mood}</textarea>
+        <span class="tacount ${moodLen()<MOOD_MIN?"bad":""}" id="moodCount">${moodLen()}/${MOOD_MAX}</span>
+      </div></div></div>
 
-    <button class="big" ${ready?"":"disabled"} onclick="publish()">루트 저장하기</button>`;
+    <button class="big" id="previewBtn" ${ready?"":"disabled"} onclick="go('preview')">루트 미리보기</button>`;
+}
+const MOOD_MAX=40, MOOD_MIN=3;
+const moodLen=()=>[...S.draft.mood.trim()].length;
+/* 한 글자 칠 때마다 render()를 돌리면 입력창이 새로 만들어져 한글 조합이 깨진다.
+   그래서 여기서는 글자수·버튼 활성화만 직접 건드린다. */
+function onMood(v){
+  S.draft.mood=v;
+  const n=[...v.trim()].length;
+  const c=document.getElementById("moodCount");
+  if(c){ c.textContent=`${[...v].length}/${MOOD_MAX}`; c.classList.toggle("bad",n<MOOD_MIN); }
+  const b=document.getElementById("previewBtn");
+  if(b) b.disabled=!(S.draft.stops.length>=2&&n>=MOOD_MIN);
 }
 function delPhoto(p){ if(S.draft.photos) delete S.draft.photos[p]; render(); }
 const photoCount=()=>Object.values(S.draft.photos||{}).reduce((a,b)=>a+b,0);
+/* 초안을 루트 객체로. 미리보기와 저장이 같은 모양을 쓰게 한다. */
+function draftRoute(id){
+  const d=S.draft;
+  return {id:id||"draft",area:PLACES[d.stops[0].p].area,transport:d.transport,people:d.people,
+    plan:d.plan,by:"나",av:"🙂",likes:0,visits:0,regrams:0,
+    title:d.mood.trim(),mood:d.mood.trim(),note:"",
+    date:d.date,time:d.time,stops:d.stops.map(s=>({...s}))};
+}
+function moveStop(i,k){
+  const a=S.draft.stops, j=i+k;
+  if(j<0||j>=a.length) return;
+  [a[i],a[j]]=[a[j],a[i]];
+  render();
+}
+/* ═════ 미리보기 ═════
+   예전에는 저장하면 한 곳씩 넘기는 화면으로 갔는데 뎁스가 너무 컸다.
+   지금은 게시된 루트와 같은 모양을 미리 보여주고, 여기서 순서를 고친 뒤 저장한다. */
+function previewView(){
+  const d=S.draft;
+  if(d.stops.length<2) return `<div class="top"><h1>미리보기</h1></div>
+    <div class="empty"><div class="ic">${IC.pin}</div>장소를 2곳 이상 담아주세요.</div>
+    <button class="big" onclick="back()">돌아가기</button>`;
+  const r=draftRoute(), c=computeRoute(r,`${d.date}T${d.time}:00`), t=TRANSPORT[r.transport];
+  const dt=new Date(iso()), hp=heroPlace(r);
+  const tl=c.stops.map((s,i)=>{
+    const bad=["closed","early","late"].includes(s.status);
+    return `<div class="stp ${bad?"x":""}">
+      ${ph(s.place.img,CT[s.place.c]||"park",s.place.n.length,"",`<span class="bd">${i+1}</span>`)}
+      <div class="in"><div class="nm">${s.place.n}</div>
+        <div class="tm">${hm(s.arrive)}쯤 도착 · ${dur(s.stay)} 안팎</div>
+        <div class="tags"><span class="tg">${s.place.c}</span>
+          ${s.status==="ok"?"":`<span class="tg ${bad?"bad":"warn"}">${s.why}</span>`}
+          <span class="tg">1인 ${wonRange(s.place.cost[0],s.place.cost[1])}</span></div>
+        <div class="acts">
+          <button class="mini" ${i===0?"disabled":""} onclick="moveStop(${i},-1)">↑ 위로</button>
+          <button class="mini" ${i===c.stops.length-1?"disabled":""} onclick="moveStop(${i},1)">↓ 아래로</button>
+        </div></div></div>
+      ${s.leg?`<div class="hop"><div class="rl"></div>
+        <div class="tx">${IC[MODE[s.leg.mode].ic]}${MODE[s.leg.mode].label} ${s.leg.min}분 · ${s.leg.km.toFixed(1)}km</div></div>`:""}`;
+  }).join("");
+  return `<div class="hero">${ph(hp.img,CT[hp.c]||"park",7)}
+      <div class="grad"></div>
+      <div class="nav"><button onclick="back()"><span>${IC.back}</span></button></div>
+      <div class="txt"><span class="pill">${IC[t.ic]}${t.label} · ${AREAS.find(a=>a.id===r.area).n}</span>
+        <h1>${r.title}</h1></div></div>
+    <div class="card summary rise">
+      <div class="hd2"><span class="av">🙂</span>
+        <div><div class="quote">"${r.mood}"</div>
+          <div class="who">나 · 아직 저장 전 미리보기</div></div></div>
+      <div class="kv">
+        <div><div class="k">총 소요</div><div class="v">${IC.clock}${durRange(c.totalLo,c.totalHi)}</div></div>
+        <div><div class="k">${hm(c.startAt)} 출발이면</div><div class="v">${hm(c.endLo)}쯤 <small>종료</small></div></div>
+        <div><div class="k">${plabel(r.people)}명 총액</div><div class="v">${IC.card}${wonRange(...totalCost(c,r.transport,r.people))}</div></div>
+        <div><div class="k">교통비</div><div class="v">${IC[TRANSPORT[r.transport].ic]}${(r.transport==="car"?c.fare:c.fare*peopleN(r.people)).toLocaleString()}원</div></div>
+        <div><div class="k">이동 거리</div><div class="v">${IC.walk}${c.distKm.toFixed(1)}km</div></div>
+        <div><div class="k">걷는 거리</div><div class="v">${IC.walk}${c.walkKm.toFixed(1)}km</div></div>
+      </div></div>
+    <div class="bar ${c.blocked?"x":"o"}">${c.blocked
+      ?`${DAYS[dt.getDay()]}요일 ${hm(toMin(d.time))} 출발이면 — ${c.blockNames.join(", ")}`
+      :`${DAYS[dt.getDay()]}요일 ${hm(toMin(d.time))} 출발, 전부 갈 수 있어요`}</div>
+    <div class="map">${hasL()?`<div class="lmap" id="rmap"></div>`:mapSVG(c.stops)}
+      <div class="ft">순서대로 ${c.stops.length}곳 · 이동 ${c.distKm.toFixed(1)}km</div></div>
+    <div class="sec" style="padding-top:16px"><div><h2 style="font-size:16px">순서 바꾸기</h2>
+      <p>보통 가까운 곳부터 도니까, 구간 거리를 보고 조정해 보세요</p></div></div>
+    <div class="tl">${tl}</div>
+    <button class="big" onclick="publish()">루트 저장하기</button>
+    <button class="foldbtn" onclick="back()" style="margin-bottom:20px">더 고칠래요</button>`;
+}
 function publish(){
   const d=S.draft;
   if(!d.plan) d.stops.forEach(s=>S.visited.add(s.p));
-  S.playRoute={id:"draft",area:PLACES[d.stops[0].p].area,transport:d.transport,people:d.people,
-    plan:d.plan,by:"나",av:"🙂",likes:0,visits:0,title:d.mood.trim(),mood:d.mood.trim(),note:"",
-    date:d.date,time:d.time,stops:d.stops.map(s=>({...s}))};
-  S.playIdx=0;
-  toast(d.plan?"계획 코스로 저장했어요":"저장했어요");
+  const id="my"+(++myN);
+  const r=draftRoute(id);
+  ROUTES.unshift(r); S.myRoutes.push(id);      // 실제로 게시된 것처럼 목록에 올린다
   S.draft={title:"",mood:"",transport:"transit",people:2,plan:1,photos:{},date:S.date,time:S.time,stops:[]};
-  go("play");
+  S.stack=[];                                   // 미리보기·만들기로 되돌아가지 않게 흐름을 끊는다
+  toast(d.plan?"계획 코스로 저장했어요":"저장했어요");
+  go("route",id);
+}
+let myN=0;
+
+/* ═════ 리그램 · 팔로우 ═════
+   깃허브 fork처럼, 남의 루트를 내 것으로 가져오되 원작자를 지우지 않는다.
+   origBy가 있으면 그 루트는 누군가의 것을 가져온 것이고, 화면에 항상 원작자를 함께 보여준다. */
+function regram(id){
+  const src=ROUTES.find(r=>r.id===id); if(!src) return;
+  if(S.myRoutes.some(x=>{const r=ROUTES.find(y=>y.id===x); return r&&r.regramOf===id;})){
+    toast("이미 가져온 코스예요"); return;
+  }
+  src.regrams=(src.regrams||0)+1;
+  const nid="my"+(++myN);
+  ROUTES.unshift({...src,id:nid,by:"나",av:"🙂",likes:0,visits:0,regrams:0,
+    regramOf:id, origBy:src.origBy||src.by, stops:src.stops.map(s=>({...s}))});
+  S.myRoutes.push(nid);
+  toast(`${src.origBy||src.by}님의 코스를 가져왔어요`);
+  render();
+}
+const isFollowing=n=>S.follows.has(n);
+function toggleFollow(n){
+  isFollowing(n)?S.follows.delete(n):S.follows.add(n);
+  toast(isFollowing(n)?`${n}님을 팔로우해요`:`${n}님 팔로우를 취소했어요`);
+  render();
+}
+// 원작자 표시 — 가져온 루트면 원작자를 앞에 세운다
+function bylineHTML(r){
+  return r.origBy
+    ? `<button class="lnk flat" onclick="go('author','${r.origBy}')">${r.origBy}</button>
+       <span class="rg">${IC.share}${r.by}님이 가져옴</span>`
+    : `<button class="lnk flat" onclick="go('author','${r.by}')">${r.by}</button>`;
+}
+function authorView(){
+  const name=S.authorId;
+  const mine=ROUTES.filter(r=>(r.origBy||r.by)===name||r.by===name);
+  const av=(mine.find(r=>r.by===name)||{}).av||"🙂";
+  const totalRegram=mine.reduce((a,r)=>a+(r.regrams||0),0);
+  return `<div class="top"><h1>${name}</h1><div class="note">이 사람이 만든 코스만 모았어요</div></div>
+    <div class="card rise" style="margin-top:10px">
+      <div class="hd2"><span class="av" style="width:46px;height:46px;font-size:21px">${av}</span>
+        <div><div style="font-size:18px;font-weight:800;letter-spacing:-.032em">${name}</div>
+          <div style="font-size:12px;color:var(--sub);margin-top:5px;font-weight:600">
+            코스 ${mine.length} · 가져가기 ${totalRegram}</div></div></div>
+      <button class="big" style="width:100%;margin:12px 0 0" onclick="toggleFollow('${name}')">
+        ${isFollowing(name)?"팔로우 중":"팔로우"}</button></div>
+    <div class="sec"><div><h2>코스 ${mine.length}</h2></div></div>
+    <div class="col">${mine.map((r,i)=>routeCard(r,"wide",i)).join("")}</div>`;
 }
 
 function stopRows(){
@@ -1913,6 +2107,20 @@ function addApiPlace(i){
 
 /* ═════ 루트 검색 ═════ */
 const SUGGEST=["서울숲","창덕궁","광장시장","성수 팝업","전시","한강","야경","브런치"];
+// 인기 코스는 처음에 5개만. 나머지는 '더보기'로 편다.
+const RANK_FOLD=5;
+function rankBlock(){
+  const all=[...ROUTES].sort((a,b)=>b.visits-a.visits).slice(0,10);
+  const list=S.rankOpen?all:all.slice(0,RANK_FOLD);
+  return `<div class="sec"><div><h2 style="font-size:16px">지금 인기 코스 TOP 10</h2></div></div>
+    <div class="rank">${list.map((r,i)=>
+      `<button class="rk flat" onclick="go('route','${r.id}')">
+        <span class="rknum ${i<3?"top":""}">${i+1}</span>
+        <span class="rkt">${r.title}</span>
+        </button>`).join("")}</div>
+    ${all.length>RANK_FOLD?`<button class="foldbtn flat" onclick="S.rankOpen=!S.rankOpen;render()">
+      ${S.rankOpen?"접기":`더보기 ${all.length-RANK_FOLD}개`}</button>`:""}`;
+}
 function routeHits(q){
   const t=q.trim(); if(!t) return {byPlace:[],byText:[]};
   const byPlace=[], byText=[], seen=new Set();
@@ -1935,12 +2143,7 @@ function searchResults(){
         <button class="flat cx" onclick="S.rsearch=S.rsearch.filter(x=>x!=='${t}');render()">✕</button></span>`).join("")}</div>`:""}
     <div class="sec"><div><h2 style="font-size:16px">추천 검색어</h2></div></div>
     <div class="chips">${SUGGEST.map(t=>`<button class="chip2 one flat" onclick="doSearch('${t}')">${t}</button>`).join("")}</div>
-    <div class="sec"><div><h2 style="font-size:16px">지금 인기 코스 TOP 10</h2></div></div>
-    <div class="rank">${[...ROUTES].sort((a,b)=>b.visits-a.visits).slice(0,10).map((r,i)=>
-      `<button class="rk flat" onclick="go('route','${r.id}')">
-        <span class="rknum ${i<3?"top":""}">${i+1}</span>
-        <span class="rkt">${r.title}</span>
-        </button>`).join("")}</div>`;
+    ${rankBlock()}`;
   const {byPlace,byText}=routeHits(q), total=byPlace.length+byText.length;
   return `<div class="sec" style="padding-top:16px"><div><h2 style="font-size:16px">'${q}' 검색 결과 ${total}</h2></div></div>
     ${byPlace.length?`<div class="sec" style="padding-top:14px"><div><div class="kick">이 장소가 포함된 코스</div></div></div>
@@ -2331,6 +2534,9 @@ function mountMaps(){
   if(!hasL()) return;
   if(S.view==="route"){ const r=ROUTES.find(x=>x.id===S.routeId);
     if(r) mountRouteMap("rmap",computeRoute(r,iso()).stops,-1); }
+  if(S.view==="preview"&&S.draft.stops.length>=2){
+    const r=draftRoute();
+    mountRouteMap("rmap",computeRoute(r,`${S.draft.date}T${S.draft.time}:00`).stops,-1); }
   if(S.view==="play"&&S.playRoute){ const c=computeRoute(S.playRoute,`${S.playRoute.date}T${S.playRoute.time}:00`);
     mountRouteMap("pmap",c.stops,Math.max(0,Math.min(S.playIdx,c.stops.length-1))); }
   if(S.view==="nearby") mountNearMap();
@@ -2338,7 +2544,7 @@ function mountMaps(){
 }
 
 /* ═════ 렌더 ═════ */
-const VIEWS={home,list:listView,route:routeView,place:placeView,saved:savedView,pick:pickView,create:createView,play:playView,search:searchView,nearby:nearbyView,profile:profileView};
+const VIEWS={home,list:listView,route:routeView,place:placeView,saved:savedView,pick:pickView,create:createView,play:playView,search:searchView,nearby:nearbyView,profile:profileView,preview:previewView,author:authorView};
 function render(){
   usedImg=new Set(); heroCache={};
   const app=document.getElementById("app");
