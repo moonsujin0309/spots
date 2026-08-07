@@ -8,16 +8,33 @@
 <!-- 지도는 카카오 지도 SDK를 스크립트에서 동적으로 붙인다(JS 키 + 도메인 등록 필요).
      로드에 실패하면 SVG 개요도로 자동 폴백된다. -->
 <style>
-/* ═══ 테마 ═══
-   포인트 컬러(일렉트릭 라임 #d4ff00 + 핫 핑크 #ff007a)는 두 테마에서 그대로 유지한다.
-   기본은 라이트. 다크로 돌리려면 <html data-theme="dark"> — 프로필에 토글이 있다.
+/* ═══ 디자인 토큰 — shadcn/ui + Tailwind 구조 ═══
+   Tailwind는 빌드가 필요하고 이 앱은 빌드 없는 단일 파일이라, 프레임워크를 넣는 대신
+   그 '구조'만 순수 CSS로 가져왔다: radius 하나에서 파생되는 스케일, Tailwind 그림자 스케일,
+   shadcn 시맨틱 이름(--background/--card/--border/--ring/--primary…).
 
-   ⚠️ 라임은 밝은 바탕에서 '글자색'으로 쓰면 안 보인다. 그래서 토큰을 둘로 나눴다.
+   ⚠️ 색은 기존 그대로다 — 일렉트릭 라임 #d4ff00 + 핫 핑크 #ff007a.
+   기본은 라이트. 다크는 <html data-theme="dark"> (프로필에 토글).
+
+   ⚠️ 라임은 밝은 바탕에서 '글자색'으로 쓰면 안 보인다. 그래서 토큰이 둘로 나뉜다.
       --accent    = 채우기(버튼·칩 배경). 위 글자는 항상 --on-accent(검정)
       --accent-tx = 글자·아이콘용. 라이트에서는 어둡게 눌러서 읽히게 한다
-   지도 위 핀·이름표(--ink)는 두 테마 모두 어둡게 둔다. 밝은 지도 위에 얹는 스티커라
-   어두워야 대비가 산다. */
+   지도 위 핀·이름표(--ink)는 두 테마 모두 어둡게 둔다. 밝은 지도 위에 얹으므로. */
 :root{
+  /* ── radius: shadcn 규약. 하나를 바꾸면 전체가 따라온다 ── */
+  --radius:10px;
+  --r-xl:calc(var(--radius) + 4px);   /* 14 — 카드 */
+  --r-l:var(--radius);                /* 10 — 버튼·큰 칩 */
+  --r-m:calc(var(--radius) - 2px);    /*  8 — 입력·썸네일 */
+  --r-s:calc(var(--radius) - 4px);    /*  6 — 배지 */
+
+  /* ── 그림자: Tailwind 스케일. 이전의 하드 그림자(0 2px 0)를 대체한다 ── */
+  --shadow-xs:0 1px 2px 0 rgb(31 26 58 / .06);
+  --shadow-sm:0 1px 3px 0 rgb(31 26 58 / .10), 0 1px 2px -1px rgb(31 26 58 / .10);
+  --shadow-md:0 4px 6px -1px rgb(31 26 58 / .10), 0 2px 4px -2px rgb(31 26 58 / .10);
+  --shadow-lg:0 10px 15px -3px rgb(31 26 58 / .12), 0 4px 6px -4px rgb(31 26 58 / .12);
+
+  /* ── 색 (변경 없음) ── */
   --bg:#f4f3fa; --card:#ffffff; --card2:#f0eef8; --fg:#17142a; --sub:#5d5780; --dim:#8d87a8;
   --line:#e6e2f2;
   --accent:#d4ff00; --on-accent:#141200; --accent-2:#eef9c0; --accent-dk:#a8cc00; --accent-tx:#5a7300;
@@ -29,13 +46,22 @@
   --ink:#14121f; --ink-fg:#f6f4ff; --g-dk:#c6c1da;
   --veil:#17142a; --veil-fg:#ffffff;
   --sh:rgba(31,26,58,.18);
-  --e1:0 2px 0 rgba(31,26,58,.13);
-  --e2:0 2px 0 rgba(31,26,58,.13), 0 10px 26px -12px rgba(31,26,58,.4);
-  --gloss:linear-gradient(180deg,rgba(255,255,255,.75),rgba(255,255,255,0) 42%);
-  --r-xl:24px; --r-l:18px; --r-m:12px; --r-s:9px;
+
+  /* ── shadcn 시맨틱 별칭 — 위 색을 가리키기만 한다 ── */
+  --background:var(--bg); --foreground:var(--fg); --card-foreground:var(--fg);
+  --muted:var(--chip); --muted-foreground:var(--sub);
+  --border:var(--line); --input:var(--chip); --ring:var(--accent-dk);
+  --primary:var(--accent); --primary-foreground:var(--on-accent);
+  --secondary:var(--chip); --secondary-foreground:var(--sub);
+  --destructive:var(--warn);
+
+  /* 기존 이름은 유지한다 — CSS 전역이 --e1/--e2를 참조하고 있다 */
+  --e1:var(--shadow-xs); --e2:var(--shadow-sm);
+  --gloss:none;
   --ease:cubic-bezier(.2,0,0,1);
 }
-/* Neon Cyber-Y2K — 딥 바이올렛 블랙 위 일렉트릭 라임 + 핫 핑크 */
+/* 다크 — 색은 그대로, 그림자만 더 짙게. 커스텀 속성은 사용 시점에 풀리므로
+   --shadow-*만 다시 정의하면 --e1/--e2가 자동으로 따라온다 */
 :root[data-theme="dark"]{
   --bg:#0f0e17; --card:#191627; --card2:#201c33; --fg:#f6f4ff; --sub:#a29cc4; --dim:#6d6790;
   --line:#2b2545;
@@ -47,9 +73,11 @@
   --ink:#0b0a12; --ink-fg:#f6f4ff; --g-dk:#14111f;
   --veil:rgba(18,20,26,.94); --veil-fg:#ffffff;
   --sh:rgba(0,0,0,.55);
-  --e1:0 2px 0 rgba(0,0,0,.5);
-  --e2:0 2px 0 rgba(0,0,0,.55), 0 10px 26px -12px rgba(0,0,0,.9);
-  --gloss:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,0) 42%);
+  --shadow-xs:0 1px 2px 0 rgb(0 0 0 / .45);
+  --shadow-sm:0 1px 3px 0 rgb(0 0 0 / .55), 0 1px 2px -1px rgb(0 0 0 / .55);
+  --shadow-md:0 4px 6px -1px rgb(0 0 0 / .6), 0 2px 4px -2px rgb(0 0 0 / .6);
+  --shadow-lg:0 10px 15px -3px rgb(0 0 0 / .7), 0 4px 6px -4px rgb(0 0 0 / .7);
+  --ring:var(--accent);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 /* 인라인 아이콘은 viewBox만 있고 width/height가 없다. 크기 규칙을 빠뜨린 곳에서
@@ -63,8 +91,16 @@ h1,h2,h3{text-wrap:balance;margin:0}
 #app{max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:96px}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0;text-align:left;
   transition-property:transform,opacity,background-color,color;transition-duration:.16s;transition-timing-function:var(--ease)}
-button:active{transform:scale(.96)}
+/* shadcn 버튼은 눌러도 크기가 변하지 않지만, 모바일에선 촉각 피드백이 사라지면 반응이 없어 보인다.
+   .96 → .98로 줄여 눌린 느낌만 남긴다 (의도적인 shadcn 이탈) */
+button:active{transform:scale(.98)}
 button.flat:active{transform:none;opacity:.6}
+/* shadcn 포커스 링 — 키보드 탐색에서만 보인다. 지금까지 포커스 표시가 아예 없었다 */
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;scroll-behavior:auto !important}
+}
 /* iOS 사파리는 입력 글자가 16px보다 작으면 포커스할 때 화면을 확대해버린다.
    모바일 앱들이 입력만 16px로 두는 이유가 이것. 줄이면 안 된다. */
 input,select,textarea{font:inherit;font-size:16px}
@@ -85,7 +121,7 @@ svg{display:block}
   transition-property:box-shadow,background-color;transition-duration:.2s;transition-timing-function:var(--ease)}
 .top.stuck{background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.6);
   box-shadow:0 1px 0 var(--line)}
-.top h1{font-size:23px;font-weight:800;letter-spacing:-.042em;line-height:1.26}
+.top h1{font-size:23px;font-weight:700;letter-spacing:-.042em;line-height:1.26}
 .top .note{font-size:13px;color:var(--sub);margin-top:4px}
 
 .cond{margin:4px 20px 0;background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:12px}
@@ -101,20 +137,22 @@ svg{display:block}
   color:var(--sub);text-align:center;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;min-height:42px}
 .seg button.on{background:var(--accent);color:var(--on-accent)}
 .seg svg{width:15px;height:15px}
-/* 인원은 6칸이라 라벨과 한 줄에 두면 마지막 칸이 잘린다 — 라벨을 위로 올려 폭을 다 쓴다 */
-.cond .r.stack{display:block}
-.cond .r.stack .lab{display:block;width:auto;flex:none;margin-bottom:7px}
-/* overflow-x:auto는 세로도 같이 자른다 — 선택된 칸의 아래 그림자가 잘리지 않게 여백을 준다 */
-.ppl{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none;
-  padding:4px 2px 5px;margin:-4px -2px -5px}
-.ppl::-webkit-scrollbar{display:none}
-.ppl button{flex:0 0 auto;width:42px;height:42px;border-radius:50%;background:var(--chip);
+/* 인원을 5칸(1~5+)으로 줄여 라벨과 한 줄에 들어간다 → 위 '언제·어떻게' 행과 왼쪽 정렬이 맞는다.
+   예전엔 6칸이라 .stack으로 라벨을 올렸고, 그 탓에 이 행만 왼쪽으로 튀어나와 있었다. */
+.ppl{display:flex;gap:6px;flex:1;min-width:0}
+/* 인원은 양쪽 다 원형. 만들기는 라벨이 없어 가운데 정렬, 홈은 라벨과 한 줄이라 남는 폭을 고르게 나눈다.
+   좁은 화면에서는 flex-shrink로 줄어드는데 aspect-ratio가 원형을 지켜준다 */
+.box .ppl{justify-content:center;flex:none}
+.box .ppl button{flex:0 0 46px;width:46px;height:46px;border-radius:50%}
+.cond .ppl{justify-content:space-between;align-items:center}
+.cond .ppl button{flex:0 1 44px;width:44px;height:auto;aspect-ratio:1;border-radius:50%;padding:0}
+.ppl button{flex:1;min-width:0;height:42px;border-radius:var(--r-m);background:var(--chip);
   font-size:13.5px;color:var(--sub);display:grid;place-items:center;font-weight:700}
 .ppl button.on{background:var(--accent);color:var(--on-accent)}
 .condsum{margin:4px 20px 0;background:var(--card);border-radius:var(--r-l);box-shadow:var(--e1);
   padding:13px 15px;display:flex;align-items:center;gap:9px;font-size:13.5px;font-weight:700;width:calc(100% - 40px)}
 .condsum svg{width:16px;height:16px;color:var(--sub);flex:0 0 16px}
-.condsum .cg{flex:1;min-width:0}
+.condsum .cg{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .condsum .ar{color:var(--dim);font-size:12px;font-weight:600}
 
 .tgl{display:flex;align-items:center;gap:9px;margin:12px 20px 0;background:var(--card);
@@ -143,8 +181,8 @@ svg{display:block}
 .area.fav .st{background:var(--point);color:var(--point-ink)}
 
 .sec{padding:26px 20px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.sec .kick{font-size:11.5px;font-weight:800;color:var(--accent-tx)}
-.sec h2{margin-top:3px;font-size:19px;font-weight:800;letter-spacing:-.042em;line-height:1.28}
+.sec .kick{font-size:11.5px;font-weight:700;color:var(--accent-tx)}
+.sec h2{margin-top:3px;font-size:19px;font-weight:700;letter-spacing:-.042em;line-height:1.28}
 .sec p{margin:4px 0 0;font-size:12.5px;color:var(--sub)}
 .sec .more{flex:0 0 auto;font-size:12.5px;color:var(--sub);font-weight:700;padding:8px 0 2px;white-space:nowrap}
 .rail{display:flex;gap:12px;overflow-x:auto;padding:12px 20px 8px;scrollbar-width:none;
@@ -173,7 +211,7 @@ svg{display:block}
 .pill.bad{background:var(--warn);border-color:transparent}
 .pill.hot{background:var(--point);color:var(--point-ink);border-color:transparent}
 .pill.been{background:rgba(28,32,30,.72);border-color:transparent}
-.aib{font-size:9.5px;font-weight:800;letter-spacing:.04em;color:#fff;
+.aib{font-size:9.5px;font-weight:700;letter-spacing:.04em;color:#fff;
   background:rgba(0,0,0,.3);backdrop-filter:blur(8px);border:.5px solid rgba(255,255,255,.2);
   border-radius:999px;padding:3px 7px;display:inline-flex;align-items:center;opacity:.6}
 .rc .ph>.aib{position:absolute;top:10px;left:10px;z-index:4}
@@ -189,7 +227,7 @@ svg{display:block}
 .save.on i.off{opacity:0;transform:scale(.25);filter:blur(4px)}
 .save.on i.onn{opacity:1;transform:scale(1);filter:blur(0)}
 .rc .body{padding:13px 14px 14px}
-.rc .ttl{font-size:15.5px;font-weight:800;letter-spacing:-.042em;line-height:1.36}
+.rc .ttl{font-size:15.5px;font-weight:700;letter-spacing:-.042em;line-height:1.36}
 .rc.big .ttl{font-size:18px}
 .rc .mood{font-size:12.5px;color:var(--sub);margin-top:5px;line-height:1.5;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -212,7 +250,7 @@ svg{display:block}
   background:linear-gradient(transparent 18%,rgba(6,8,12,.42) 52%,rgba(6,8,12,.9))}
 /* 아래 요약 카드가 margin-top:-24px로 히어로를 덮는다. 제목이 그 밑에 깔리지 않게 띄운다 */
 .hero .txt{position:absolute;inset:auto 20px 36px;color:#fff;z-index:5}
-.hero h1{margin-top:9px;font-size:25px;font-weight:800;letter-spacing:-.045em;line-height:1.28;
+.hero h1{margin-top:9px;font-size:25px;font-weight:700;letter-spacing:-.045em;line-height:1.28;
   text-shadow:0 2px 18px rgba(0,0,0,.45)}
 /* 뒤로가기가 아이폰 상태바 밑에 깔리지 않게 */
 .hero .nav{position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px;right:12px;
@@ -231,38 +269,17 @@ svg{display:block}
 .kv{display:grid;grid-template-columns:1fr 1fr;gap:14px 0;margin-top:15px;padding-top:15px;
   box-shadow:inset 0 1px 0 var(--line)}
 .kv .k{font-size:11px;color:var(--dim);font-weight:600}
-.kv .v{font-size:14px;font-weight:800;letter-spacing:-.032em;margin-top:2px;display:flex;align-items:center;gap:5px}
+.kv .v{font-size:14px;font-weight:700;letter-spacing:-.032em;margin-top:2px;display:flex;align-items:center;gap:5px}
 .kv .v svg{width:14px;height:14px}
 .kv .v small{font-weight:600;font-size:11.5px;color:var(--sub)}
 .tipbox{margin-top:14px;padding-top:13px;box-shadow:inset 0 1px 0 var(--line);font-size:12.5px;
   color:var(--sub);display:flex;gap:9px;font-weight:600;line-height:1.55}
 .tipbox svg{width:14px;height:14px;flex:0 0 14px;color:var(--accent-tx);margin-top:2px}
 
-.jr{margin:12px 20px 0;background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:15px 0 12px}
-.jr h3{margin:0 16px 12px;font-size:13px;font-weight:800;color:var(--sub)}
-.jrs{display:flex;align-items:flex-start;overflow-x:auto;padding:0 16px 6px;scrollbar-width:none}
-.jrs::-webkit-scrollbar{display:none}
-.jn{flex:0 0 74px;text-align:center}
-.jn .ph{width:64px;height:64px;border-radius:var(--r-l);margin:0 auto}
-.jn .bd{position:absolute;top:0;left:0;width:21px;height:21px;border-bottom-right-radius:11px;
-  background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:800;display:grid;place-items:center;z-index:5}
-.jn.x .bd{background:var(--warn)}
-.jn.been .ph>img,.jn.been .ph>svg{opacity:.45}
-.jn.been .bd{background:var(--dim)}
-.jn .nm{font-size:11.5px;font-weight:700;margin-top:7px;letter-spacing:-.03em;line-height:1.32}
-.jn .tt{font-size:10.5px;color:var(--dim);margin-top:2px;font-weight:600}
-.jl{flex:0 0 54px;padding-top:19px;text-align:center;color:var(--sub)}
-.jl svg{width:16px;height:16px;margin:0 auto}
-.jl .tx{font-size:10.5px;font-weight:700;margin-top:3px}
-.jl .ln{height:2px;background:var(--line);margin:6px 4px 0;border-radius:2px}
 
 .map{margin:12px 20px 0;background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);overflow:hidden}
 .map svg.mp{width:100%;height:238px}
 .map .ft{font-size:11.5px;color:var(--sub);padding:11px 15px;box-shadow:inset 0 1px 0 var(--line);font-weight:600}
-.maplink{display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;
-  font-size:13.5px;font-weight:800;color:var(--accent-tx);background:var(--accent-2);
-  box-shadow:inset 0 1px 0 var(--line);min-height:48px}
-.maplink svg{width:15px;height:15px}
 
 .tl{margin:12px 20px 0}
 .stp{background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:13px;display:flex;gap:12px}
@@ -270,10 +287,10 @@ svg{display:block}
 .stp.been{opacity:.66}
 .stp .ph{width:76px;height:76px;border-radius:var(--r-m);flex:0 0 76px}
 .stp .bd{position:absolute;top:0;left:0;width:22px;height:22px;border-bottom-right-radius:11px;
-  background:var(--accent);color:var(--on-accent);font-size:11.5px;font-weight:800;display:grid;place-items:center;z-index:5}
+  background:var(--accent);color:var(--on-accent);font-size:11.5px;font-weight:700;display:grid;place-items:center;z-index:5}
 .stp.x .bd{background:var(--warn)} .stp.been .bd{background:var(--dim)}
 .stp .in{flex:1;min-width:0}
-.stp .nm{font-size:16.5px;font-weight:800;letter-spacing:-.042em}
+.stp .nm{font-size:16.5px;font-weight:700;letter-spacing:-.042em}
 .stp .tm{font-size:12.5px;color:var(--sub);margin-top:3px;font-weight:600}
 .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .tg{font-size:11px;background:var(--chip);color:var(--sub);border-radius:var(--r-s);padding:4px 7px;font-weight:700}
@@ -295,7 +312,8 @@ svg{display:block}
 
 .bar{margin:12px 20px 0;border-radius:var(--r-l);padding:13px 15px;font-size:13.5px;font-weight:700;line-height:1.5}
 .bar.x{background:var(--warn-2);color:var(--warn)}
-.bar.o{background:var(--ok-2);color:var(--ok)}
+/* 솔리드 라임은 화면당 하나(주 CTA)만 쓴다. 상태 표시까지 꽉 채우면 둘이 싸워서 위계가 사라진다 */
+.bar.o{background:var(--accent-2);color:var(--accent-tx);box-shadow:inset 0 0 0 1px var(--border)}
 
 /* 루트 상세 하단 고정 액션 — 저장(작게) · 다녀왔어요(저장 후) · 따라가기(크게).
    이 화면에선 탭바를 숨기므로 바닥에 붙어도 겹치지 않는다(render 참고). */
@@ -310,13 +328,13 @@ svg{display:block}
 .fb svg{width:22px;height:22px}
 .fb.on{background:var(--accent);color:var(--on-accent);box-shadow:0 3px 0 var(--accent-dk)}
 .fgo{flex:1;height:54px;background:var(--accent);color:var(--on-accent);border-radius:var(--r-l);
-  display:grid;place-items:center;font-size:15.5px;font-weight:800;letter-spacing:-.032em;
+  display:grid;place-items:center;font-size:15.5px;font-weight:700;letter-spacing:-.032em;
   box-shadow:0 4px 0 var(--accent-dk),0 10px 22px -10px rgba(255,0,122,.6)}
 .fgo:active{transform:translateY(3px);box-shadow:0 1px 0 var(--accent-dk)}
 /* 리루트 — 이름 없이 아이콘+숫자만 */
 .rr{gap:6px;padding:9px 12px}
 .rr svg{width:15px;height:15px}
-.rr b{font-weight:800;font-variant-numeric:tabular-nums}
+.rr b{font-weight:700;font-variant-numeric:tabular-nums}
 
 .tabs{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;
   background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(16px) saturate(1.6);
@@ -331,25 +349,25 @@ svg{display:block}
 .tabs .dot{position:absolute;top:3px;right:calc(50% - 17px);width:7px;height:7px;border-radius:50%;
   background:var(--accent);box-shadow:0 0 0 2px var(--card)}
 
-.step{margin:16px 20px 0}
-.step .no{font-size:11.5px;font-weight:800;color:var(--accent-tx)}
-.step h3{margin:2px 0 10px;font-size:16.5px;font-weight:800;letter-spacing:-.042em}
-.box{background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:14px}
-.srch{display:flex;align-items:center;gap:10px;background:var(--chip);border-radius:var(--r-m);padding:12px 14px}
+.step{margin:11px 20px 0}
+.step .no{font-size:11.5px;font-weight:700;color:var(--accent-tx)}
+.step h3{margin:2px 0 7px;font-size:16.5px;font-weight:700;letter-spacing:-.042em}
+.box{background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:12px}
+.srch{display:flex;align-items:center;gap:10px;background:var(--chip);border-radius:var(--r-m);padding:10px 13px}
 .srch svg{width:17px;height:17px;color:var(--sub);flex:0 0 17px}
 .srch input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--fg);font-weight:600}
 .recent{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
 .recent button{background:var(--chip);border-radius:999px;padding:7px 12px;font-size:12px;color:var(--sub);font-weight:600}
 .recent button.on{background:var(--accent);color:var(--on-accent);font-weight:700}
 .custom{margin-top:12px;padding:13px;background:var(--accent-2);border-radius:var(--r-m)}
-.custom .ttl2{font-size:13.5px;font-weight:800;letter-spacing:-.03em;color:var(--accent-tx)}
+.custom .ttl2{font-size:13.5px;font-weight:700;letter-spacing:-.03em;color:var(--accent-tx)}
 .custom .sm2{font-size:11.5px;color:var(--sub);margin-top:2px;font-weight:600}
 .crow{display:flex;gap:7px;margin-top:10px}
 .crow select{flex:1;min-width:0;background:var(--card);border:0;border-radius:var(--r-s);
   padding:10px 8px;font-size:12.5px;color:var(--fg);font-weight:600}
 .crow .mini{flex:0 0 auto}
 .mapbtn{display:flex;align-items:center;gap:8px;width:100%;margin-top:11px;background:var(--accent-2);
-  color:var(--accent-tx);border-radius:var(--r-m);padding:13px;font-size:13.5px;font-weight:800;min-height:48px}
+  color:var(--accent-tx);border-radius:var(--r-m);padding:13px;font-size:13.5px;font-weight:700;min-height:48px}
 .mapbtn svg{width:16px;height:16px;flex:0 0 16px}
 .mapbtn .ar2{margin-left:auto;font-size:11.5px;font-weight:600;opacity:.8}
 /* 외부 지도 검색 연결 */
@@ -360,9 +378,9 @@ svg{display:block}
   display:flex;align-items:center;justify-content:center}
 .minelab{font-size:11.5px;color:var(--dim);font-weight:700;margin-top:14px}
 /* 라디오형 선택 카드 */
-.opts{display:grid;gap:9px}
+.opts{display:grid;gap:7px}
 .opt{display:flex;gap:11px;align-items:flex-start;background:var(--card);border-radius:var(--r-l);
-  box-shadow:var(--e1);padding:14px;width:100%}
+  box-shadow:var(--e1);padding:12px;width:100%}
 .opt.on{box-shadow:inset 0 0 0 2px var(--accent),var(--e2);background:var(--accent-2)}
 .opt .radio{flex:0 0 20px;width:20px;height:20px;border-radius:50%;margin-top:1px;
   box-shadow:inset 0 0 0 2px var(--dim);transition:box-shadow .18s var(--ease)}
@@ -372,12 +390,27 @@ svg{display:block}
 /* 홈 헤더의 검색 진입 */
 /* 워드마크 — 두꺼운 3D 스티커 배지 */
 .wordmark{display:inline-flex;align-items:center;background:var(--accent);color:var(--on-accent);
-  border-radius:999px;padding:7px 15px 8px;font-size:16px;font-weight:800;letter-spacing:-.05em;
+  border-radius:999px;padding:7px 15px 8px;font-size:16px;font-weight:700;letter-spacing:-.05em;
   margin-bottom:10px;line-height:1;
   box-shadow:0 3px 0 var(--accent-dk), 0 8px 18px -6px rgba(212,255,0,.45);
   border:2px solid rgba(0,0,0,.75)}
-.tophead{display:flex;align-items:flex-start;gap:12px}
-.tophead>div{flex:1;min-width:0}
+/* 스크롤 시 고정되는 건 로고와 검색뿐. 헤드라인은 .headline으로 빠져 같이 흘러간다 */
+.tophead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tophead .wordmark{margin-bottom:0}
+.headline{padding:14px 20px 0}
+.headline h1{font-size:23px;font-weight:700;letter-spacing:-.042em;line-height:1.26}
+.headline .note{font-size:13px;color:var(--sub);margin-top:4px}
+/* 네이티브 date/time 입력은 표시 형식을 브라우저가 정해서 좁은 화면에서 잘린다.
+   → 우리가 그린 텍스트 위에 입력을 투명하게 덮는다. 네이티브 피커는 그대로 열린다 */
+.dfield{position:relative;flex:1;min-width:0;display:flex;align-items:center;gap:6px;
+  background:var(--input);border-radius:var(--r-m);padding:11px 10px;font-weight:600;font-size:14px;
+  min-height:42px;overflow:hidden}
+.dfield .dtx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dfield>svg{width:15px;height:15px;color:var(--dim);flex:0 0 15px}
+.dfield.d{flex:1.4}
+.dfield.t{flex:1}
+.dfield input{position:absolute;inset:0;width:100%;height:100%;opacity:0;border:0;padding:0;
+  margin:0;cursor:pointer}
 .srchbtn{flex:0 0 44px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
   background:var(--card);box-shadow:var(--e1);margin-top:2px}
 .srchbtn svg{width:21px;height:21px}
@@ -398,12 +431,12 @@ svg{display:block}
 .chip2 .cx{color:var(--dim);padding:0 6px;font-size:12px}
 .rank{padding:10px 20px 0;display:grid;gap:2px}
 .rk{display:flex;align-items:center;gap:11px;padding:11px 4px;min-height:46px}
-.rknum{flex:0 0 18px;font-size:14px;font-weight:800;color:var(--dim);text-align:center}
+.rknum{flex:0 0 18px;font-size:14px;font-weight:700;color:var(--dim);text-align:center}
 .rknum.top{color:var(--accent-tx)}
 .rkt{flex:1;min-width:0;font-size:14px;font-weight:700;letter-spacing:-.03em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rkv{font-size:11.5px;color:var(--dim);font-weight:700}
-.hitlab{font-size:11.5px;font-weight:800;color:var(--accent-tx);margin:2px 0 6px}
+.hitlab{font-size:11.5px;font-weight:700;color:var(--accent-tx);margin:2px 0 6px}
 
 /* ── Leaflet 지도 ── */
 .lmap{height:280px;width:100%;background:var(--ink);z-index:1}
@@ -417,7 +450,7 @@ svg{display:block}
 .lpin.been::after{box-shadow:inset 0 0 0 3px var(--dim)}
 .lpin.dim{opacity:.4}
 .lpin img{width:42px;height:42px;border-radius:50%;object-fit:cover}
-.lface{font-size:12px;font-weight:800;color:var(--on-accent);background:var(--accent);
+.lface{font-size:12px;font-weight:700;color:var(--on-accent);background:var(--accent);
   width:42px;height:42px;border-radius:50%;display:grid;place-items:center;letter-spacing:-.05em}
 .lpin b{position:absolute;top:-5px;right:-5px;width:22px;height:22px;border-radius:50%;
   background:var(--accent);color:var(--on-accent);font-size:11px;display:grid;place-items:center;
@@ -425,16 +458,16 @@ svg{display:block}
 .lpin.bad b{background:var(--warn);color:#fff}
 .lpin.been b{background:var(--dim);color:#fff}
 .ltip{background:var(--ink);color:var(--ink-fg);border:1.4px solid var(--accent);
-  border-radius:999px;font-size:11px;font-weight:800;
+  border-radius:999px;font-size:11px;font-weight:700;
   padding:3px 9px;box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 /* 지도 위 칩은 두 테마 모두 어둡게 — 밝은 지도 위에서 대비가 살아야 한다 */
 .lleg{display:flex;align-items:center;gap:4px;background:var(--ink);border:1.6px solid var(--accent);
-  border-radius:999px;padding:4px 9px;font-size:11px;font-weight:800;color:var(--ink-fg);
+  border-radius:999px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--ink-fg);
   box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 .lleg svg{width:13px;height:13px}
 .lval{display:inline-flex;align-items:center;gap:6px;background:var(--ink);
   border:1.8px solid var(--accent);border-radius:999px;padding:4px 11px 4px 4px;font-size:11.5px;
-  font-weight:800;color:var(--accent);box-shadow:0 2px 0 var(--sh);white-space:nowrap}
+  font-weight:700;color:var(--accent);box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 .lval img{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:0 0 26px}
 .lval .lvi{width:26px;height:26px;border-radius:50%;background:var(--accent);display:grid;
   place-items:center;font-size:13px;flex:0 0 26px}
@@ -471,39 +504,61 @@ svg{display:block}
 .pklocate{position:absolute;right:14px;bottom:14px;width:46px;height:46px;border-radius:50%;
   background:var(--card);box-shadow:var(--e2);display:grid;place-items:center;z-index:500;color:var(--accent-tx)}
 .pklocate svg{width:20px;height:20px}
-.picksheet{flex:0 0 auto;background:var(--card);border-radius:22px 22px 0 0;padding:16px 18px;
+.picksheet{flex:0 0 auto;background:var(--card);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:16px 18px;
   padding-bottom:calc(16px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px -8px var(--sh)}
-.pickaddr{font-size:13px;font-weight:800;color:var(--accent-tx)}
+.pickaddr{font-size:13px;font-weight:700;color:var(--accent-tx)}
 
-/* ── 3D 스티커 마감 — 카드 광택, 네온 외곽, 눌리는 버튼 ── */
-.rc,.card,.box,.map,.stp,.jr,.nearsheet,.empty{position:relative}
-.rc::before,.card::before,.box::before,.stp::before,.jr::before{
-  content:"";position:absolute;inset:0;border-radius:inherit;background:var(--gloss);
-  pointer-events:none;z-index:2}
-.rc,.card,.box,.map,.stp,.jr{box-shadow:var(--e2), inset 0 0 0 1px rgba(255,255,255,.06)}
+/* ── shadcn 표면 마감 ──
+   이전의 '3D 스티커'(상단 광택 + 0 2px 0 하드 그림자 + 눌리면 내려앉기)를 걷어낸 자리다.
+   shadcn의 표면은 그림자로 띄우지 않고 1px 테두리로 경계를 만들고, 그림자는 거들기만 한다.
+   ⚠️ 광택(::before)을 지웠으므로 .rc .body / .stp .in의 z-index는 이제 없어도 되지만,
+      지도·오버레이가 같은 스택을 쓰므로 그대로 둔다. */
+.rc,.card,.box,.map,.stp,.nearsheet,.empty{position:relative}
+.rc,.card,.box,.map,.stp,.empty,.opt,.picksheet,.nearsheet{
+  border:1px solid var(--border);box-shadow:var(--shadow-sm)}
 .rc .body,.stp .in{position:relative;z-index:3}
-/* 알약·배지는 에나멜 핀처럼 두께를 준다 */
-.pill{box-shadow:0 2px 0 var(--sh)}
-.pill.hot{box-shadow:0 2px 0 var(--point-dk)}
-.pill.bad{box-shadow:0 2px 0 var(--warn-dk)}
-.tg{box-shadow:0 1.5px 0 var(--sh)}
-.tg.bad{box-shadow:0 1.5px 0 var(--warn-dk)}
-/* 주 버튼 — 아래로 두께가 보이고 누르면 내려앉는다 */
-.big{box-shadow:0 4px 0 var(--accent-dk), 0 10px 22px -10px rgba(255,0,122,.6);
-  transition-property:transform,box-shadow,opacity;transition-duration:.12s}
-.big:active{transform:translateY(3px) scale(1);box-shadow:0 1px 0 var(--accent-dk)}
-.big.g{box-shadow:0 4px 0 var(--g-dk)}
-.big.g:active{box-shadow:0 1px 0 var(--g-dk)}
-.mini.p{box-shadow:0 2px 0 var(--accent-dk)}
-.seg button.on,.chip2.on,.kmchip.on,.tline button.on,.ppl button.on{box-shadow:0 2px 0 var(--accent-dk)}
-.sw.on{box-shadow:0 2px 0 var(--accent-dk)}
-.research{box-shadow:0 3px 0 var(--accent-dk), 0 10px 22px -8px rgba(255,0,122,.55)}
-.opt.on{box-shadow:inset 0 0 0 2px var(--accent), 0 2px 0 var(--sh)}
-/* 형광 위 글자는 항상 검정 */
-.bar.o{box-shadow:0 3px 0 var(--point-dk);font-weight:800}
+.stp.x{border-color:var(--warn)}
+
+/* 배지 — shadcn Badge: 옅은 바탕 + 테두리, 두께감 없음 */
+.tg{background:var(--muted);color:var(--muted-foreground);border:1px solid var(--border);
+  box-shadow:none;font-weight:600}
+.tg.bad{background:var(--destructive);color:#fff;border-color:transparent;box-shadow:none}
+.tg.warn{background:var(--warn-2);color:var(--warn);border-color:transparent}
+.tg.ok{background:var(--chip-2);color:var(--sub);border-color:transparent}
+/* 인기는 핑크(--point), 갈 수 있음은 라임(--accent). 강조를 한 색으로만 쓰면 위계가 안 보인다 */
+.tg.pop{background:var(--point-2);color:var(--point-dk);border-color:transparent;font-weight:700}
+/* 사진 위 알약만 예외로 유리 재질 유지 — 이미지 위에선 테두리보다 대비가 먼저다 */
+.pill{box-shadow:none}
+
+/* 버튼 — shadcn: 얕은 그림자, 눌림은 투명도로. 내려앉는 3D 제거 */
+.big{box-shadow:var(--shadow-xs);
+  transition-property:transform,box-shadow,opacity,background-color;transition-duration:.16s}
+.big:active{transform:none;opacity:.85;box-shadow:var(--shadow-xs)}
+.big.g{box-shadow:var(--shadow-xs);border:1px solid var(--border)}
+.big.g:active{box-shadow:var(--shadow-xs)}
+.mini{border:1px solid var(--border);background:var(--card)}
+.mini.p{background:var(--primary);color:var(--primary-foreground);border-color:transparent;
+  box-shadow:var(--shadow-xs)}
+.mini.o{background:var(--secondary);color:var(--secondary-foreground)}
+.fb{border:1px solid var(--border);box-shadow:var(--shadow-xs)}
+.fb.on{background:var(--primary);color:var(--primary-foreground);border-color:transparent;
+  box-shadow:var(--shadow-xs)}
+.fgo{box-shadow:var(--shadow-sm)}
+.fgo:active{transform:none;opacity:.9;box-shadow:var(--shadow-xs)}
+.research{box-shadow:var(--shadow-md)}
+.seg button.on,.chip2.on,.kmchip.on,.tline button.on,.ppl button.on,.sw.on{box-shadow:var(--shadow-xs)}
+.opt.on{border-color:var(--accent);box-shadow:var(--shadow-xs)}
+.bar.o{font-weight:700}
 .locbtn svg{color:var(--accent-tx)}
-.srchbtn{background:var(--card);box-shadow:var(--e1), inset 0 0 0 1px rgba(255,255,255,.07)}
-.av{box-shadow:0 2px 0 var(--sh)}
+.srchbtn{background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow-xs)}
+.av{box-shadow:none}
+/* 워드마크만 예전 3D 스티커 마감을 유지한다 (사용자 요청) — 로고는 브랜드 자산이라 예외 */
+.pitem.on{border-color:var(--accent);box-shadow:var(--shadow-xs)}
+.locbtn,.kmchip,.nearwhere{border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.pklocate{border:1px solid var(--border);box-shadow:var(--shadow-md)}
+/* 지도 위 요소는 밝은 지도와 대비가 필요해 진한 그림자를 유지한다 */
+.ltip,.lleg,.lval{box-shadow:var(--shadow-md)}
+.lpin{box-shadow:var(--shadow-lg)}
 /* ⚠️ 여기 아이콘에 크기를 안 주면 SVG 기본값(300x150)으로 퍼져서 화면을 잡아먹는다.
    viewBox만 있고 width/height가 없는 인라인 SVG는 반드시 CSS로 크기를 줄 것. */
 .apinote{display:flex;align-items:center;gap:7px;padding:12px 4px;color:var(--sub);font-size:13px;font-weight:600}
@@ -529,27 +584,28 @@ svg{display:block}
 /* 시트 위에 떠 있어야 해서 화면 기준으로 고정한다 (시트에 가리면 안 됨) */
 .research{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(42dvh + 12px);z-index:30;
   background:var(--accent);color:var(--on-accent);border-radius:999px;padding:12px 18px;font-size:13px;
-  font-weight:800;box-shadow:var(--e2);display:flex;align-items:center;gap:7px;min-height:46px}
+  font-weight:700;box-shadow:var(--e2);display:flex;align-items:center;gap:7px;min-height:46px}
 .research svg{width:15px;height:15px}
 /* button.flat:active의 transform:none이 가운데 정렬(translateX)까지 지워서 눌릴 때 옆으로 튄다 */
 button.research:active{transform:translateX(-50%);opacity:.6}
 .nearwhere{position:absolute;left:50%;transform:translateX(-50%);top:62px;
   background:var(--card);box-shadow:var(--e2);border-radius:999px;padding:7px 14px;
-  font-size:12.5px;font-weight:800;z-index:7;pointer-events:none;white-space:nowrap}
+  font-size:12.5px;font-weight:700;z-index:7;pointer-events:none;white-space:nowrap}
 .nearsheet{position:fixed;top:58dvh;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;z-index:20;
-  background:var(--card);border-radius:22px 22px 0 0;box-shadow:0 -6px 24px -8px rgba(0,0,0,.18);
+  background:var(--card);border-radius:var(--r-xl) var(--r-xl) 0 0;box-shadow:0 -6px 24px -8px rgba(0,0,0,.18);
   display:flex;flex-direction:column;overflow:hidden;transition:top .22s var(--ease)}
+.nearsheet.full{border-radius:0;padding-top:env(safe-area-inset-top)}
 .sheetgrab{flex:0 0 auto;touch-action:none;cursor:grab;padding-bottom:4px}
 .sheetgrab:active{cursor:grabbing}
 .sheethandle{width:38px;height:4px;border-radius:2px;background:var(--chip-2);margin:9px auto 4px}
 .sheethead{padding:6px 20px 8px;font-size:14px;font-weight:700;color:var(--sub)}
-.sheethead b{color:var(--fg);font-weight:800}
+.sheethead b{color:var(--fg);font-weight:700}
 .sheetlist{flex:1;min-height:0;overflow-y:auto;padding:4px 20px calc(78px + env(safe-area-inset-bottom))}
 /* 키 입력 */
 .keyrow{display:flex;gap:8px;margin-top:10px}
 .keyrow input{flex:1;min-width:0;background:var(--chip);border:0;border-radius:var(--r-m);
   padding:12px;color:var(--fg);font-weight:600;outline:none}
-.opt .ot{display:block;font-size:14.5px;font-weight:800;letter-spacing:-.03em}
+.opt .ot{display:block;font-size:14.5px;font-weight:700;letter-spacing:-.03em}
 .opt.on .ot{color:var(--accent-tx)}
 .opt .od{display:block;font-size:12px;color:var(--sub);font-weight:600;margin-top:3px;line-height:1.5}
 /* 따라가기 */
@@ -565,7 +621,7 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .ri .plus{flex:0 0 46px;width:46px;height:46px;border-radius:var(--r-m);background:var(--card);
   display:grid;place-items:center;font-size:20px;font-weight:700;color:var(--accent-tx)}
 .ri .plus svg{width:19px;height:19px}
-.catsel{background:var(--chip);border:0;border-radius:6px;padding:2px 4px;font-size:11px;
+.catsel{background:var(--chip);border:0;border-radius:var(--r-s);padding:2px 4px;font-size:11px;
   color:var(--sub);font-weight:700}
 /* 담은 장소 한 줄 — 좁은 화면에서 글자가 세로로 쪼개지지 않도록 2행 그리드로 짠다 */
 .pk{display:grid;grid-template-columns:24px 24px 44px 1fr auto;grid-template-areas:
@@ -574,7 +630,7 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .pk:last-child{box-shadow:none}
 .pk>.grip{grid-area:grip}
 .pk .no2{grid-area:no;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--on-accent);
-  font-size:12px;font-weight:800;display:grid;place-items:center}
+  font-size:12px;font-weight:700;display:grid;place-items:center}
 .pk>.ph{grid-area:thumb;width:44px;height:44px;border-radius:var(--r-m)}
 .pk .g{grid-area:name;min-width:0}
 .pk .rm{grid-area:rm;color:var(--dim);font-size:17px;padding:8px 4px;justify-self:end}
@@ -594,7 +650,7 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .pk.first{background:var(--accent-2);border-radius:var(--r-m);padding-left:6px;padding-right:6px;
   box-shadow:inset 0 0 0 1.5px var(--accent)}
 .pk.first .no2{width:26px;height:26px;flex:0 0 26px;font-size:13px}
-.meetbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;
+.meetbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
   color:var(--accent-tx);margin-bottom:3px}
 .meetbadge svg{width:12px;height:12px}
 .photo{color:var(--accent-tx);font-weight:700;font-size:11px;text-decoration:underline;text-underline-offset:2px}
@@ -602,7 +658,7 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .meet{display:flex;align-items:center;gap:9px;margin-top:11px;background:var(--accent-2);
   border-radius:var(--r-m);padding:12px 13px;font-size:13.5px;font-weight:600;color:var(--accent-tx);line-height:1.5}
 .meet svg{width:16px;height:16px;flex:0 0 16px}
-.meet b{font-weight:800}
+.meet b{font-weight:700}
 .shot{display:flex;align-items:center;gap:9px;font-size:12.5px;background:var(--chip);
   border-radius:var(--r-m);padding:11px 12px;margin-top:11px;font-weight:700;color:var(--sub);min-height:44px}
 .shot svg{width:16px;height:16px}
@@ -622,18 +678,18 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .pav{width:58px;height:58px;flex:0 0 58px;border-radius:50%;background:var(--card);
   display:grid;place-items:center;font-size:27px;box-shadow:0 0 0 3px var(--accent),var(--e1)}
 .pnm{flex:1;min-width:0}
-.pnm b{display:block;font-size:19px;font-weight:800;letter-spacing:-.035em}
+.pnm b{display:block;font-size:19px;font-weight:700;letter-spacing:-.035em}
 .pnm span{display:block;font-size:12px;color:var(--sub);font-weight:600;margin-top:3px}
 .pstat{display:flex;gap:8px;margin-top:8px}
 .pstat span{flex:1;display:flex;align-items:center;gap:6px;background:var(--chip);
   border-radius:var(--r-m);padding:11px 12px;font-size:12px;font-weight:700;color:var(--sub)}
-.pstat b{margin-left:auto;font-size:14.5px;font-weight:800;color:var(--fg)}
+.pstat b{margin-left:auto;font-size:14.5px;font-weight:700;color:var(--fg)}
 .pstat svg{width:14px;height:14px;flex:0 0 14px;color:var(--accent-tx)}
 /* 프로필 카운트 — 트위터처럼 숫자를 눌러 이동 */
 .cnts{display:flex;gap:6px;margin-top:14px}
 .cnt{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--chip);
   border-radius:var(--r-m);padding:10px 4px}
-.cnt b{font-size:17px;font-weight:800;letter-spacing:-.03em}
+.cnt b{font-size:17px;font-weight:700;letter-spacing:-.03em}
 .cnt span{font-size:11px;font-weight:700;color:var(--sub)}
 /* 따라가기 — 전체 목록. 누른 곳이 지도에서 강조된다 */
 .plst{margin:12px 20px 0;display:flex;flex-direction:column}
@@ -642,11 +698,11 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .pitem.on{border-color:var(--accent);box-shadow:0 3px 0 var(--accent-dk)}
 .pitem .ph{width:52px;height:52px;border-radius:var(--r-m);flex:0 0 52px}
 .pno{width:22px;height:22px;flex:0 0 22px;border-radius:50%;background:var(--chip);color:var(--sub);
-  display:grid;place-items:center;font-size:11px;font-weight:800}
+  display:grid;place-items:center;font-size:11px;font-weight:700}
 .pitem.on .pno{background:var(--accent);color:var(--on-accent)}
 .pg{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.pt{font-size:11.5px;font-weight:800;color:var(--accent-tx);font-variant-numeric:tabular-nums}
-.pn{font-size:15px;font-weight:800;letter-spacing:-.035em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pt{font-size:11.5px;font-weight:700;color:var(--accent-tx);font-variant-numeric:tabular-nums}
+.pn{font-size:15px;font-weight:700;letter-spacing:-.035em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pc{font-size:11.5px;font-weight:600;color:var(--sub)}
 .pmap{flex:0 0 34px;height:34px;border-radius:50%;background:var(--chip);display:grid;place-items:center;color:var(--accent-tx)}
 .pleg{display:flex;align-items:center;gap:7px;margin:6px 0 6px 26px;font-size:12px;font-weight:700;color:var(--sub)}
@@ -668,8 +724,8 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 /* 미리보기 순서 바꾸기 — 손잡이로 끌거나 우측 화살표로 */
 .ord{position:absolute;right:9px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;
   align-items:center;gap:3px;z-index:2}
-.ord button{width:28px;height:22px;border-radius:7px;background:var(--chip);color:var(--sub);
-  font-size:11px;font-weight:800;display:grid;place-items:center}
+.ord button{width:28px;height:22px;border-radius:var(--r-s);background:var(--chip);color:var(--sub);
+  font-size:11px;font-weight:700;display:grid;place-items:center}
 .ord button:disabled{opacity:.35}
 .ord .grip{width:28px;height:22px;display:grid;place-items:center;color:var(--dim);cursor:grab;touch-action:none}
 .pvrow.dragging,.pk.dragging{opacity:.6}
@@ -678,18 +734,18 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);
   font-size:12px;font-weight:700;color:var(--sub)}
 .fldr svg{width:14px;height:14px;color:var(--accent-tx)}
-.fldr select{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--fg);font-weight:800;font-size:13px}
+.fldr select{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--fg);font-weight:700;font-size:13px}
 /* 원작자 링크 — 가져온(리그램) 루트는 원작자를 먼저 보여준다 */
-.lnk{display:inline;padding:0;font:inherit;font-weight:800;color:var(--accent-tx);
+.lnk{display:inline;padding:0;font:inherit;font-weight:700;color:var(--accent-tx);
   text-decoration:underline;text-underline-offset:2px}
 .rg{display:inline-flex;align-items:center;gap:3px;margin-left:5px;font-size:11px;font-weight:700;
   color:var(--dim)}
 .rg svg{width:11px;height:11px}
 .foldbtn{display:block;width:calc(100% - 40px);margin:10px 20px 0;background:var(--card);
   border:1px solid var(--line);border-radius:999px;padding:12px;text-align:center;
-  font-size:13px;font-weight:800;color:var(--accent-tx)}
+  font-size:13px;font-weight:700;color:var(--accent-tx)}
 .big{display:block;width:calc(100% - 40px);margin:14px 20px 0;background:var(--accent);color:var(--on-accent);
-  font-weight:800;border-radius:var(--r-l);padding:16px;text-align:center;font-size:15.5px;letter-spacing:-.032em}
+  font-weight:700;border-radius:var(--r-l);padding:16px;text-align:center;font-size:15.5px;letter-spacing:-.032em}
 .big.g{background:var(--chip);color:var(--fg)}
 .big[disabled]{opacity:.36}
 .row2{display:flex;gap:9px;margin:12px 20px 0}
@@ -824,6 +880,12 @@ const AREAS=[
   {id:"jamsil", n:"잠실·송파",  lat:37.5130,lng:127.1020,tone:"mall",  img:"석촌호수"},
   {id:"gangnam",n:"강남·역삼",  lat:37.4980,lng:127.0280,tone:"food",  img:"코엑스"},
   {id:"magok",  n:"마곡",       lat:37.5650,lng:126.8320,tone:"expo",  img:"서울식물원"},
+  {id:"mullae", n:"문래·영등포", lat:37.5175,lng:126.8950,tone:"alley", img:""},
+  {id:"konkuk", n:"건대·광진",   lat:37.5405,lng:127.0700,tone:"mall",  img:""},
+  {id:"apgu",   n:"압구정·청담", lat:37.5270,lng:127.0400,tone:"food",  img:""},
+  {id:"ddp",    n:"동대문·DDP",  lat:37.5665,lng:127.0090,tone:"expo",  img:""},
+  {id:"yeonhui",n:"서대문·연희", lat:37.5700,lng:126.9330,tone:"cafe",  img:""},
+  {id:"gwanak", n:"관악·서울대", lat:37.4810,lng:126.9530,tone:"park",  img:""},
 ];
 /* 실존이 확인된 곳만 둔다. "성수 파스타집" 같은 가상 장소는 전부 걷어냈다 —
    가짜 장소 위에는 좋은 루트가 올라갈 수 없다. img가 빈 곳은 종류별 아트로 표시된다. */
@@ -909,6 +971,39 @@ const PLACES={
   /* ── 마곡 ── */
   botanic:    {n:"서울식물원",c:"전시",area:"magok",lat:37.5698,lng:126.8351,open:"09:30",close:"18:00",closed:[1],cost:[5000,5000],park:1,wait:0,pop:88,img:"서울식물원"},
   lgart:      {n:"LG아트센터 서울",c:"복합공간",area:"magok",lat:37.5660,lng:126.8300,open:"10:00",close:"22:00",closed:[],cost:[0,80000],park:1,wait:0,pop:59,img:""},
+  /* 문래·영등포 */
+  mullaeart:  {n:"문래창작촌",       c:"골목",   area:"mullae", lat:37.5165,lng:126.8955,open:"00:00",close:"23:59",closed:[],cost:[0,15000],park:0,wait:0,pop:71,img:""},
+  timessq:    {n:"타임스퀘어",       c:"복합공간",area:"mullae",lat:37.5170,lng:126.9035,open:"10:30",close:"22:00",closed:[],cost:[10000,35000],park:1,wait:0,pop:84,img:""},
+  seonyudo:   {n:"선유도공원",       c:"공원",   area:"mullae", lat:37.5443,lng:126.8991,open:"06:00",close:"24:00",closed:[],cost:[0,0],park:1,wait:0,pop:80,img:""},
+  yeongjungno:{n:"영등포 지하상가",  c:"시장",   area:"mullae", lat:37.5155,lng:126.9070,open:"10:00",close:"21:00",closed:[],cost:[5000,20000],park:0,wait:0,pop:52,img:""},
+  /* 건대·광진 */
+  common:     {n:"커먼그라운드",     c:"복합공간",area:"konkuk",lat:37.5410,lng:127.0665,open:"11:00",close:"22:00",closed:[],cost:[0,30000],park:1,wait:0,pop:79,img:""},
+  childpark:  {n:"서울어린이대공원", c:"공원",   area:"konkuk", lat:37.5500,lng:127.0810,open:"05:00",close:"22:00",closed:[],cost:[0,0],park:1,wait:0,pop:83,img:""},
+  ttukhan:    {n:"뚝섬한강공원",     c:"공원",   area:"konkuk", lat:37.5295,lng:127.0700,open:"00:00",close:"23:59",closed:[],cost:[0,8000],park:1,wait:0,pop:81,img:""},
+  achasan:    {n:"아차산",           c:"공원",   area:"konkuk", lat:37.5555,lng:127.0985,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:68,img:""},
+  /* 압구정·청담 */
+  dosan:      {n:"도산공원",         c:"공원",   area:"apgu",   lat:37.5240,lng:127.0355,open:"05:00",close:"23:00",closed:[],cost:[0,0],park:0,wait:0,pop:74,img:""},
+  apgurodeo:  {n:"압구정로데오거리", c:"골목",   area:"apgu",   lat:37.5273,lng:127.0400,open:"00:00",close:"23:59",closed:[],cost:[10000,50000],park:0,wait:0,pop:82,img:""},
+  galleria:   {n:"갤러리아 명품관",  c:"복합공간",area:"apgu",  lat:37.5273,lng:127.0410,open:"10:30",close:"20:00",closed:[],cost:[15000,60000],park:1,wait:0,pop:76,img:""},
+  cheongdam:  {n:"청담동 명품거리",  c:"골목",   area:"apgu",   lat:37.5250,lng:127.0480,open:"00:00",close:"23:59",closed:[],cost:[0,40000],park:0,wait:0,pop:69,img:""},
+  /* 동대문·DDP */
+  ddpplaza:   {n:"DDP 동대문디자인플라자",c:"전시",area:"ddp",  lat:37.5665,lng:127.0090,open:"10:00",close:"20:00",closed:[],cost:[0,15000],park:1,wait:0,pop:90,img:""},
+  heungin:    {n:"흥인지문",         c:"고궁",   area:"ddp",    lat:37.5711,lng:127.0095,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:73,img:""},
+  ddpmarket:  {n:"동대문종합시장",   c:"시장",   area:"ddp",    lat:37.5705,lng:127.0075,open:"08:00",close:"18:00",closed:[0],cost:[5000,20000],park:0,wait:0,pop:66,img:""},
+  /* 서대문·연희 */
+  ansan:      {n:"안산자락길",       c:"공원",   area:"yeonhui",lat:37.5760,lng:126.9450,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:75,img:""},
+  yeonhuigol: {n:"연희동 골목",      c:"골목",   area:"yeonhui",lat:37.5690,lng:126.9310,open:"00:00",close:"23:59",closed:[],cost:[10000,30000],park:0,wait:0,pop:70,img:""},
+  hongje:     {n:"홍제천 산책로",    c:"공원",   area:"yeonhui",lat:37.5830,lng:126.9400,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:58,img:""},
+  prison:     {n:"서대문형무소역사관",c:"전시",  area:"yeonhui",lat:37.5745,lng:126.9560,open:"09:30",close:"18:00",closed:[1],cost:[3000,3000],park:1,wait:0,pop:77,img:""},
+  /* 관악·서울대 */
+  nakseong:   {n:"낙성대공원",       c:"공원",   area:"gwanak", lat:37.4770,lng:126.9605,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:61,img:""},
+  gwanaksan:  {n:"관악산",           c:"공원",   area:"gwanak", lat:37.4450,lng:126.9640,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:78,img:""},
+  snu:        {n:"서울대학교 캠퍼스",c:"복합공간",area:"gwanak",lat:37.4600,lng:126.9520,open:"00:00",close:"23:59",closed:[],cost:[0,10000],park:1,wait:0,pop:72,img:""},
+  sharosu:    {n:"샤로수길",         c:"골목",   area:"gwanak", lat:37.4800,lng:126.9525,open:"11:00",close:"23:00",closed:[],cost:[10000,28000],park:0,wait:1,pop:67,img:""},
+  /* 마곡·강서 보강 — 서울식물원 하나로는 루트가 안 나온다 */
+  gyeomjae:   {n:"겸재정선미술관",   c:"전시",   area:"magok",  lat:37.5540,lng:126.8365,open:"10:00",close:"18:00",closed:[1],cost:[1000,1000],park:1,wait:0,pop:49,img:""},
+  heojun:     {n:"허준박물관",       c:"전시",   area:"magok",  lat:37.5545,lng:126.8395,open:"10:00",close:"18:00",closed:[1],cost:[1000,1000],park:1,wait:0,pop:47,img:""},
+  yangcheon:  {n:"양천향교",         c:"고궁",   area:"magok",  lat:37.5555,lng:126.8385,open:"09:00",close:"18:00",closed:[],cost:[0,0],park:0,wait:0,pop:44,img:""},
 };
 /* 시드 루트 70개 — 전부 AI가 초안을 짜고 사람이 실존·휴무를 확인해서 ai:1이 붙는다.
    아직 아무도 안 다녀왔으므로 plan:1(계획 루트) · visits:0이 정직한 상태다.
@@ -1307,6 +1402,179 @@ const ROUTES=[
    note:"공연 일정은 미리 확인하세요. 식물원 온실은 월요일 휴무입니다",
    stops:[{p:"botanic",stay:100,c:"마곡나루역에서 바로. 온실 밖 공원은 그늘이 적습니다"},
           {p:"lgart",stay:130,c:"역까지 되돌아 나와야 해요"}]},
+
+  /* ── 문래·영등포 ── */
+  {id:"ml1",area:"mullae",transport:"transit",hot:0,likes:96,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"문래 철공소 골목 보고 타임스퀘어에서 저녁",
+   mood:"낮엔 공장, 밤엔 술집인 동네를 한 번에 보는 순서",
+   note:"주말 낮엔 문 닫은 공장이 많아요. 마무리는 영등포역 도보 5분",
+   stops:[{p:"mullaeart",stay:70,c:"도림로 141·143번지 골목이 중심. 좁은 데다 지게차가 다녀서 주말이 아니면 걷기 불편해요"},
+          {p:"timessq",stay:100,c:"지하 식당가가 제일 붐비는 시간은 6시 전후"},
+          {p:"yeongjungno",stay:40,c:"지하로 연결돼 비를 안 맞아요. 오래된 상가라 문 닫은 칸이 군데군데 있습니다"}]},
+  {id:"ml2",area:"mullae",transport:"car",hot:0,likes:71,visits:0,people:4,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"선유도공원 걷고 타임스퀘어에서 쉬어가기",
+   mood:"주차되고 실내로 이어져서 날씨를 덜 타는 하루",
+   note:"선유도는 다리를 건너 들어가요. 바람이 세서 겉옷 필요",
+   stops:[{p:"seonyudo",stay:90,c:"옛 정수장을 그대로 둔 공원이라 콘크리트 구조물이 그대로예요. 그늘이 적고 계단이 많습니다"},
+          {p:"timessq",stay:110,c:"차는 여기 대는 게 편해요. 주말 진입 대기가 깁니다"}]},
+  {id:"ml3",area:"mullae",transport:"transit",hot:0,likes:58,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"문래에서 선유도까지, 걷는 게 반인 코스",
+   mood:"골목 구경하고 강 건너 공원에서 마무리",
+   note:"두 곳 사이가 멀어서 지하철 한 번 타야 해요",
+   stops:[{p:"mullaeart",stay:60,c:"벽화와 작업실이 섞여 있어요"},
+          {p:"seonyudo",stay:80,c:"해질 때가 제일 좋은데 조명이 어두운 구간이 있어요"}]},
+  {id:"ml4",area:"mullae",transport:"transit",hot:0,likes:44,visits:0,people:3,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"비 오는 날 영등포, 지하로만 다니기",
+   mood:"우산 거의 안 펴고 다닐 수 있는 실내 코스",
+   note:"지하상가는 일요일에 문 닫는 칸이 많아요",
+   stops:[{p:"yeongjungno",stay:60,c:"영등포역에서 바로 이어져 비를 안 맞아요. 다만 통로가 좁은 데다 카트를 끄는 상인이 계속 지나다녀서 천천히 구경하긴 어렵습니다"},
+          {p:"timessq",stay:120,c:"영화관·서점이 한 건물에 있어 비 오는 날 오래 버티기 좋아요"}]},
+
+  /* ── 건대·광진 ── */
+  {id:"kk1",area:"konkuk",transport:"transit",hot:0,likes:158,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"커먼그라운드 구경하고 뚝섬한강공원까지",
+   mood:"컨테이너 상가 돌고 강가에서 앉아 마무리",
+   note:"커먼그라운드는 밤 10시까지. 건대입구역 6번 출구에서 만나면 됩니다",
+   stops:[{p:"common",stay:80,c:"컨테이너 200개를 쌓아 만든 상가라 통로가 좁고 계단이 많아요. 비 오면 이동 구간이 젖습니다"},
+          {p:"ttukhan",stay:70,c:"돗자리 없으면 앉을 데가 마땅치 않아요. 편의점은 입구 쪽에만 있습니다"}]},
+  {id:"kk2",area:"konkuk",transport:"transit",hot:0,likes:112,visits:0,people:4,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"어린이대공원 한 바퀴, 많이 안 걷는 길로",
+   mood:"입장료 없고 앉을 데 많아서 부모님이랑 가기 좋은 하루",
+   note:"공원은 무료지만 안쪽 놀이시설은 따로 받아요",
+   stops:[{p:"childpark",stay:120,c:"정문에서 후문까지가 꽤 멀어요. 평지 위주라 걷기는 편한데 그늘이 몰려 있습니다"},
+          {p:"common",stay:70,c:"공원에서 지하철 한 정거장. 앉을 자리는 2층 안쪽이 낫습니다"}]},
+  {id:"kk3",area:"konkuk",transport:"transit",hot:0,likes:67,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"아차산 짧게 오르고 강가로 내려오기",
+   mood:"많이 안 힘든 산과 한강을 하루에",
+   note:"아차산은 등산로 초입만 걸어도 전망이 나와요. 미끄러운 구간 주의",
+   stops:[{p:"achasan",stay:100,c:"아차산역에서 초입까지 15분. 정상까지 안 가도 전망대가 중간에 있어요. 흙길이라 비 온 다음 날은 미끄럽습니다"},
+          {p:"ttukhan",stay:60,c:"산에서 내려와 강까지는 버스를 타야 해요"}]},
+  {id:"kk4",area:"konkuk",transport:"car",hot:0,likes:53,visits:0,people:4,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"차로 도는 광진, 공원 두 곳",
+   mood:"주차 되는 곳만 골라 담은 코스",
+   note:"두 공원 다 주차장이 있지만 주말 오후엔 대기가 있어요",
+   stops:[{p:"childpark",stay:110,c:"주차장이 정문·후문 양쪽에 있어요. 어느 쪽에 댔는지 기억해둬야 합니다"},
+          {p:"ttukhan",stay:70,c:"강변 주차장은 주말 저녁에 빨리 차요"}]},
+
+  /* ── 압구정·청담 ── */
+  {id:"ap1",area:"apgu",transport:"transit",hot:0,likes:184,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"도산공원 지나 압구정로데오 한 바퀴",
+   mood:"공원에서 시작해 거리 구경으로 이어지는 반나절",
+   note:"로데오는 저녁부터 붐벼요. 압구정로데오역 도보 5분",
+   stops:[{p:"dosan",stay:50,c:"작은 공원이라 한 바퀴가 15분이면 끝나요. 벤치가 적어 앉을 자리 경쟁이 있습니다"},
+          {p:"apgurodeo",stay:90,c:"골목마다 가게 성격이 달라요. 인도가 좁고 주차 차량이 많아 걷기가 편하진 않습니다"},
+          {p:"galleria",stay:60,c:"저녁 8시면 닫아요"}]},
+  {id:"ap2",area:"apgu",transport:"transit",hot:0,likes:126,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"청담 명품거리 걷고 갤러리아에서 마무리",
+   mood:"조용한 편이라 얘기하기 좋은 저녁 코스",
+   note:"청담 쪽은 저녁에 인적이 빠르게 줄어요",
+   stops:[{p:"cheongdam",stay:70,c:"가로수가 정돈돼 있어 걷기는 좋은데, 예약제이거나 문턱이 높은 가게가 많아 그냥 들어갈 만한 데는 생각보다 적습니다"},
+          {p:"galleria",stay:80,c:"식당가는 지하. 주말 저녁은 예약이 안 되면 대기가 깁니다"}]},
+  {id:"ap3",area:"apgu",transport:"transit",hot:0,likes:88,visits:0,people:3,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"압구정에서 도산공원까지 걷기만",
+   mood:"이동이 전부 도보인 짧은 코스",
+   note:"두 곳 사이가 도보 10분이에요",
+   stops:[{p:"apgurodeo",stay:80,c:"오후 3시쯤이 제일 한산해요"},
+          {p:"dosan",stay:60,c:"나무가 많아 여름에도 그늘이 있어요. 주말엔 사진 찍는 사람이 많아 조용하진 않습니다"}]},
+  {id:"ap4",area:"apgu",transport:"car",hot:0,likes:64,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"차 대고 도는 청담·압구정",
+   mood:"백화점에 주차하고 걸어서 도는 방식",
+   note:"거리 주차는 사실상 불가라 백화점 주차가 답이에요",
+   stops:[{p:"galleria",stay:90,c:"주차는 여기가 제일 확실해요. 구매 금액에 따라 무료 시간이 달라집니다"},
+          {p:"cheongdam",stay:70,c:"걸어서 10분 남짓. 언덕이 조금 있어요"}]},
+
+  /* ── 동대문·DDP ── */
+  {id:"dd1",area:"ddp",transport:"transit",hot:1,likes:246,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"DDP 밤에 보고 흥인지문까지 걷기",
+   mood:"해 지고 나서가 본편인 코스",
+   note:"DDP 외부 공간은 밤에도 열려 있어요. 동대문역사문화공원역에서 바로",
+   stops:[{p:"ddpplaza",stay:90,c:"곡면 외벽이 조명을 받는 밤이 훨씬 나아요. 전시는 유료라 따로 끊어야 하고, 내부는 길이 헷갈립니다"},
+          {p:"heungin",stay:40,c:"성문 자체는 안에 못 들어가고 둘러보는 거예요. 차도 한가운데라 소음이 큽니다"}]},
+  {id:"dd2",area:"ddp",transport:"transit",hot:0,likes:97,visits:0,people:3,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"동대문종합시장 구경하고 DDP에서 쉬기",
+   mood:"원단 시장 구경이 생각보다 볼 만한 코스",
+   note:"시장은 일요일 휴무고 저녁 6시면 닫아요",
+   stops:[{p:"ddpmarket",stay:70,c:"원단·부자재가 층마다 나뉘어 있어요. 도매 위주라 소량 구매는 눈치가 보입니다"},
+          {p:"ddpplaza",stay:80,c:"시장에서 걸어서 5분. 앉을 데가 많아 다리 쉬기 좋아요"}]},
+  {id:"dd3",area:"ddp",transport:"transit",hot:0,likes:73,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"흥인지문에서 청계천 따라 걸어 내려오기",
+   mood:"성문에서 물길로 이어지는 산책 위주 코스",
+   note:"청계천은 비 온 뒤 수위가 오르면 산책로가 통제돼요",
+   stops:[{p:"heungin",stay:40,c:"성곽이 여기서 끊겼다 이어져요. 횡단보도를 두 번 건너야 해서 번거롭습니다"},
+          {p:"cheonggye",stay:70,c:"물길 옆으로 계속 내려가면 종로예요"}]},
+  {id:"dd4",area:"ddp",transport:"transit",hot:0,likes:61,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"비 와도 되는 DDP, 실내로만",
+   mood:"전시 보고 앉아 있다 가는 실내 코스",
+   note:"전시는 기간마다 바뀌니 미리 확인하세요",
+   stops:[{p:"ddpplaza",stay:150,c:"디자인장터와 전시관이 층으로 나뉘어요. 무료 구역만 봐도 두 시간은 걸립니다"}]},
+
+  /* ── 서대문·연희 ── */
+  {id:"yh1",area:"yeonhui",transport:"transit",hot:0,likes:104,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"안산자락길 한 바퀴 돌고 연희동으로",
+   mood:"경사가 거의 없는 숲길이라 부담이 적은 코스",
+   note:"자락길은 나무데크라 유모차도 가능해요. 연희동은 월요일 쉬는 가게가 많습니다",
+   stops:[{p:"ansan",stay:90,c:"무장애 데크길이라 계단이 없어요. 한 바퀴가 7km라 다 돌면 두 시간은 잡아야 합니다"},
+          {p:"yeonhuigol",stay:80,c:"주택가에 가게가 섞여 있어 간판이 작아요. 찾기가 쉽지 않습니다"}]},
+  {id:"yh2",area:"yeonhui",transport:"transit",hot:0,likes:139,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"서대문형무소 보고 안산 넘어가기",
+   mood:"무겁게 보고 나와 숲길에서 걸으며 정리하는 순서",
+   note:"형무소는 월요일 휴관이에요",
+   stops:[{p:"prison",stay:90,c:"독립문역 5번 출구 도보 5분. 관람료 3천원이고, 옥사 내부는 조도가 낮아 사진이 잘 안 나옵니다"},
+          {p:"ansan",stay:80,c:"형무소 뒤로 바로 이어져요. 초입 오르막이 짧게 있습니다"}]},
+  {id:"yh3",area:"yeonhui",transport:"transit",hot:0,likes:66,visits:0,people:3,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"연희동 골목 한 바퀴, 사람 적은 시간에",
+   mood:"홍대를 피해서 걷고 싶을 때 가는 동네",
+   note:"주택가라 밤엔 조용히. 홍제천으로 빠지면 걸어서 마무리됩니다",
+   stops:[{p:"yeonhuigol",stay:90,c:"평일 오후가 제일 한산해요. 언덕이 있어 편한 신발이 낫습니다"},
+          {p:"hongje",stay:60,c:"물길 따라 계속 이어져요. 조명이 어두운 구간이 있고, 자전거가 빠르게 지나가서 밤에는 가장자리로 걷는 게 낫습니다"}]},
+  {id:"yh4",area:"yeonhui",transport:"car",hot:0,likes:48,visits:0,people:4,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"차로 가는 서대문, 주차되는 두 곳",
+   mood:"걷는 양을 조절할 수 있는 코스",
+   note:"형무소 주차장은 크지 않아요",
+   stops:[{p:"prison",stay:90,c:"주차 공간이 넉넉하진 않아 주말엔 대기가 있어요"},
+          {p:"ansan",stay:80,c:"자락길 입구마다 주차 여건이 달라요. 서대문자연사박물관 쪽이 편합니다"}]},
+
+  /* ── 관악·서울대 ── */
+  {id:"gw1",area:"gwanak",transport:"transit",hot:0,likes:87,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"낙성대공원 걷고 샤로수길에서 저녁",
+   mood:"조용한 공원에서 시작해 밥집 골목으로 내려오는 코스",
+   note:"샤로수길은 저녁 7시 넘으면 웨이팅이 붙어요. 서울대입구역 2번 출구",
+   stops:[{p:"nakseong",stay:60,c:"강감찬 장군 사당이 있는 공원이라 한적해요. 편의시설이 거의 없습니다"},
+          {p:"sharosu",stay:90,c:"작은 가게가 촘촘해 골목 자체가 볼거리. 인도가 좁고 저녁엔 줄 선 사람들로 막힙니다"}]},
+  {id:"gw2",area:"gwanak",transport:"transit",hot:0,likes:118,visits:0,people:3,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"관악산 초입만 걷고 캠퍼스로 내려오기",
+   mood:"등산까지는 아니고 숲 냄새만 맡고 오는 코스",
+   note:"정상까지는 왕복 4시간이라 이 코스는 초입까지만이에요",
+   stops:[{p:"gwanaksan",stay:90,c:"서울대입구 쪽 등산로가 완만해요. 돌길이라 운동화는 필수고 물은 미리 챙겨야 합니다"},
+          {p:"snu",stay:70,c:"캠퍼스가 넓어서 걷는 양이 만만치 않아요. 셔틀버스가 있습니다"}]},
+  {id:"gw3",area:"gwanak",transport:"transit",hot:0,likes:59,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"서울대 캠퍼스 한 바퀴, 사람 적은 주말에",
+   mood:"주말엔 캠퍼스가 거의 공원이 되는 걸 이용하는 코스",
+   note:"학기 중 주말이 가장 한산해요",
+   stops:[{p:"snu",stay:100,c:"버들골과 자하연 쪽이 앉기 좋아요. 경사가 심해서 안쪽까지 걸으면 다리가 남아나지 않습니다"},
+          {p:"sharosu",stay:80,c:"정문에서 지하철 한 정거장. 골목이 좁습니다"}]},
+  {id:"gw4",area:"gwanak",transport:"car",hot:0,likes:41,visits:0,people:4,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"차로 관악, 공원 두 곳만",
+   mood:"많이 안 걷고 바람만 쐬는 하루",
+   note:"둘 다 주차장이 있어요",
+   stops:[{p:"nakseong",stay:70,c:"공영주차장이 붙어 있어요"},
+          {p:"gwanaksan",stay:80,c:"등산로 입구까지만. 주차장이 작아 늦게 가면 자리가 없어요"}]},
+
+  /* ── 마곡·강서 보강 ── */
+  {id:"mg3",area:"magok",transport:"transit",hot:0,likes:52,visits:0,people:2,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"겸재정선미술관에서 양천향교까지 걸어서",
+   mood:"관람료 천원짜리 미술관 두 곳을 붙인 조용한 반나절",
+   note:"미술관과 박물관 모두 월요일 휴관이에요. 세 곳이 걸어서 5분 안쪽",
+   stops:[{p:"gyeomjae",stay:70,c:"관람료 천원. 구립이라 규모는 작은데 한강 습지 쪽 전망이 좋아요. 겨울엔 5시에 입장이 끊깁니다"},
+          {p:"yangcheon",stay:40,c:"서울에 하나 남은 향교예요. 행사가 없으면 안이 조용하다 못해 비어 있습니다"},
+          {p:"heojun",stay:60,c:"동의보감 중심 전시. 아이들 단체가 오면 꽤 시끄러워요"}]},
+  {id:"mg4",area:"magok",transport:"car",hot:0,likes:63,visits:0,people:4,plan:1,ai:1,by:"편집팀",av:"📌",
+   title:"서울식물원 보고 강서 박물관 두 곳",
+   mood:"주차되고 실내가 많아 날씨를 안 타는 하루",
+   note:"온실과 박물관 모두 월요일 휴무라 월요일은 피하세요",
+   stops:[{p:"botanic",stay:120,c:"온실만 유료. 안에 앉을 데가 계속 있어 오래 있어도 덜 지쳐요"},
+          {p:"gyeomjae",stay:60,c:"차로 10분 남짓. 주차장이 작습니다"},
+          {p:"heojun",stay:50,c:"겸재정선미술관 바로 옆이라 묶어서 보면 됩니다"}]},
 ];
 const TRANSPORT={transit:{label:"대중교통",ic:"subway",note:"도보 포함"},car:{label:"차",ic:"car",note:"주차 후 도보 포함"}};
 const MODE={walk:{ic:"walk",label:"도보"},bus:{ic:"bus",label:"버스"},subway:{ic:"subway",label:"지하철"},
@@ -1328,9 +1596,10 @@ function durRange(a,b){
 }
 // 인원: 7은 '6+'(6명 이상)를 뜻한다. 비용 계산엔 6을 쓴다.
 // 7은 '6명 이상'을 뜻하는 값이다. 6은 6+에 흡수시켜 칸을 줄였다.
-const PEOPLE=[1,2,3,4,5,7];
-const plabel=n=>n===7?"6+":String(n);
-const peopleN=n=>n===7?6:n;
+/* 5칸으로 줄였다 — 6칸은 좁은 화면에서 마지막 칸이 잘렸고 정렬도 어긋났다. 5가 '5명 이상' */
+const PEOPLE=[1,2,3,4,5];
+const plabel=n=>n>=5?"5+":String(n);
+const peopleN=n=>n;
 // 총 예상 비용 = 장소 비용×인원 + 교통비 (대중교통은 인당, 차는 1대 기준)
 const totalCost=(c,transport,people)=>{
   const n=peopleN(people), tr=transport==="car"?c.fare:c.fare*n;
@@ -1605,32 +1874,41 @@ function toggleLike(k){
 }
 
 /* ═════ 조각 ═════ */
+/* 날짜·시간 입력 — 네이티브 위젯은 표시 형식을 브라우저가 정해서 좁은 화면에서 잘린다.
+   우리가 그린 텍스트(26/08/07(금)) 위에 투명한 네이티브 입력을 덮어, 보이는 건 우리가 정하고
+   피커는 네이티브를 그대로 쓴다. showPicker()는 지원이 갈려서 쓰지 않는다. */
+function dField(val,on){
+  const d=new Date(val+"T00:00");
+  const tx=`${String(d.getFullYear()).slice(2)}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}(${DAYS[d.getDay()]})`;
+  return `<label class="dfield d">${IC.cal}<span class="dtx">${tx}</span>
+    <input type="date" value="${val}" onchange="${on}" aria-label="날짜"></label>`;
+}
+function tField(val,on){
+  return `<label class="dfield t">${IC.clock}<span class="dtx">${hm(toMin(val))}</span>
+    <input type="time" step="900" value="${val}" onchange="${on}" aria-label="시각"></label>`;
+}
 function condBar(){
   return `<div class="cond">
     <div class="r"><span class="lab">언제</span>
-      <input type="date" value="${S.date}" onchange="S.date=this.value;render()">
-      <input type="time" step="900" value="${S.time}" onchange="S.time=this.value;render()">
-      <button class="now flat" onclick="setNow()">지금</button></div>
+      ${dField(S.date,"S.date=this.value;render()")}
+      ${tField(S.time,"S.time=this.value;render()")}</div>
     <div class="r"><span class="lab">어떻게</span><div class="seg">
       <button class="flat ${S.transport==="all"?"on":""}" onclick="S.transport='all';render()">전체</button>
       <button class="flat ${S.transport==="transit"?"on":""}" onclick="S.transport='transit';render()">${IC.subway}대중교통</button>
       <button class="flat ${S.transport==="car"?"on":""}" onclick="S.transport='car';render()">${IC.car}차</button>
     </div></div>
-    <div class="r stack"><span class="lab">인원</span><div class="ppl">
+    <div class="r"><span class="lab">인원</span><div class="ppl">
       ${PEOPLE.map(n=>`<button class="flat ${S.people===n?"on":""}" onclick="S.people=${n};render()">${plabel(n)}</button>`).join("")}
     </div></div></div>`;
 }
 function condFolded(){
   const d=new Date(iso());
-  const t=S.transport==="all"?"이동수단 전체":TRANSPORT[S.transport].label;
+  const t=S.transport==="all"?"전체":TRANSPORT[S.transport].label;
   return S.condOpen ? condBar()
     : `<button class="condsum flat" onclick="S.condOpen=true;render()">
-        ${IC.cal}<span class="cg">${d.getMonth()+1}월 ${d.getDate()}일(${DAYS[d.getDay()]}) ${hm(toMin(S.time))} · ${t} · ${plabel(S.people)}명</span>
+        ${IC.cal}<span class="cg">${d.getMonth()+1}/${d.getDate()}(${DAYS[d.getDay()]}) ${hm(toMin(S.time))} · ${t} · ${plabel(S.people)}명</span>
         <span class="ar">조건 바꾸기</span></button>`;
 }
-function setNow(){ const d=new Date(); S.date=ymd(d);
-  S.time=`${String(d.getHours()).padStart(2,"0")}:${String(Math.floor(d.getMinutes()/15)*15).padStart(2,"0")}`; render(); }
-
 /* AI가 초안을 짠 루트 표시. 데이터에 ai:1이 있으면 작성자명과 무관하게 붙는다
    (사람이 검수한 시드는 작성자가 사람이어도 AI 초안임을 숨기지 않는다) */
 const aiTag=r=>(r.ai||r.by==="AI")?`<span class="aib" title="AI가 초안을 만든 루트">AI</span>`:"";
@@ -1696,18 +1974,28 @@ function home(){
       ${rows.length>limit?`<button class="more flat" onclick="openList('${key}')">전체 ${s.rows.length} ›</button>`:""}
     </div><div class="rail">${rows.slice(0,limit).map((r,i)=>routeCard(r,"",i)).join("")}</div>`;
   };
+  /* 즐겨찾기한 지역을 '누른 순서대로' 앞으로 당긴다 — Set은 삽입 순서를 지키므로 그대로 쓴다.
+     둘 다 즐겨찾기가 아니면 0을 반환해 원래 순서를 유지한다(정렬이 안정적이다). */
+  const favOrder=[...S.favs];
+  const areaList=[...AREAS].sort((a,b)=>{
+    const ia=favOrder.indexOf(a.id), ib=favOrder.indexOf(b.id);
+    if(ia<0&&ib<0) return 0;
+    if(ia<0) return 1;
+    if(ib<0) return -1;
+    return ia-ib;
+  });
   return `<div class="top"><div class="tophead">
-      <div><div class="wordmark">spots.</div>
-        <h1>우리, 어디 갈래?</h1>
-        <div class="note">조건만 정하면 오늘 실제로 갈 수 있는 루트만 보여드려요</div></div>
+      <div class="wordmark">spots.</div>
       <button class="flat srchbtn" onclick="go('search')">${IC.search}</button></div></div>
+    <div class="headline"><h1>우리, 어디 갈래?</h1>
+      <div class="note">조건만 정하면 오늘 실제로 갈 수 있는 루트만 보여드려요</div></div>
     ${condBar()}
     <button class="tgl flat" onclick="S.onlyNew=!S.onlyNew;render()">
       <div class="tx">안 가본 곳만 보기<div class="sm">다녀온 곳이 하나라도 있으면 숨겨요 · 지금 ${S.visited.size}곳 다녀옴</div></div>
       <span class="sw ${S.onlyNew?"on":""}"></span></button>
     <div class="sec"><div><h2>어디로 가시나요?</h2>
       <p>자주 가는 곳을 눌러두면 근처 루트를 먼저 보여줘요</p></div></div>
-    <div class="areas">${AREAS.map((a,i)=>{const f=S.favs.has(a.id);
+    <div class="areas">${areaList.map((a,i)=>{const f=S.favs.has(a.id);
       return `<div class="area rise ${f?"fav":""}" style="--d:${i*30}ms">
         <button onclick="S.favs.has('${a.id}')?S.favs.delete('${a.id}'):S.favs.add('${a.id}');render()"
           style="display:block">${ph(a.img,a.tone,a.n.length*3)}
@@ -1734,24 +2022,19 @@ function routeView(){
   const allBeen=r.stops.every(s=>S.visited.has(s.p));
   // 내 루트는 저장할 필요가 없다. '다녀왔어요'는 저장한 뒤(또는 내 루트일 때)에만 뜬다 — 담아두고 나중에 체크하는 흐름
   const own=r.by==="나", saved=S.saved.has(r.id), canCheck=own||saved;
-  const journey=c.stops.map((s,i)=>{
-    const bad=["closed","early","late"].includes(s.status);
-    return `<div class="jn ${bad?"x":""} ${s.been?"been":""}">${ph(s.place.img,CT[s.place.c]||"park",s.place.n.length,"",
-        `<span class="bd">${s.been?"✓":i+1}</span>`)}
-      <div class="nm">${s.place.n}</div><div class="tt">${hm(s.arrive)}</div></div>
-      ${s.leg?`<div class="jl">${IC[MODE[s.leg.mode].ic]}<div class="tx">${s.leg.min}분</div><div class="ln"></div></div>`:""}`;
-  }).join("");
-  /* 루트 상세는 '여기가 왜 좋은지'를 읽는 화면이다.
-     도착 시각·길찾기처럼 실제로 움직일 때 필요한 정보는 '이 루트 따라가기'가 맡는다. */
+  /* 루트 상세는 '여기가 어떤 곳이고 사람들이 얼마나 좋아하는지'만 읽는 화면이다.
+     도착 시각·구간 이동수단·길찾기는 전부 '이 루트 따라가기'가 맡는다 —
+     예전엔 여기서도 다 보여줘서 두 화면이 거의 같아 보였고, 따라가기를 누를 이유가 없었다.
+     '이렇게 이동해요' 스트립도 같은 이유로 없앴다(번호 붙은 이 목록이 곧 순서다). */
   const tl=c.stops.map((s,i)=>{
     const bad=["closed","early","late"].includes(s.status);
     return `<div class="stp ${bad?"x":""} ${s.been?"been":""} rise" style="--d:${Math.min(i,5)*50}ms">
       ${ph(s.place.img,CT[s.place.c]||"park",s.place.n.length,"",`<span class="bd">${s.been?"✓":i+1}</span>`)}
       <div class="in"><div class="nm">${s.place.n}</div>
-        <div class="tm">${s.place.c} · ${popWord(s.place.pop)} · 머무는 시간 ${dur(s.stay)} 안팎</div>
+        <div class="tm">${s.place.c} · 1인 ${wonRange(s.place.cost[0],s.place.cost[1])}</div>
         ${s.c?`<div class="cm">"${s.c}"</div>`:""}
         <div class="tags">
-          <span class="tg">1인 ${wonRange(s.place.cost[0],s.place.cost[1])}</span>
+          <span class="tg pop">${popWord(s.place.pop)}</span>
           ${s.place.wait?`<span class="tg">웨이팅 있음</span>`:""}
           ${s.place.park?`<span class="tg">주차 가능</span>`:""}
           ${s.been?`<span class="tg ok">다녀온 곳</span>`:""}
@@ -1760,11 +2043,7 @@ function routeView(){
           <button class="mini lk ${S.likes.has(s.p)?"on":""}" id="lk-${s.p}" onclick="toggleLike('${s.p}')">
             ${IC.heart}<b>${likeCount(s.p)}</b></button>
           <button class="mini" onclick="go('place','${s.p}')">담긴 루트</button>
-          <a class="mini" href="${kakaoPlaceURL(s.place)}" target="_blank" rel="noopener"
-             aria-label="지도에서 보기">${IC.pin}</a>
-        </div></div></div>
-      ${s.leg?`<div class="hop"><div class="rl"></div>
-        <div class="tx">${IC[MODE[s.leg.mode].ic]}${MODE[s.leg.mode].label} ${s.leg.min}분</div></div>`:""}`;
+        </div></div></div>`;
   }).join("");
   return `<div class="hero">${ph(hp.img,CT[hp.c]||"park",r.id.charCodeAt(1)*7)}
       <div class="grad"></div>
@@ -1798,11 +2077,8 @@ function routeView(){
     <div class="bar ${c.blocked?"x":"o"}">${c.blocked
       ?`${DAYS[d.getDay()]}요일 ${hm(toMin(S.time))} 출발이면 — ${c.blockNames.join(", ")}`
       :`${DAYS[d.getDay()]}요일 ${hm(toMin(S.time))} 출발, 전부 갈 수 있어요`}</div>
-    <div class="jr"><h3>이렇게 이동해요</h3><div class="jrs">${journey}</div></div>
     <div class="map">${hasL()?`<div class="lmap" id="rmap"></div>`:mapSVG(c.stops)}
-      <div class="ft">순서대로 ${c.stops.length}곳 · 이동 ${c.distKm.toFixed(1)}km (걷는 거리 ${c.walkKm.toFixed(1)}km)${c.waits?` · 웨이팅 ${c.waits}곳(머무는 시간에 포함)`:""}</div>
-      <a class="maplink" href="${c.stops.length>1?(r.transport==="car"?kakaoAllURL(c.stops,r.transport):kakaoLegURL(c.stops[0].place,c.stops[1].place,c.stops[0].leg.mode)):kakaoPlaceURL(c.stops[0].place)}"
-         target="_blank" rel="noopener">${IC.pin}${r.transport==="car"?`카카오맵에서 전체 경로 (${c.stops.length}곳)`:"카카오맵에서 첫 구간 길찾기"}</a></div>
+      <div class="ft">순서대로 ${c.stops.length}곳 · 이동 ${c.distKm.toFixed(1)}km (걷는 거리 ${c.walkKm.toFixed(1)}km)${c.waits?` · 웨이팅 ${c.waits}곳(머무는 시간에 포함)`:""}</div></div>
     <div class="tl">${tl}</div>
     <div class="fabpad"></div>
     <div class="fab">
@@ -2130,8 +2406,8 @@ function createView(){
     <div class="step"><div class="no">STEP 1</div><h3>언제 만나요?</h3><div class="box">
       <div class="cond" style="margin:0;padding:0;box-shadow:none;background:none">
         <div class="r"><span class="lab">만나기</span>
-          <input type="date" value="${d.date}" onchange="S.draft.date=this.value;render()">
-          <input type="time" step="900" value="${d.time}" onchange="S.draft.time=this.value;render()"></div></div>
+          ${dField(d.date,"S.draft.date=this.value;render()")}
+          ${tField(d.time,"S.draft.time=this.value;render()")}</div></div>
       ${pv?`<div class="meet">${IC.clock}<span><b>${hm(pv.startAt)}</b>에 만나면
         <b>${hm(pv.endLo)}쯤</b> 끝나요 · ${durRange(pv.totalLo,pv.totalHi)}</span></div>`:""}
       ${pv&&pv.blocked?`<div class="warnline" style="margin-top:10px">${pv.blockNames.join(" · ")}</div>`:""}
@@ -2514,14 +2790,22 @@ function kakaoSearch(q){
       else rej(new Error("kakao "+status));
     },opt);
   });
-  // 먼저 보고 있는 지역 주변에서 찾고, 없으면 범위를 풀어 전국에서 다시 찾는다
-  return run({location:new kakao.maps.LatLng(c.lat,c.lng),radius:20000,size:10})
-    .then(d=>d.length?d:run({size:10}))
-    .then(d=>d.slice(0,6).map(p=>({
-      id:"kk"+p.id, kakaoId:p.id, url:p.place_url, n:p.place_name,
-      c:kkCat(p)||"복합공간", known:!!kkCat(p),
-      lat:+p.y, lng:+p.x,
-      addr:(p.road_address_name||p.address_name||"").split(" ").slice(0,3).join(" ") })));
+  const map=p=>({
+    id:"kk"+p.id, kakaoId:p.id, url:p.place_url, n:p.place_name,
+    c:kkCat(p)||"복합공간", known:!!kkCat(p),
+    lat:+p.y, lng:+p.x,
+    addr:(p.road_address_name||p.address_name||"").split(" ").slice(0,3).join(" ") });
+  /* 보고 있는 지역 주변을 먼저 보여주되, 전국 검색도 항상 함께 돌려 뒤에 붙인다.
+     ⚠️ 예전엔 반경 검색이 '0개일 때만' 전국으로 넘어갔다. 그래서 근처에서 엉뚱한 1~2개만
+     걸리면 전국 검색이 아예 안 돌았고, 카카오맵에는 있는 곳이 여기선 안 뜨는 원인이었다.
+     결과 상한도 6 → 12로 올렸다. */
+  const near=run({location:new kakao.maps.LatLng(c.lat,c.lng),radius:20000,size:15}).catch(()=>[]);
+  const all =run({size:15}).catch(()=>[]);
+  return Promise.all([near,all]).then(([a,b])=>{
+    const seen=new Set(), out=[];
+    for(const p of [...a,...b]){ if(seen.has(p.id)) continue; seen.add(p.id); out.push(map(p)); }
+    return out.slice(0,12);
+  });
 }
 async function photonSearch(q){
   const c=S.nearCenter||AREAS[0];
@@ -2719,7 +3003,8 @@ function nearDrag(box){
 /* 하단 시트 — 손잡이를 끌어 높이 조절, 놓으면 가까운 단계로 붙는다 */
 /* 하단 시트 — 위아래로 쓸어서만 움직인다(탭으로 토글하지 않는다).
    놓으면 가까운 단계로 붙고, '현 지도에서 검색' 버튼은 시트 바로 위를 따라다닌다. */
-const SHEET_SNAP=[14,58,86];
+/* 0 = 화면을 가득 채움. 이때만 모서리를 펴고 상태바만큼 안쪽으로 민다(.nearsheet.full) */
+const SHEET_SNAP=[0,58,86];
 function syncResearch(){
   const b=document.querySelector(".research");
   if(b) b.style.bottom=`calc(${(100-S.sheetTop).toFixed(1)}dvh + 12px)`;
@@ -2748,15 +3033,19 @@ function sheetDrag(grab){
     const dy=pt(e).clientY-y0;
     if(!moved&&Math.abs(dy)<3) return;
     moved=true; if(e.cancelable) e.preventDefault();
-    const v=Math.min(88,Math.max(8,t0+dy/innerHeight*100));
-    S.sheetTop=v; sheet.style.top=v+"dvh"; syncResearch(); syncMapH(true);
+    const v=Math.min(88,Math.max(0,t0+dy/innerHeight*100));
+    S.sheetTop=v; sheet.style.top=v+"dvh";
+    sheet.classList.toggle("full",v<=0);   // 렌더 때만 붙이면 드래그로 올렸을 때 모서리가 안 펴진다
+    syncResearch(); syncMapH(true);
   };
   const end=()=>{
     if(!on) return; on=false;
     sheet.style.transition="";
     if(!moved) return;                       // 그냥 탭한 거면 아무 것도 하지 않는다
     S.sheetTop=SHEET_SNAP.reduce((a,b)=>Math.abs(b-S.sheetTop)<Math.abs(a-S.sheetTop)?b:a);
-    sheet.style.top=S.sheetTop+"dvh"; syncResearch(); syncMapH();
+    sheet.style.top=S.sheetTop+"dvh";
+    sheet.classList.toggle("full",S.sheetTop<=0);
+    syncResearch(); syncMapH();
   };
   grab.addEventListener("pointerdown",start);
   grab.addEventListener("pointermove",move);
@@ -2969,7 +3258,7 @@ function nearbyView(){
       <button class="research flat" style="display:${S.nearMoved?"flex":"none"}" onclick="nearSearchHere()">
         ${IC.search}현 지도에서 검색</button>
     </div>
-    <div class="nearsheet" id="nearsheet" style="top:${S.sheetTop}dvh">
+    <div class="nearsheet ${S.sheetTop<=0?"full":""}" id="nearsheet" style="top:${S.sheetTop}dvh">
       <div id="nearsheetInner" style="display:flex;flex-direction:column;min-height:0;flex:1">${nearSheetInner()}</div>
     </div>`;
 }
