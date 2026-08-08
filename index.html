@@ -151,6 +151,9 @@ svg{display:block}
   border:1px solid var(--border);
   padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;width:calc(100% - 40px)}
 .condsum svg{color:var(--accent-tx)}
+/* 펼친 뒤 다시 접을 방법이 없었다 — 펼침은 되는데 되돌릴 수가 없으면 갇힌 느낌이 든다 */
+.condclose{display:block;width:100%;margin-top:11px;padding:10px;text-align:center;
+  font-size:12.5px;font-weight:700;color:var(--sub);background:var(--chip);border-radius:var(--r-m)}
 .condsum svg{width:16px;height:16px;color:var(--sub);flex:0 0 16px}
 .condsum .cg{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .condsum .ar{color:var(--dim);font-size:12px;font-weight:600}
@@ -204,9 +207,12 @@ svg{display:block}
 .hrail::-webkit-scrollbar{display:none}
 .hrail::after{content:"";flex:0 0 8px}
 /* 화면 폭에 딱 맞추면 여기서 끝인 줄 안다 — 다음 카드가 살짝 보이게 남긴다 */
-.rcx{position:relative;display:block;flex:0 0 calc(100% - 64px);margin:0;scroll-snap-align:center;
+.rcx{position:relative;display:block;flex:0 0 calc(100% - 64px);margin:0;scroll-snap-align:start;
+  transform:scale(.93);opacity:.82;transform-origin:center;
+  transition:transform .26s var(--ease),opacity .26s var(--ease);
   border-radius:var(--r-xl);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-md)}
 .rcx .ph{height:264px;border-radius:0}
+.rcx.on{transform:none;opacity:1}
 .hdots{display:flex;gap:6px;justify-content:center;margin-top:12px}
 .hdots span{width:6px;height:6px;border-radius:50%;background:var(--chip-2);
   transition:width .22s var(--ease),background-color .22s var(--ease)}
@@ -1083,7 +1089,7 @@ const ROUTES=[
    note:"세 곳 다 실내라 날씨를 안 타요. 다만 비 오는 날은 카페가 더 붐빕니다",
    stops:[{p:"yeonbang",stay:70,c:"건물 안에서 층만 옮기면 돼요"},
           {p:"onion",stay:70,c:"비 오는 날 오후엔 자리 경쟁이 심해집니다. 우산 둘 데가 마땅치 않아요"}]},
-  {id:"s7",area:"seongsu",transport:"transit",hot:0,likes:203,visits:0,people:2,plan:1,ai:1,fame:"아이돌 성지순례",by:"편집팀",av:"📌",
+  {id:"s7",area:"seongsu",transport:"transit",hot:1,likes:203,visits:0,people:2,plan:1,ai:1,fame:"아이돌 성지순례",by:"편집팀",av:"📌",
    title:"브이로그에 나온 성수 그대로 걷기",mood:"영상에 찍힌 순서대로 도는 루트",
    note:"주말 오후엔 사람이 많아 같은 각도로 찍기 어려워요",
    stops:[{p:"onion",stay:60,c:"2층 창가 자리가 가장 많이 나온 곳. 그만큼 비어 있을 때가 드뭅니다"},
@@ -1365,7 +1371,7 @@ const ROUTES=[
    note:"몰과 전망대가 한 건물이라 이동이 없어요. 주말엔 사람이 많습니다",
    stops:[{p:"lwmall",stay:120,c:"층이 많고 넓어서 목적지를 정하지 않으면 걷기만 합니다"},
           {p:"lwtower",stay:80,c:"이동은 없고 대기만 있어요"}]},
-  {id:"js4",area:"jamsil",transport:"transit",hot:0,likes:214,visits:0,people:4,plan:1,ai:1,fame:"유튜브 화제",by:"편집팀",av:"📌",
+  {id:"js4",area:"jamsil",transport:"transit",hot:1,likes:214,visits:0,people:4,plan:1,ai:1,fame:"유튜브 화제",by:"편집팀",av:"📌",
    title:"롯데월드 하루 통째로 쓰기",mood:"자유이용권 사고 아침부터 들어가는 코스",
    note:"주말은 오픈런이 답이에요. 인기 기구는 대기가 한 시간을 넘습니다",
    stops:[{p:"lotteworld",stay:180,c:"실내와 야외가 나뉘어 있어 비 와도 실내는 됩니다. 대기 시간이 길어 체력 배분이 필요해요"},
@@ -1956,7 +1962,8 @@ function condBar(){
     </div></div>
     <div class="r"><span class="lab">인원</span><div class="ppl">
       ${PEOPLE.map(n=>`<button class="flat ${S.people===n?"on":""}" onclick="S.people=${n};render()">${plabel(n)}</button>`).join("")}
-    </div></div></div>`;
+    </div></div>
+    <button class="condclose flat" onclick="S.condOpen=false;render()">조건 접기</button></div>`;
 }
 /* 8/15(토)만 보면 오늘인지 내일인지 바로 안 잡힌다 — 가까운 날은 상대 표기가 빠르다 */
 function relDay(ymdStr){
@@ -1986,7 +1993,7 @@ function heroRail(list){
   if(!top.length) return {ids:[],html:""};
   return {ids:top.map(r=>r.id), html:`<div class="hrwrap">
     <div class="hrail" id="hrail" onscroll="heroDots()">
-      ${top.map((r,i)=>heroCard(r,i===0?"지금 가장 인기":`인기 ${i+1}위`)).join("")}</div>
+      ${top.map((r,i)=>heroCard(r,i===0?"지금 가장 인기":`인기 ${i+1}위`,i===0)).join("")}</div>
     <div class="hdots" id="hdots">${top.map((_,i)=>`<span class="${i?"":"on"}"></span>`).join("")}</div>
   </div>`};
 }
@@ -1997,13 +2004,15 @@ function heroDots(){
   const step=rail.firstElementChild.offsetWidth+12;
   const i=Math.min(dots.children.length-1,Math.round(rail.scrollLeft/step));
   [...dots.children].forEach((d,k)=>d.classList.toggle("on",k===i));
+  [...rail.children].forEach((c,k)=>c.classList.toggle("on",k===i));
 }
 
 /* 히어로 카드 — 레일 한 칸. 정보는 일반 카드와 같고 크기·배치만 다르다.
    같은 크기 카드만 나열하면 어디부터 봐야 할지가 없어서 화면이 밋밋해진다. */
-function heroCard(r,label){
+function heroCard(r,label,active){
   const c=computeRoute(r,iso()), t=TRANSPORT[r.transport], hp=heroPlace(r);
-  return `<button class="rcx rise" onclick="go('route','${r.id}')">
+  /* rise 애니메이션은 transform을 both로 덮어써서 활성/비활성 scale이 먹지 않는다 — 히어로에는 안 쓴다 */
+  return `<button class="rcx ${active?"on":""}" onclick="go('route','${r.id}')">
     ${ph(hp.img,CT[hp.c]||"park",r.id.charCodeAt(1)*11,"",aiTag(r))}
     <div class="rcxov">
       <span class="rcxrank">${IC.fire}${label}</span>
@@ -2061,8 +2070,9 @@ function sections(){
       rows:list.filter(r=>r.hot)},
     fame:{title:"인터넷에서 유명한 루트",kick:"화제의 루트",desc:"아이돌 성지순례 · 애니 배경지 · 외국인 여행객 인기 루트",
       rows:list.filter(r=>r.fame)},
-    taste:{title:"전시랑 카페 좋아하시죠",kick:"취향 기반",desc:"그동안 본 루트를 보고 고른 루트예요",
-      rows:list.filter(r=>r.stops.some(s=>["전시","카페"].includes(PLACES[s.p].c)))},
+    /* '취향 기반'은 뺐다 — 조건이 "전시나 카페가 하나라도 있으면"이라 사실상 전부 걸렸다.
+       실제 취향 데이터가 없는데 개인화한 척하면 나머지 추천의 신뢰까지 깎는다.
+       진짜 취향 추천은 다녀온 곳·좋아요가 쌓인 뒤에 만든다. */
     _list:list,
     near:{title:fv.length?`${fv.map(f=>AREAS.find(a=>a.id===f).n).join(" · ")}에서 가까운`:"즐겨찾기 근처",
       kick:"즐겨찾기 근처",desc:"눌러둔 지역에서 걸어서·한 정거장 거리",
@@ -2079,9 +2089,11 @@ function home(){
   const hero=heroRail(S2._list);
   hero.ids.forEach(id=>shown.add(id));
   let any=false;
-  const sec=(key,s,limit)=>{
+  /* 가로 레일은 카드가 1개만 남으면 오류처럼 보인다 — 최소 2개일 때만 그린다.
+     히어로가 상위 인기 루트를 먼저 가져가므로 이 상황이 실제로 발생했다(hot 3개 중 2개를 히어로가 가져감). */
+  const sec=(key,s,limit,min=2)=>{
     const rows=s.rows.filter(r=>!shown.has(r.id));
-    if(!rows.length) return "";
+    if(rows.length<min) return "";
     rows.slice(0,limit).forEach(r=>shown.add(r.id)); any=true;
     return `<div class="sec"><div>
       <div class="kick">${s.kick}</div><h2>${s.title}</h2><p>${s.desc}</p></div>
@@ -2116,9 +2128,10 @@ function home(){
           style="display:block">${ph(a.img,a.tone,a.n.length*3)}
           <span class="st">${f?IC.star:IC.starO}</span></button>
         <div class="nm">${a.n}</div></div>`;}).join("")}</div>
-    ${sec("hot",S2.hot,2)}${sec("fame",S2.fame,4)}${sec("taste",S2.taste,4)}
+    ${sec("hot",S2.hot,2)}
     ${S.favs.size?sec("near",S2.near,4)
       :`<div class="empty"><div class="ic">${IC.star}</div>위에서 자주 가는 지역을 눌러보세요.<br>그 근처 루트를 여기에 모아드려요.</div>`}
+    ${sec("fame",S2.fame,4)}
     ${!any?`<div class="empty"><div class="ic">${IC.search}</div>
       이 조건에 맞는 루트가 없어요.
       <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
