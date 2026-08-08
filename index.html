@@ -152,8 +152,16 @@ svg{display:block}
   padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;width:calc(100% - 40px)}
 .condsum svg{color:var(--accent-tx)}
 /* 펼친 뒤 다시 접을 방법이 없었다 — 펼침은 되는데 되돌릴 수가 없으면 갇힌 느낌이 든다 */
-.condclose{display:block;width:100%;margin-top:11px;padding:10px;text-align:center;
-  font-size:12.5px;font-weight:700;color:var(--sub);background:var(--chip);border-radius:var(--r-m)}
+/* 접기는 값을 고르는 버튼이 아니다 — 칩처럼 생기면 인원 선택과 구분이 안 된다.
+   구분선 위 텍스트형으로 두어 '닫기'라는 성격이 드러나게 한다. */
+.condclose{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;
+  margin-top:12px;padding:9px 0 2px;background:none;border-radius:0;
+  box-shadow:inset 0 1px 0 var(--border);
+  font-size:12px;font-weight:700;color:var(--dim)}
+.condclose svg{width:13px;height:13px}
+/* 조건 안에 들어온 토글 행 */
+.cond .r.sw2{justify-content:space-between}
+.cond .r.sw2 .lab{width:auto;flex:1}
 .condsum svg{width:16px;height:16px;color:var(--sub);flex:0 0 16px}
 .condsum .cg{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .condsum .ar{color:var(--dim);font-size:12px;font-weight:600}
@@ -202,12 +210,14 @@ svg{display:block}
 /* 히어로 카드 — '지금 가장 인기 있는 루트' 하나를 크게 세운다.
    카드 크기를 히어로 > 와이드 > 레일 세 단계로 두어 화면에 위계를 만든다. */
 .hrwrap{margin-top:14px}
-.hrail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 20px;
+/* 가운데 정렬 캐러셀 — 좌우 여백이 (컨테이너 - 카드)/2 여야 첫·마지막 카드도 가운데에 온다.
+   레일에 좌우 40px 패딩을 주면 내부 폭 = 화면폭-80 이고, 카드를 flex:0 0 100%로 두면 그 폭에 딱 맞는다.
+   ⚠️ 카드 폭을 calc(100% - N)로 쓰면 100%가 이미 패딩을 뺀 값이라 두 번 빠진다. */
+.hrail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 40px;
   scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;overscroll-behavior-x:contain}
 .hrail::-webkit-scrollbar{display:none}
-.hrail::after{content:"";flex:0 0 8px}
 /* 화면 폭에 딱 맞추면 여기서 끝인 줄 안다 — 다음 카드가 살짝 보이게 남긴다 */
-.rcx{position:relative;display:block;flex:0 0 calc(100% - 64px);margin:0;scroll-snap-align:start;
+.rcx{position:relative;display:block;flex:0 0 100%;margin:0;scroll-snap-align:center;
   transform:scale(.93);opacity:.82;transform-origin:center;
   transition:transform .26s var(--ease),opacity .26s var(--ease);
   border-radius:var(--r-xl);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-md)}
@@ -734,6 +744,30 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   border-radius:var(--r-m);padding:11px 12px;font-size:12px;font-weight:700;color:var(--sub)}
 .pstat b{margin-left:auto;font-size:14.5px;font-weight:700;color:var(--fg)}
 .pstat svg{width:14px;height:14px;flex:0 0 14px;color:var(--accent-tx)}
+/* ── 프로필 ── */
+/* 활동 점수는 숫자로 노출하지 않는다(설계서) — 배지 구간과 진행 바로만 보여준다 */
+.plv{margin-top:14px;padding-top:13px;box-shadow:inset 0 1px 0 var(--border)}
+.plvhd{display:flex;align-items:baseline;gap:6px;font-size:12.5px;font-weight:700}
+.plvhd b{font-size:14px;color:var(--accent-tx)}
+.plvhd span{margin-left:auto;font-size:11.5px;color:var(--dim);font-weight:600}
+.plvbar{height:7px;border-radius:999px;background:var(--chip-2);margin-top:8px;overflow:hidden}
+.plvbar i{display:block;height:100%;border-radius:999px;background:var(--accent);
+  transition:width .5s var(--ease)}
+.pmenu{margin:12px 20px 0;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r-xl);box-shadow:var(--shadow-sm);overflow:hidden}
+.pmi{display:flex;align-items:center;gap:11px;width:100%;padding:14px 15px;min-height:52px;
+  font-size:14px;font-weight:700}
+.pmi+.pmi{box-shadow:inset 0 1px 0 var(--border)}
+.pmi>svg{width:18px;height:18px;color:var(--accent-tx);flex:0 0 18px}
+.pmi .pmt{flex:1;min-width:0;text-align:left}
+.pmi .pmv{font-size:13px;color:var(--sub);font-weight:700}
+.pmi .pmc{color:var(--dim);display:flex;align-items:center}
+.pmi .pmc svg{width:16px;height:16px}
+.pseg{display:flex;gap:6px;flex:0 0 auto}
+.pseg button{background:var(--chip);border-radius:999px;padding:7px 13px;font-size:12px;
+  font-weight:700;color:var(--sub)}
+.pseg button.on{background:var(--accent);color:var(--on-accent);box-shadow:var(--shadow-xs)}
+.pfoot{margin:16px 20px 0;font-size:11.5px;color:var(--dim);line-height:1.7;text-align:center}
 /* 프로필 카운트 — 트위터처럼 숫자를 눌러 이동 */
 .cnts{display:flex;gap:6px;margin-top:14px}
 .cnt{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--chip);
@@ -856,6 +890,8 @@ const IC={
   users:S_('<circle cx="9.4" cy="8.4" r="3.2"/><path d="M3.4 19.4c.5-3.2 3-5 6-5s5.5 1.8 6 5"/><path d="M16 5.6a3.1 3.1 0 0 1 0 5.7M17.2 14.9c2.1.5 3.2 2.2 3.5 4.5"/>'),
   check:S_('<path d="M5 12.6 9.8 17.2 19 7.4"/>'),
   flag:S_('<path d="M6 21V4.2h12l-2.4 4.2L18 12.6H6"/>'),
+  next:S_('<path d="M9.5 6 15.5 12l-6 6"/>'),
+  up:S_('<path d="M6 14.5 12 8.5l6 6"/>'),
   cal:S_('<rect x="3.6" y="5.2" width="16.8" height="15.2" rx="3"/><path d="M3.6 10h16.8M8.4 3.4v3.4M15.6 3.4v3.4"/>'),
   grip:S_('<path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/>'),
   bus:S_('<rect x="4.4" y="3.8" width="15.2" height="12.6" rx="2.6"/><path d="M4.4 11.6h15.2M8.2 3.8v-.4h7.6v.4"/><circle cx="8.2" cy="14" r=".9" fill="currentColor" stroke="none"/><circle cx="15.8" cy="14" r=".9" fill="currentColor" stroke="none"/><path d="M7.2 16.4 6 20.4M16.8 16.4 18 20.4"/>'),
@@ -1963,7 +1999,10 @@ function condBar(){
     <div class="r"><span class="lab">인원</span><div class="ppl">
       ${PEOPLE.map(n=>`<button class="flat ${S.people===n?"on":""}" onclick="S.people=${n};render()">${plabel(n)}</button>`).join("")}
     </div></div>
-    <button class="condclose flat" onclick="S.condOpen=false;render()">조건 접기</button></div>`;
+    <div class="r sw2"><span class="lab">안 가본 곳만 보기</span>
+      <button class="flat" aria-label="안 가본 곳만 보기" onclick="S.onlyNew=!S.onlyNew;render()">
+        <span class="sw ${S.onlyNew?"on":""}"></span></button></div>
+    <button class="condclose flat" onclick="S.condOpen=false;render()">${IC.up}조건 접기</button></div>`;
 }
 /* 8/15(토)만 보면 오늘인지 내일인지 바로 안 잡힌다 — 가까운 날은 상대 표기가 빠르다 */
 function relDay(ymdStr){
@@ -1976,7 +2015,7 @@ function condFolded(){
   const t=S.transport==="all"?"전체":TRANSPORT[S.transport].label;
   return S.condOpen ? condBar()
     : `<button class="condsum flat" onclick="S.condOpen=true;render()">
-        ${IC.cal}<span class="cg">${relDay(S.date)||`${d.getMonth()+1}/${d.getDate()}`}(${DAYS[d.getDay()]}) ${hm(toMin(S.time))} · ${t} · ${plabel(S.people)}명</span>
+        ${IC.cal}<span class="cg">${relDay(S.date)||`${d.getMonth()+1}/${d.getDate()}`}(${DAYS[d.getDay()]}) ${hm(toMin(S.time))} · ${t} · ${plabel(S.people)}명${S.onlyNew?" · 안 가본 곳만":""}</span>
         <span class="ar">조건 바꾸기</span></button>`;
 }
 /* AI가 초안을 짠 루트 표시. 데이터에 ai:1이 있으면 작성자명과 무관하게 붙는다
@@ -2001,8 +2040,15 @@ function heroRail(list){
 function heroDots(){
   const rail=document.getElementById("hrail"), dots=document.getElementById("hdots");
   if(!rail||!dots||!rail.firstElementChild) return;
-  const step=rail.firstElementChild.offsetWidth+12;
-  const i=Math.min(dots.children.length-1,Math.round(rail.scrollLeft/step));
+  /* scrollLeft/step 방식은 정렬(start/center)에 따라 어긋난다 —
+     레일 뷰포트 중앙에 가장 가까운 카드를 고르면 정렬 방식과 무관하게 맞는다 */
+  const mid=rail.scrollLeft+rail.clientWidth/2;
+  let i=0,bd=Infinity;
+  [...rail.children].forEach((c,k)=>{
+    const d=Math.abs((c.offsetLeft+c.offsetWidth/2)-mid);
+    if(d<bd){bd=d;i=k;}
+  });
+  i=Math.min(dots.children.length-1,i);
   [...dots.children].forEach((d,k)=>d.classList.toggle("on",k===i));
   [...rail.children].forEach((c,k)=>c.classList.toggle("on",k===i));
 }
@@ -2116,9 +2162,6 @@ function home(){
     <div class="headline"><h1>우리, 어디 갈래?</h1>
       <div class="note">조건만 정하면 오늘 실제로 갈 수 있는 루트만 보여드려요</div></div>
     ${condFolded()}
-    <button class="tgl flat" onclick="S.onlyNew=!S.onlyNew;render()">
-      <div class="tx">안 가본 곳만 보기</div>
-      <span class="sw ${S.onlyNew?"on":""}"></span></button>
     ${hero.html}
     <div class="sec"><div><h2>어디로 가시나요?</h2>
       <p>자주 가는 곳을 눌러두면 근처 루트를 먼저 보여줘요</p></div></div>
@@ -3204,13 +3247,28 @@ function sheetDrag(grab){
 
 /* ═════ 프로필 ═════ */
 function myRoutes(){ return S.myRoutes.map(id=>ROUTES.find(r=>r.id===id)).filter(Boolean); }
+/* 활동 배지 — 점수는 저장하지 않고 매번 계산한다(설계서 §4). 숫자 대신 구간으로만 보여준다 */
+const BADGES=[{n:"새싹",min:0},{n:"탐험가",min:6},{n:"길잡이",min:18},{n:"동네 마스터",min:40}];
+function activityScore(){
+  return myRoutes().length*3 + S.visited.size*2 + S.saved.size + S.follows.size;
+}
+/* 점수는 숫자로 노출하지 않는다(설계서 §4) — 남은 만큼을 '할 일'로 바꿔서 보여준다 */
+function nextHint(next,left){
+  if(left<=2) return `${next.n}까지 거의 다 왔어요`;
+  const routes=Math.ceil(left/3);
+  return `루트 ${routes}개 더 만들면 ${next.n}`;
+}
 function profileView(){
   const mine=myRoutes();
   const regrams=mine.reduce((a,r)=>a+(r.regrams||0),0);
+  const sc=activityScore();
+  const idx=BADGES.reduce((a,b,i)=>sc>=b.min?i:a,0);
+  const cur=BADGES[idx], next=BADGES[idx+1];
+  const pct=next?Math.min(100,Math.round((sc-cur.min)/(next.min-cur.min)*100)):100;
   return `<div class="top"><h1>내 프로필</h1></div>
     <div class="card prof rise" style="margin-top:10px">
       <div class="phd"><span class="pav">🙂</span>
-        <div class="pnm"><b>나</b><span>신입 배지 · 이번 달 활동</span></div>
+        <div class="pnm"><b>나</b><span>${cur.n} · 이번 달 활동</span></div>
         <button class="mini p" onclick="go('create')">${IC.pen}루트 만들기</button></div>
       <div class="cnts">
         <button class="cnt flat" onclick="document.getElementById('myfeed')?.scrollIntoView({behavior:'smooth'})">
@@ -3219,21 +3277,39 @@ function profileView(){
         <button class="cnt flat"><b>0</b><span>팔로워</span></button>
         <button class="cnt flat" onclick="go('saved')"><b>${S.saved.size}</b><span>저장</span></button>
       </div>
-      <div class="pstat">
-        <span>${IC.pin}다녀온 곳<b>${S.visited.size}</b></span>
-        <span>${IC.reroute}받은 리루트<b>${regrams}</b></span>
-      </div></div>
+      <div class="plv">
+        <div class="plvhd">${IC.star}<b>${cur.n}</b>
+          <span>${next?nextHint(next,next.min-sc):"최고 등급이에요"}</span></div>
+        <div class="plvbar"><i style="width:${pct}%"></i></div>
+      </div>
+    </div>
     ${S.folLab==="팔로잉"&&S.follows.size?`<div class="sec"><div><h2>팔로잉 ${S.follows.size}</h2></div>
       <button class="more flat" onclick="S.folLab='';render()">닫기</button></div>
       <div class="chips">${[...S.follows].map(n=>`<button class="chip2 one flat" onclick="go('author','${n}')">${n}</button>`).join("")}</div>`:""}
+    <div class="pmenu">
+      <button class="pmi flat" onclick="go('saved')">${IC.bmk}
+        <span class="pmt">저장한 루트</span><span class="pmv">${S.saved.size}</span>
+        <span class="pmc">${IC.next}</span></button>
+      <button class="pmi flat" onclick="go('saved')">${IC.pin}
+        <span class="pmt">다녀온 곳</span><span class="pmv">${S.visited.size}</span>
+        <span class="pmc">${IC.next}</span></button>
+      <button class="pmi flat" onclick="document.getElementById('myfeed')?.scrollIntoView({behavior:'smooth'})">${IC.reroute}
+        <span class="pmt">받은 리루트</span><span class="pmv">${regrams}</span>
+        <span class="pmc">${IC.next}</span></button>
+    </div>
+    <div class="pmenu">
+      <div class="pmi">${IC.bulb}<span class="pmt">화면 테마</span>
+        <span class="pseg">
+          <button class="flat ${theme()==="light"?"on":""}" onclick="setTheme('light')">밝게</button>
+          <button class="flat ${theme()==="dark"?"on":""}" onclick="setTheme('dark')">어둡게</button>
+        </span></div>
+    </div>
     <div class="sec" id="myfeed"><div><h2>내 루트 ${mine.length}</h2><p>직접 만들거나 리루트한 루트가 여기에 쌓여요</p></div></div>
     ${mine.length?`<div class="col">${mine.map((r,i)=>routeCard(r,"wide",i)).join("")}</div>`
-      :`<div class="empty"><div class="ic">${IC.pen}</div>아직 만든 루트가 없어요.<br>가운데 '만들기'에서 첫 루트를 만들어보세요.</div>`}
-    <div class="card rise" style="margin-top:10px">
-      <div class="r"><span class="lab">화면 테마</span><div class="seg">
-        <button class="flat ${theme()==="light"?"on":""}" onclick="setTheme('light')">밝게</button>
-        <button class="flat ${theme()==="dark"?"on":""}" onclick="setTheme('dark')">어둡게</button>
-      </div></div></div>`;
+      :`<div class="empty"><div class="ic">${IC.pen}</div>아직 만든 루트가 없어요.<br>아래 '만들기'에서 첫 루트를 만들어보세요.
+        <div style="margin-top:13px"><button class="mini p" onclick="go('create')">루트 만들기</button></div></div>`}
+    <div class="pfoot">스팟스 프로토타입 · 지도와 장소 검색은 카카오<br>사진 출처: 위키미디어 공용</div>
+    <div style="height:20px"></div>`;
 }
 /* 테마 — 기본은 밝게. 고른 값은 브라우저에 기억시킨다. */
 const theme=()=>document.documentElement.dataset.theme==="dark"?"dark":"light";
