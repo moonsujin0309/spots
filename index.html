@@ -907,15 +907,56 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   border-radius:var(--r-m);padding:10px 4px}
 .cnt b{font-size:17px;font-weight:700;letter-spacing:-.03em}
 .cnt span{font-size:11px;font-weight:700;color:var(--sub)}
+/* 따라가기 — 진행 레일. 몇 곳 중 몇 번째인지가 지도를 안 봐도 읽혀야 한다 */
+.prail{display:flex;align-items:center;gap:11px;margin:13px 24px 0}
+.prls{display:flex;align-items:center;flex:1;min-width:0}
+.prl{width:26px;height:26px;flex:0 0 26px;border-radius:50%;background:var(--chip);color:var(--sub);
+  display:grid;place-items:center;font-size:12px;font-weight:700}
+.prl svg{width:14px;height:14px}
+.prl.done{background:var(--accent);color:var(--on-accent)}
+/* 현재 항목 표시 — 배경색으로는 '들름'과 구분이 안 돼서 바탕색을 한 겹 끼운 링으로 두른다 */
+.prl.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent-dk)}
+.prld{flex:1;height:2px;background:var(--line);min-width:5px}
+.prp{font-size:11.5px;font-weight:700;color:var(--dim);white-space:nowrap}
+.prp b{color:var(--fg);font-variant-numeric:tabular-nums}
 /* 따라가기 — 전체 목록. 누른 곳이 지도에서 강조된다 */
-.plst{margin:12px 24px 0;display:flex;flex-direction:column}
-.pitem{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:var(--card);
-  border:1.5px solid var(--line);border-radius:var(--r-l);padding:10px 12px;box-shadow:var(--e1)}
+.plst{margin:11px 24px 0;display:flex;flex-direction:column}
+/* ⚠️ 겉을 button으로 두면 안 된다 — 안에 체크 버튼과 길찾기 링크가 들어가는데
+   button 안의 button/a는 유효하지 않아 파서가 바깥을 끊고 자식을 형제로 올려버린다.
+   겉은 div, 누르는 영역만 .pbody 버튼으로 둔다. */
+.pitem{display:flex;align-items:stretch;width:100%;background:var(--card);overflow:hidden;
+  border:1.5px solid var(--line);border-radius:var(--r-l);box-shadow:var(--e1)}
 .pitem.on{border-color:var(--accent);box-shadow:0 3px 0 var(--accent-dk)}
+.pbody{display:flex;align-items:center;gap:11px;flex:1;min-width:0;text-align:left;padding:10px 4px 10px 12px}
 .pitem .ph{width:52px;height:52px;border-radius:var(--r-m);flex:0 0 52px}
 .pno{width:22px;height:22px;flex:0 0 22px;border-radius:50%;background:var(--chip);color:var(--sub);
   display:grid;place-items:center;font-size:11px;font-weight:700}
+.pno svg{width:13px;height:13px}
 .pitem.on .pno{background:var(--accent);color:var(--on-accent)}
+.pitem.been .pno{background:var(--accent);color:var(--on-accent)}
+/* 오른쪽 세로 묶음 — 체크(들렀다)와 길찾기(지금 여기서 간다). 밖에서 제일 많이 누르는 둘 */
+.pact{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  padding:8px 9px 8px 3px;flex:0 0 auto}
+.pchk{width:34px;height:34px;border-radius:50%;background:var(--chip);color:var(--dim);
+  display:grid;place-items:center}
+.pchk svg{width:17px;height:17px}
+.pchk.on{background:var(--accent);color:var(--on-accent)}
+.pgo{display:inline-flex;align-items:center;gap:2px;font-size:10.5px;font-weight:700;
+  color:var(--accent-tx);white-space:nowrap}
+.pgo svg{width:12px;height:12px}
+/* 스팟 코멘트 — 상세에만 있던 걸 가져왔다. 두 줄 넘으면 자른다 */
+.pq{font-size:11.5px;font-weight:600;color:var(--sub);line-height:1.45;margin-top:3px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pitem .tags{margin-top:4px}
+/* 끝맺음 — 캘린더 담기와 완주 */
+.pend{margin:14px 24px 0;display:flex;flex-direction:column;gap:10px}
+.pend>.mini{justify-content:center;min-height:46px}
+.pdone{display:flex;align-items:center;gap:10px;background:var(--accent-2);border-radius:var(--r-l);
+  padding:13px 14px;color:var(--accent-tx)}
+.pdone svg{width:18px;height:18px;flex:0 0 18px}
+.pdone b{display:block;font-size:13.5px;font-weight:700}
+.pdone em{font-style:normal;font-size:11.5px;font-weight:600;opacity:.85}
+.pdone .mini{margin-left:auto;flex:0 0 auto}
 .pg{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .pt{font-size:11.5px;font-weight:700;color:var(--accent-tx);font-variant-numeric:tabular-nums}
 .pn{font-size:15px;font-weight:700;letter-spacing:-.035em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -2426,6 +2467,10 @@ const googleRouteURL=(stops,transport)=>{
 const kkPt=p=>`${encodeURIComponent(p.n)},${p.lat},${p.lng}`;
 const KK_MODE={walk:"walk",bus:"traffic",subway:"traffic",mix:"traffic",car:"car"};
 const kakaoPlaceURL=p=>`https://map.kakao.com/link/map/${kkPt(p)}`;
+/* 출발지를 안 넣으면 지도앱이 '현재 위치'를 쓴다.
+   구간 길찾기(이전 스팟 → 다음 스팟)는 계획할 때 맞는 값이고,
+   실제로 밖에 나와 있을 땐 "지금 여기서 거기까지"가 필요하다. 둘 다 둔다. */
+const kakaoToURL=p=>`https://map.kakao.com/link/to/${kkPt(p)}`;
 const kakaoLegURL=(a,b,mode)=>`https://map.kakao.com/link/by/${KK_MODE[mode]||"traffic"}/${kkPt(a)}/${kkPt(b)}`;
 // 전체 경로는 경유지를 받는 수단(차·도보)만 가능. 대중교통은 구간별로 연다.
 const kakaoAllURL=(stops,transport)=>
@@ -2433,7 +2478,11 @@ const kakaoAllURL=(stops,transport)=>
 function mapSVG(stops,h=270,focus=-1){
   const W=480,pad=62, uid="m"+Math.random().toString(36).slice(2,8);
   const pts=stops.map(s=>({lat:s.place.lat,lng:s.place.lng}));
-  const la=pts.map(p=>p.lat), ln=pts.map(p=>p.lng);
+  /* 구간별 실제 경로 — 받아둔 것만 쓴다. 없으면 그 구간만 예전처럼 곡선으로 잇는다.
+     화면 범위는 스팟만이 아니라 경로 전체를 감싸야 한다 — 안 그러면 길이 바깥으로 잘린다. */
+  const RP=stops.slice(0,-1).map((s,i)=>s.leg?cachedPath(s.place,stops[i+1].place,s.leg.mode):null);
+  const all=pts.concat(...RP.filter(Boolean).map(r=>r.map(q=>({lat:q[0],lng:q[1]}))));
+  const la=all.map(p=>p.lat), ln=all.map(p=>p.lng);
   const cLat=(Math.min(...la)+Math.max(...la))/2, cLng=(Math.min(...ln)+Math.max(...ln))/2;
   const sLat=Math.max(Math.max(...la)-Math.min(...la),.005), sLng=Math.max(Math.max(...ln)-Math.min(...ln),.005);
   const X=p=>pad+(p.lng-(cLng-sLng/2))/sLng*(W-pad*2), Y=p=>pad+((cLat+sLat/2)-p.lat)/sLat*(h-pad*2);
@@ -2443,9 +2492,15 @@ function mapSVG(stops,h=270,focus=-1){
   for(let gx=0;gx<=W;gx+=40) land+=`<line x1="${gx}" y1="0" x2="${gx}" y2="${h}" stroke="var(--line)" stroke-width="1" opacity=".6"/>`;
   for(let gy=0;gy<=h;gy+=40) land+=`<line x1="0" y1="${gy}" x2="${W}" y2="${gy}" stroke="var(--line)" stroke-width="1" opacity=".6"/>`;
 
-  // 이동 경로는 실제 도로 경로가 아니므로 직선 대신 완만한 곡선으로 그린다(도식)
+  /* 실제 경로가 있는 구간은 그대로 잇는다.
+     못 받은 구간(지하철·응답 실패)은 예전처럼 완만한 곡선 — '이건 도식이다'라는 표시로 남긴다. */
   let path="M"+xy[0][0].toFixed(1)+" "+xy[0][1].toFixed(1);
   for(let i=1;i<xy.length;i++){
+    const rp=RP[i-1];
+    if(rp&&rp.length>1){
+      path+=rp.map(q=>` L${X({lat:q[0],lng:q[1]}).toFixed(1)} ${Y({lat:q[0],lng:q[1]}).toFixed(1)}`).join("");
+      continue;
+    }
     const a=xy[i-1], b=xy[i];
     const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2;
     const dx=b[0]-a[0], dy=b[1]-a[1], len=Math.hypot(dx,dy)||1;
@@ -3672,50 +3727,136 @@ function addStop(k){ S.draft.stops.push({p:k,stay:60,c:""});
   S.q=""; render(); }
 // 목록에 없는 곳 추가는 '지도에서 고르기 → 지도에 직접 놓기'로 통합됐다
 
-/* ═════ 따라가기 (저장 직후·상세에서 진입) ═════ */
+/* ═════ 따라가기 (저장 직후·상세에서 진입) ═════
+   상세는 '갈지 말지 고르는' 화면이고, 여기는 '이미 정하고 나온' 화면이다.
+   그래서 상세엔 없는 게 여기 다 있다 — 도착 시각, 구간 길찾기, 지금 위치에서 가는 길, 들른 곳 체크.
+   반대로 좋아요·팔로우처럼 밖에서 안 누르는 건 여기 없다.
+
+   ⚠️ 예전엔 시각·길찾기는 여기, 스팟 코멘트는 상세로 '필드를 갈라' 뒀다. 두 화면이 겹쳐 보이는 걸
+      피하려던 건데 어느 쪽도 혼자서는 완결되지 않았다. 지금은 '무엇을 보여주냐'가 아니라
+      '어떤 상황에서 보냐'로 나눈다 — 정보는 양쪽 다 갖춘다. */
+function playProg(c){
+  const done=c.stops.filter(x=>S.visited.has(x.p)).length;
+  return `들른 곳 <b>${done} / ${c.stops.length}</b>`;
+}
+function playRail(c,i){
+  return c.stops.map((s,k)=>`<button class="prl ${k===i?"on":""} ${S.visited.has(s.p)?"done":""}"
+      onclick="playFocus(${k})" aria-label="${k+1}번째 ${s.place.n}">${S.visited.has(s.p)?IC.check:k+1}</button>`)
+    .join(`<i class="prld"></i>`);
+}
+function playRows(c,i){
+  return c.stops.map((s,k)=>{
+    const bad=["closed","early","late"].includes(s.status), next=c.stops[k+1], been=S.visited.has(s.p);
+    /* 밖에서 볼 땐 '못 들어갈 수도 있는 이유'가 제일 급하다 — 코멘트보다 위에 둔다 */
+    const tags=[s.status==="ok"?0:[bad?"bad":"warn",s.why],
+      s.place.wait?["warn","웨이팅 있음"]:0].filter(Boolean);
+    return `<div class="pitem ${k===i?"on":""} ${been?"been":""}">
+        <button class="pbody" onclick="playFocus(${k})">
+          <span class="pno">${been?IC.check:k+1}</span>
+          ${ph(s.place.img,CT[s.place.c]||"park",s.place.n.length)}
+          <span class="pg">
+            <span class="pt">${hm(s.arrive)} – ${hm(s.leave)}</span>
+            <span class="pn">${s.place.n}</span>
+            <span class="pc">${s.place.c} · 1인 ${wonRange(s.place.cost[0],s.place.cost[1])}</span>
+            ${tags.length?`<span class="tags">${tags.map(([t,x])=>
+              `<span class="tg ${t}">${x}</span>`).join("")}</span>`:""}
+            ${s.c?`<span class="pq">"${s.c}"</span>`:""}
+          </span>
+        </button>
+        <div class="pact">
+          <button class="pchk ${been?"on":""}" onclick="playCheck(${k})"
+            aria-label="${s.place.n} ${been?"안 들렀음으로":"들렀음으로"} 표시">${IC.check}</button>
+          <a class="pgo" href="${kakaoToURL(s.place)}" target="_blank" rel="noopener">${IC.pin}여기로</a>
+        </div>
+      </div>
+      ${next?`<div class="pleg">${IC[MODE[s.leg.mode].ic]}
+        <span>${legText(s.leg)} · ${s.leg.km.toFixed(1)}km</span>
+        <a class="mini p" href="${kakaoLegURL(s.place,next.place,s.leg.mode)}" target="_blank"
+           rel="noopener">구간 길찾기</a></div>`:""}`;
+  }).join("");
+}
+function playEnd(r,c){
+  const all=c.stops.every(x=>S.visited.has(x.p));
+  return `<button class="mini flat" onclick="exportICS()">${IC.cal}캘린더에 넣기</button>
+    ${all?`<div class="pdone">${IC.flag}<div><b>${c.stops.length}곳 다 들렀어요</b>
+      <em>프로필 &gt; 다녀온 곳에 기록됐어요</em></div>
+      <button class="mini p" onclick="quote('${r.id}')">내 버전으로</button></div>`:""}`;
+}
 function playView(){
   const r=S.playRoute;
   if(!r) { S.view="home"; return home(); }
   const c=computeRoute(r,`${r.date}T${r.time}:00`);
   const i=Math.max(0,Math.min(S.playIdx,c.stops.length-1));
-  /* 예전엔 한 곳씩 넘겨봐야 했다(이전/다음/지금). 전체가 안 보여서 불편했다.
-     지금은 전부 펼쳐 두고, 누른 곳만 지도에서 강조한다. */
-  const rows=c.stops.map((s,k)=>{
-    const bad=["closed","early","late"].includes(s.status), next=c.stops[k+1];
-    return `<button class="pitem flat ${k===i?"on":""}" onclick="playFocus(${k})">
-        <span class="pno">${k+1}</span>
-        ${ph(s.place.img,CT[s.place.c]||"park",s.place.n.length)}
-        <span class="pg">
-          <span class="pt">${hm(s.arrive)} – ${hm(s.leave)}</span>
-          <span class="pn">${s.place.n}</span>
-          <span class="pc">${s.place.c} · 1인 ${wonRange(s.place.cost[0],s.place.cost[1])}
-            ${s.status==="ok"?"":` · <b style="color:var(--${bad?"warn":"accent-tx"})">${s.why}</b>`}</span>
-        </span>
-        <a class="pmap" href="${kakaoPlaceURL(s.place)}" target="_blank" rel="noopener"
-           onclick="event.stopPropagation()">${IC.pin}</a>
-      </button>
-      ${next?`<div class="pleg">${IC[MODE[s.leg.mode].ic]}
-        <span>${legText(s.leg)} · ${s.leg.km.toFixed(1)}km</span>
-        <a class="mini p" href="${kakaoLegURL(s.place,next.place,s.leg.mode)}" target="_blank"
-           rel="noopener">길찾기</a></div>`:""}`;
-  }).join("");
   return `<div class="top"><button class="mini flat" onclick="back()" style="margin-bottom:10px">${IC.back}뒤로</button>
       <h1 style="font-size:20px">${r.title}</h1>
       <div class="note">${hm(c.startAt)} 출발 · ${c.stops.length}곳 · ${durRange(c.totalLo,c.totalHi)}</div></div>
     <div class="map" style="margin-top:8px">${hasL()?`<div class="lmap" id="pmap" style="height:300px"></div>`:mapSVG(c.stops,300,i)}
-      <div class="ft">아래 목록을 누르면 지도에서 그 곳을 보여줘요</div></div>
-    <div class="plst" id="plst">${rows}</div>
-    <div class="hint">소요 시간과 거리는 <b>직선거리 기준 예상치</b>예요 — 걷기·대기 시간을 더해 잡은 값이라
-      실제 경로와 다를 수 있어요. 정확한 시간은 각 구간의 <b>길찾기</b>에서 확인하세요.</div>`;
+      <div class="ft">지도 핀과 아래 목록은 서로 따라가요 · 선은 실제 걷는 길이에요</div></div>
+    <div class="prail"><div class="prls" id="prail">${playRail(c,i)}</div>
+      <span class="prp" id="pprog">${playProg(c)}</span></div>
+    <div class="plst" id="plst">${playRows(c,i)}</div>
+    <div class="pend" id="pend">${playEnd(r,c)}</div>
+    <div class="hint">지도의 선은 <b>실제 길</b>을 따라 그리지만, 소요 시간·거리 숫자는
+      <b>직선거리 기준 예상치</b>예요 — 걷기·대기 시간을 더해 잡은 값이라 실제와 다를 수 있어요.
+      정확한 건 각 구간의 <b>길찾기</b>에서 확인하세요.</div>`;
 }
 /* 지도를 다시 만들지 않고 강조만 옮긴다. 새로 만들면 화면이 '툭' 끊긴다. */
 function playFocus(k){
   S.playIdx=k;
   document.querySelectorAll("#plst .pitem").forEach((el,n)=>el.classList.toggle("on",n===k));
+  document.querySelectorAll("#prail .prl").forEach((el,n)=>el.classList.toggle("on",n===k));
   document.querySelectorAll("#pmap .lpin").forEach((el,n)=>el.classList.toggle("dim",n!==k));
   const r=S.playRoute; if(!r||!LM.pmap) return;
   const c=computeRoute(r,`${r.date}T${r.time}:00`), p=c.stops[k].place;
   LM.pmap.panTo(LL(p.lat,p.lng));
+}
+/* 들른 곳 체크 — 여기서 누른 게 곧 프로필의 '다녀온 곳'이 된다.
+   render()를 부르면 지도가 새로 만들어져 끊기므로 목록·레일·끝맺음만 다시 그린다. */
+function playCheck(k){
+  const r=S.playRoute; if(!r) return;
+  const key=r.stops[k].p;
+  S.visited.has(key)?S.visited.delete(key):S.visited.add(key);
+  const c=computeRoute(r,`${r.date}T${r.time}:00`);
+  const i=Math.max(0,Math.min(S.playIdx,c.stops.length-1));
+  const set=(id,html)=>{ const el=document.getElementById(id); if(el) el.innerHTML=html; };
+  set("plst",playRows(c,i)); set("prail",playRail(c,i));
+  set("pprog",playProg(c)); set("pend",playEnd(r,c));
+}
+/* ═════ 캘린더로 내보내기 (.ics) ═════
+   데이트는 원래 캘린더에 넣는 약속이다. 넣는 순간 같이 가는 사람 폰에도 뜬다 —
+   우리한테는 그게 제일 자연스러운 공유다.
+   시간대를 안 붙인 '떠 있는 시각'으로 쓴다. 서울에서 만든 약속을 서울에서 볼 거라서. */
+const icsEsc=t=>String(t).replace(/\\/g,"\\\\").replace(/([,;])/g,"\\$1").replace(/\r?\n/g,"\\n");
+function icsAt(dateStr,min){
+  const d=new Date(dateStr+"T00:00:00"); d.setMinutes(min);
+  const z=n=>String(n).padStart(2,"0");
+  return `${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}T${z(d.getHours())}${z(d.getMinutes())}00`;
+}
+function exportICS(){
+  const r=S.playRoute; if(!r) return;
+  const c=computeRoute(r,`${r.date}T${r.time}:00`);
+  const stamp=new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
+  const ev=c.stops.map((s,i)=>[
+    "BEGIN:VEVENT",
+    `UID:spots-${r.id}-${i}-${Date.now()}@spots`,
+    `DTSTAMP:${stamp}`,
+    `DTSTART:${icsAt(r.date,s.arrive)}`,
+    `DTEND:${icsAt(r.date,s.leave)}`,
+    `SUMMARY:${icsEsc(`${i+1}. ${s.place.n}`)}`,
+    `LOCATION:${icsEsc(s.place.n)}`,
+    `DESCRIPTION:${icsEsc([s.c||"",`${s.place.c} · 1인 ${wonRange(s.place.cost[0],s.place.cost[1])}`,
+      kakaoPlaceURL(s.place)].filter(Boolean).join("\n"))}`,
+    "END:VEVENT"].join("\r\n"));
+  const txt=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//spots//route//KO","CALSCALE:GREGORIAN",
+    ...ev,"END:VCALENDAR"].join("\r\n");
+  try{
+    const url=URL.createObjectURL(new Blob([txt],{type:"text/calendar;charset=utf-8"}));
+    const a=document.createElement("a");
+    a.href=url; a.download=r.title.replace(/[\\/:*?"<>|]/g,"")+".ics";
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },1000);
+    toast(`${c.stops.length}개 일정을 캘린더 파일로 만들었어요`);
+  }catch(_){ toast("이 브라우저에서는 내보내기가 안 돼요"); }
 }
 /* ═════ 장소 검색 (Photon · OpenStreetMap) ═════
    API 키가 필요 없고 CORS도 열려 있어 브라우저에서 바로 부를 수 있다.
@@ -4128,6 +4269,96 @@ function setTheme(v){
 }
 try{ if(localStorage.getItem("spots.theme")==="dark") document.documentElement.dataset.theme="dark"; }catch(_){}
 
+/* ═════ 실제 도로 경로 (Valhalla · OpenStreetMap) ═════
+   예전엔 스팟과 스팟을 직선으로 이었다. 지도를 봐도 "저 건물을 뚫고 가나?" 싶어서
+   실제로 어디를 걷는지가 안 보였다.
+
+   FOSSGIS가 운영하는 공개 Valhalla 서버를 쓴다 — API 키가 없고 CORS가 열려 있다.
+   ⚠️ OSRM 공개 데모(router.project-osrm.org)도 후보였지만 프로파일이 driving 하나뿐이라
+      걷는 구간까지 차도로 그린다. 우리 루트는 대부분 도보라 보행자 프로파일이 필요했다.
+      서울숲→성수 실측 — OSRM driving 2,603m / Valhalla pedestrian 2,061m.
+      우리 추정치(직선×1.3 = 2,075m)와 맞는 건 후자다.
+
+   원칙 셋
+   1. 경로는 '그림'에만 쓴다. 소요 시간·거리·비용은 기존 직선×1.3 추정을 그대로 둔다 —
+      네트워크 응답에 따라 화면의 숫자가 달라지면 같은 루트가 볼 때마다 다르게 보인다.
+   2. 직선을 먼저 그리고 응답이 오면 그 구간만 갈아끼운다. 실패하면 직선 그대로 — 지도는 안 깨진다.
+   3. 지하철·혼합 구간은 아예 부르지 않는다. 지하로 가는 길을 차도로 그리면 거짓말이다. 점선으로 남긴다. */
+const VAL_COST={walk:"pedestrian",bus:"auto",taxi:"auto",car:"auto"};
+const pathKey=(a,b,c)=>a.lat.toFixed(5)+","+a.lng.toFixed(5)+">"+b.lat.toFixed(5)+","+b.lng.toFixed(5)+"|"+c;
+let PATH={}, pathInflight={}, pathSaveT;
+try{ PATH=JSON.parse(localStorage.getItem("spots.path")||"{}"); }catch(_){ PATH={}; }
+/* 인코딩된 문자열 그대로 저장한다(구간당 250자 안팎). 한 번 본 루트는 다시 안 부른다. */
+function pathSave(){
+  clearTimeout(pathSaveT);
+  pathSaveT=setTimeout(()=>{
+    try{
+      const k=Object.keys(PATH);
+      if(k.length>600) k.slice(0,k.length-600).forEach(x=>delete PATH[x]);
+      localStorage.setItem("spots.path",JSON.stringify(PATH));
+    }catch(_){ PATH={}; }          // 용량 초과 — 캐시를 비우고 그냥 간다
+  },800);
+}
+/* Valhalla의 shape는 구글 폴리라인과 같은 알고리즘이고 정밀도만 1e6이다 */
+function decodePoly(str){
+  let i=0,lat=0,lng=0; const out=[];
+  while(i<str.length){
+    let b,sh=0,res=0;
+    do{ b=str.charCodeAt(i++)-63; res|=(b&0x1f)<<sh; sh+=5; }while(b>=0x20);
+    lat+=(res&1)?~(res>>1):(res>>1);
+    sh=0; res=0;
+    do{ b=str.charCodeAt(i++)-63; res|=(b&0x1f)<<sh; sh+=5; }while(b>=0x20);
+    lng+=(res&1)?~(res>>1):(res>>1);
+    out.push([lat/1e6,lng/1e6]);
+  }
+  return out;
+}
+/* 한 구간의 실제 경로를 [[lat,lng],…]로 준다. 못 받으면 null(= 직선 유지).
+   실패는 캐시하지 않는다 — 대부분 일시적인 네트워크 문제라서 영구히 포기할 이유가 없다.
+   대신 같은 구간을 동시에 여러 번 부르지 않도록 진행 중인 요청은 공유한다. */
+function roadPath(a,b,mode){
+  const cost=VAL_COST[mode];
+  if(!cost||typeof fetch==="undefined") return Promise.resolve(null);
+  const key=pathKey(a,b,cost);
+  if(PATH[key]) return Promise.resolve(decodePoly(PATH[key]));
+  if(pathInflight[key]) return pathInflight[key];
+  const q={locations:[{lat:a.lat,lon:a.lng},{lat:b.lat,lon:b.lng}],costing:cost,
+    directions_options:{units:"kilometers"}};
+  const url="https://valhalla1.openstreetmap.de/route?json="+encodeURIComponent(JSON.stringify(q));
+  const pr=fetch(url).then(r=>r.ok?r.json():null).then(j=>{
+    const sh=j&&j.trip&&j.trip.legs&&j.trip.legs[0]&&j.trip.legs[0].shape;
+    if(!sh) return null;
+    PATH[key]=sh; pathSave();
+    return decodePoly(sh);
+  }).catch(()=>null).then(v=>{ delete pathInflight[key]; return v; });
+  pathInflight[key]=pr;
+  return pr;
+}
+/* 이미 받아둔 것만 즉시 돌려준다 — mapSVG는 동기 함수라 기다릴 수가 없다 */
+function cachedPath(a,b,mode){
+  const c=VAL_COST[mode]; if(!c) return null;
+  const v=PATH[pathKey(a,b,c)];
+  return v?decodePoly(v):null;
+}
+/* SVG 개요도용 — 안 받아둔 구간을 받아 놓고 한 번만 다시 그린다.
+   ⚠️ 실패한 구간을 기억해 두지 않으면 render마다 다시 부르다 무한 루프가 된다. */
+const pathTried=new Set();
+let warmT=null;
+function warmPaths(stops){
+  const need=[];
+  stops.slice(0,-1).forEach((a,i)=>{
+    const b=stops[i+1], cost=a.leg&&VAL_COST[a.leg.mode];
+    if(!cost) return;
+    const key=pathKey(a.place,b.place,cost);
+    if(PATH[key]||pathTried.has(key)) return;
+    pathTried.add(key); need.push([a,b]);
+  });
+  if(!need.length) return;
+  Promise.all(need.map(([a,b])=>roadPath(a.place,b.place,a.leg.mode)))
+    .then(rs=>{ if(!rs.some(Boolean)) return;
+      clearTimeout(warmT); warmT=setTimeout(()=>{ if(typeof render==="function") render(); },60); });
+}
+
 /* ═════ 실제 지도 (카카오 지도 SDK) ═════
    가게 이름 라벨이 뜨는 게 목적이라 카카오를 쓴다. JS 키 + 도메인 등록이 필요하고,
    SDK가 아직 안 떴거나 실패하면(아티팩트처럼 외부 요청이 막힌 곳) SVG 개요도로 폴백한다.
@@ -4160,9 +4391,9 @@ function addOv(m,list,lat,lng,html,opt){
   o.setMap(m); list.push(o);
   return el.firstElementChild||el;
 }
-function addLine(m,list,pts,color,weight,opacity){
+function addLine(m,list,pts,color,weight,opacity,style){
   const o=new kakao.maps.Polyline({path:pts.map(p=>LL(p[0],p[1])),strokeColor:color,
-    strokeWeight:weight,strokeOpacity:opacity==null?1:opacity,strokeStyle:"solid"});
+    strokeWeight:weight,strokeOpacity:opacity==null?1:opacity,strokeStyle:style||"solid"});
   o.setMap(m); list.push(o); return o;
 }
 // Leaflet의 flyTo 대체 — 레벨을 먼저 맞추고 부드럽게 이동한다
@@ -4177,25 +4408,42 @@ function pinHTML(s,i,focus){
   return `<div class="lmk"><div class="lpin${cls}">${src?`<img src="${src}" alt="">`:`<span class="lface">✦·✦</span>`}<b>${i+1}</b></div>
     <div class="ltip">${s.place.n}</div></div>`;
 }
-// 루트 지도 — 네온 라인 + 사진 핀 + 구간 칩
-function mountRouteMap(id,stops,focus){
+/* 루트 지도 — 실제 도로 경로 + 사진 핀 + 구간 칩.
+   선을 하나로 잇지 않고 구간마다 따로 그린다. 그래야 경로가 도착한 구간만 갈아끼울 수 있고,
+   지하철처럼 경로를 그릴 수 없는 구간을 점선으로 남겨둘 수 있다.
+   onPin을 주면 핀을 눌러 목록으로 돌아올 수 있다(따라가기 화면). */
+function mountRouteMap(id,stops,focus,onPin){
   const el=document.getElementById(id); if(!el||!hasL()) return;
   killMap(id);
   const pts=stops.map(s=>[s.place.lat,s.place.lng]);
   const m=baseMap(el,{lat:pts[0][0],lng:pts[0][1]},5);
   LM[id]=m;
-  addLine(m,m.__ov,pts,"#0b0a12",14,.9);
-  addLine(m,m.__ov,pts,"#d4ff00",8);
-  addLine(m,m.__ov,pts,"#ffffff",2,.35);
+  stops.forEach((s,i)=>{
+    const next=stops[i+1]; if(!next||!s.leg) return;
+    const a=pts[i],b=pts[i+1], straight=[a,b], real=!!VAL_COST[s.leg.mode];
+    // 실제 경로를 그릴 수 있는 구간은 네온 3겹, 아닌 구간(지하철)은 점선 한 겹
+    const lines=real
+      ?[addLine(m,m.__ov,straight,"#0b0a12",14,.9),
+        addLine(m,m.__ov,straight,"#d4ff00",8),
+        addLine(m,m.__ov,straight,"#ffffff",2,.35)]
+      :[addLine(m,m.__ov,straight,"#d4ff00",5,.95,"shortdash")];
+    const icons=s.leg.mode==="mix"?["subway","bus"]:[s.leg.mode];
+    addOv(m,m.__ov,(a[0]+b[0])/2,(a[1]+b[1])/2,
+      `<div class="lleg">${icons.map(k=>IC[MODE[k].ic]).join("")}<b>${s.leg.min}분</b></div>`,{zIndex:60});
+    const chip=m.__ov[m.__ov.length-1];
+    if(!real) return;
+    roadPath(s.place,next.place,s.leg.mode).then(path=>{
+      if(LM[id]!==m||!path||path.length<2) return;   // 그 사이 화면이 바뀌었으면 버린다
+      const ll=path.map(q=>LL(q[0],q[1]));
+      lines.forEach(o=>o.setPath(ll));
+      // 구간 칩도 직선 중점이 아니라 실제 경로의 가운데로 옮긴다
+      chip.setPosition(ll[Math.floor(ll.length/2)]);
+    });
+  });
   stops.forEach((s,i)=>{
     // 핀(48px) + 이름표가 세로로 쌓여 있어, 동그란 핀의 중심이 좌표에 오도록 위쪽으로 맞춘다
-    addOv(m,m.__ov,pts[i][0],pts[i][1],pinHTML(s,i,focus),{yAnchor:.32,zIndex:100});
-    if(s.leg&&stops[i+1]){
-      const a=pts[i],b=pts[i+1];
-      const icons=s.leg.mode==="mix"?["subway","bus"]:[s.leg.mode];
-      addOv(m,m.__ov,(a[0]+b[0])/2,(a[1]+b[1])/2,
-        `<div class="lleg">${icons.map(k=>IC[MODE[k].ic]).join("")}<b>${s.leg.min}분</b></div>`,{zIndex:60});
-    }
+    const node=addOv(m,m.__ov,pts[i][0],pts[i][1],pinHTML(s,i,focus),{yAnchor:.32,zIndex:100});
+    if(onPin) node.addEventListener("click",()=>onPin(i));
   });
   const bd=new kakao.maps.LatLngBounds();
   pts.forEach(p=>bd.extend(LL(p[0],p[1])));
@@ -4334,15 +4582,25 @@ function mountPickMap(){
   kakao.maps.event.addListener(m,"idle",()=>{ box&&box.classList.remove("moving"); pickRefresh(); });
   setTimeout(()=>{ m.relayout(); m.setCenter(LL(c.lat,c.lng)); pickRefresh(); },80);
 }
+/* 지금 화면이 그리는 스톱 목록 — 실제 지도와 SVG 개요도가 같은 걸 본다 */
+function viewStops(){
+  if(S.view==="route"){ const r=ROUTES.find(x=>x.id===S.routeId); return r?computeRoute(r,iso()).stops:null; }
+  if(S.view==="preview"&&S.draft.stops.length>=2)
+    return computeRoute(draftRoute(),`${S.draft.date}T${S.draft.time}:00`).stops;
+  if(S.view==="play"&&S.playRoute)
+    return computeRoute(S.playRoute,`${S.playRoute.date}T${S.playRoute.time}:00`).stops;
+  return null;
+}
 function mountMaps(){
-  if(!hasL()) return;
-  if(S.view==="route"){ const r=ROUTES.find(x=>x.id===S.routeId);
-    if(r) mountRouteMap("rmap",computeRoute(r,iso()).stops,-1); }
-  if(S.view==="preview"&&S.draft.stops.length>=2){
-    const r=draftRoute();
-    mountRouteMap("rmap",computeRoute(r,`${S.draft.date}T${S.draft.time}:00`).stops,-1); }
-  if(S.view==="play"&&S.playRoute){ const c=computeRoute(S.playRoute,`${S.playRoute.date}T${S.playRoute.time}:00`);
-    mountRouteMap("pmap",c.stops,Math.max(0,Math.min(S.playIdx,c.stops.length-1))); }
+  const st=viewStops();
+  // 지도 SDK가 없으면 SVG 개요도가 뜬다 — 거기도 실제 경로를 쓰므로 미리 받아둔다
+  if(!hasL()){ if(st) warmPaths(st); return; }
+  if((S.view==="route"||S.view==="preview")&&st) mountRouteMap("rmap",st,-1);
+  if(S.view==="play"&&st)
+    // 핀을 누르면 목록이 따라온다 — 예전엔 목록→지도 한 방향뿐이라 지도에서 누를 데가 없었다
+    mountRouteMap("pmap",st,Math.max(0,Math.min(S.playIdx,st.length-1)),
+      k=>{ playFocus(k); const el=document.querySelectorAll("#plst .pitem")[k];
+           if(el) el.scrollIntoView({behavior:"smooth",block:"center"}); });
   if(S.view==="nearby") mountNearMap();
   if(S.view==="pick") mountPickMap();
 }
