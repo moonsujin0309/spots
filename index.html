@@ -1199,6 +1199,12 @@ const AREAS=[
   {id:"dongjak",n:"노량진·동작", lat:37.5130,lng:126.9420,tone:"market",img:""},
   {id:"guro",   n:"구로·금천",  lat:37.4870,lng:126.8700,tone:"mall",  img:""},
   {id:"seocho", n:"양재·서초",  lat:37.4800,lng:127.0250,tone:"park",  img:""},
+  /* ── 근교 (2026-08-14 리서치 검증분 — 리서치_2026-08-14_근교실내바베큐.md) ── */
+  {id:"paju",   n:"파주",       lat:37.7900,lng:126.7000,tone:"cafe",  img:""},
+  {id:"yangpyeong",n:"양평",    lat:37.5400,lng:127.3300,tone:"river", img:""},
+  {id:"yongin", n:"용인",       lat:37.1600,lng:127.3100,tone:"park",  img:""},
+  {id:"gimpo",  n:"김포",       lat:37.6430,lng:126.6870,tone:"river", img:""},
+  {id:"yangju", n:"양주·장흥",  lat:37.7250,lng:126.9600,tone:"park",  img:""},
 ];
 /* 실존이 확인된 곳만 둔다. "성수 파스타집" 같은 가상 장소는 전부 걷어냈다 —
    가짜 장소 위에는 좋은 루트가 올라갈 수 없다. img가 빈 곳은 종류별 아트로 표시된다. */
@@ -1386,6 +1392,60 @@ const PLACES={
   seorae:     {n:"서래마을",c:"골목",area:"seocho",lat:37.4990,lng:126.9950,open:"11:00",close:"23:00",closed:[],cost:[10000,25000],park:0,wait:1,pop:64,img:"익선동"},
   nationallib:{n:"국립중앙도서관",c:"복합공간",area:"seocho",lat:37.4977,lng:127.0047,open:"09:00",close:"18:00",closed:[0],cost:[0,0],park:1,wait:0,pop:42,img:"국립중앙박물관"},
   seoripul:   {n:"서리풀공원",c:"공원",area:"seocho",lat:37.4915,lng:127.0030,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:46,img:"낙산공원"},
+  /* ── 파주 (2026-08-14 웹 검증 — 좌표는 OSM. 도로근사·단지 내 근사 좌표는 STATUS '다음 할 일'에서 핀 재확인 대상) ── */
+  provence:   {n:"프로방스 마을",c:"복합공간",out:1,area:"paju",lat:37.8018,lng:126.6874,open:"10:00",close:"22:00",closed:[],cost:[15000,25000],park:1,wait:0,pop:66,img:""},
+  heyri:      {n:"헤이리 예술마을",c:"복합공간",out:1,area:"paju",lat:37.7888,lng:126.6992,open:"00:00",close:"23:59",closed:[],cost:[0,10000],park:1,wait:0,pop:74,img:""},
+  whiteblock: {n:"아트센터 화이트블럭",c:"카페",area:"paju",lat:37.7900,lng:126.7000,open:"10:30",close:"19:00",closed:[],cost:[7000,10000],park:1,wait:0,pop:58,img:""},
+  blume:      {n:"블루메미술관",c:"전시",area:"paju",lat:37.7878,lng:126.7004,open:"10:00",close:"18:00",closed:[1],cost:[5000,10000],park:1,wait:0,pop:52,img:""},
+  naruter:    {n:"반구정 나루터집",c:"식당",area:"paju",lat:37.8669,lng:126.7520,open:"11:30",close:"22:00",closed:[],cost:[40000,50000],park:1,wait:0,pop:62,img:""},
+  bangujeong: {n:"황희정승 유적지 반구정",c:"고궁",area:"paju",lat:37.8673,lng:126.7517,open:"09:00",close:"18:00",closed:[],cost:[1000,2000],park:1,wait:0,pop:45,img:""},
+  imjingak:   {n:"임진각 평화누리공원",c:"공원",area:"paju",lat:37.8894,lng:126.7435,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:78,img:""},
+  gondola:    {n:"임진각 평화곤돌라",c:"액티비티",area:"paju",lat:37.8902,lng:126.7425,open:"09:00",close:"18:00",closed:[],cost:[9000,9000],park:1,wait:0,pop:64,img:""},
+  pajuoutlet: {n:"롯데프리미엄아울렛 파주점",c:"복합공간",area:"paju",lat:37.7184,lng:126.6918,open:"10:30",close:"20:30",closed:[],cost:[10000,20000],park:1,wait:0,pop:60,img:""},
+  wisdomforest:{n:"지혜의숲",c:"서점",area:"paju",lat:37.7068,lng:126.6869,open:"10:00",close:"20:00",closed:[],cost:[0,0],park:1,wait:0,pop:68,img:""},
+  mimesis:    {n:"미메시스 아트 뮤지엄",c:"전시",area:"paju",lat:37.7114,lng:126.6864,open:"09:00",close:"18:00",closed:[],cost:[11000,11000],park:1,wait:0,pop:56,img:""},
+  dirtytrunk: {n:"더티트렁크",c:"카페",area:"paju",lat:37.7259,lng:126.6914,open:"09:30",close:"21:30",closed:[],cost:[10000,15000],park:1,wait:0,pop:72,img:""},
+  oreun:      {n:"옳은휴식하루",c:"복합공간",area:"paju",lat:37.7648,lng:126.7014,open:"10:00",close:"22:00",closed:[3,4],cost:[20000,40000],park:1,wait:0,pop:55,img:""},
+  /* ── 양평 ── */
+  hwanghae:   {n:"옥천냉면 황해식당",c:"식당",area:"yangpyeong",lat:37.5149,lng:127.4522,open:"11:00",close:"18:30",closed:[1],cost:[12000,15000],park:1,wait:0,pop:60,img:""},
+  dumulmeori: {n:"두물머리",c:"공원",area:"yangpyeong",lat:37.5328,lng:127.3159,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:82,img:""},
+  semiwon:    {n:"세미원",c:"공원",area:"yangpyeong",lat:37.5387,lng:127.3226,open:"09:00",close:"18:00",closed:[],cost:[5000,8500],park:1,wait:0,pop:64,img:""},
+  terarosa:   {n:"테라로사 서종점",c:"카페",area:"yangpyeong",lat:37.6224,lng:127.3528,open:"09:00",close:"21:00",closed:[],cost:[6000,8000],park:1,wait:0,pop:58,img:""},
+  /* ── 용인 ── */
+  ririm:      {n:"리림",c:"복합공간",area:"yongin",lat:37.1180,lng:127.3132,open:"10:00",close:"21:00",closed:[],cost:[40000,65000],park:1,wait:0,pop:50,img:""},
+  yonginfarm: {n:"용인농촌테마파크",c:"공원",area:"yongin",lat:37.1725,lng:127.2974,open:"09:30",close:"18:30",closed:[1],cost:[1000,3000],park:1,wait:0,pop:44,img:""},
+  jeilsik:    {n:"백암 제일식당",c:"식당",area:"yongin",lat:37.1648,lng:127.3732,open:"06:00",close:"21:00",closed:[3],cost:[10000,18000],park:0,wait:0,pop:58,img:""},
+  wawoo:      {n:"와우정사",c:"고궁",area:"yongin",lat:37.1939,lng:127.2780,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:52,img:""},
+  /* ── 김포 ── */
+  laveniche:  {n:"라베니체",c:"복합공간",out:1,area:"gimpo",lat:37.6406,lng:126.6797,open:"11:00",close:"22:00",closed:[],cost:[10000,20000],park:1,wait:0,pop:62,img:""},
+  gimpoart:   {n:"김포아트빌리지 한옥마을",c:"복합공간",out:1,area:"gimpo",lat:37.6454,lng:126.6958,open:"09:00",close:"18:00",closed:[1],cost:[0,5000],park:1,wait:0,pop:58,img:""},
+  glinpark:   {n:"글린공원",c:"카페",area:"gimpo",lat:37.6499,lng:126.6502,open:"10:00",close:"19:00",closed:[],cost:[9000,13000],park:1,wait:0,pop:60,img:""},
+  gimpobird:  {n:"김포한강야생조류생태공원",c:"공원",area:"gimpo",lat:37.6593,lng:126.6872,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:48,img:""},
+  /* ── 양주·장흥 ── */
+  songchubbq: {n:"송추계곡 글램핑 셀프바베큐장",c:"복합공간",area:"yangju",lat:37.7127,lng:126.9851,open:"10:00",close:"21:00",closed:[],cost:[60000,70000],park:1,wait:0,pop:52,img:""},
+  ganaart:    {n:"가나아트파크",c:"전시",area:"yangju",lat:37.7244,lng:126.9495,open:"10:00",close:"18:00",closed:[1],cost:[8000,12000],park:1,wait:0,pop:50,img:""},
+  orangerie:  {n:"오랑주리",c:"카페",area:"yangju",lat:37.7774,lng:126.9550,open:"11:00",close:"21:00",closed:[],cost:[9000,14000],park:1,wait:0,pop:66,img:""},
+  /* ── 부암동·광화문 (jongno 확장) ── */
+  jaha:       {n:"자하손만두",c:"식당",area:"jongno",lat:37.5931,lng:126.9660,open:"11:00",close:"21:00",closed:[],cost:[15000,22000],park:1,wait:0,pop:63,img:""},
+  seokpa:     {n:"석파정 서울미술관",c:"전시",area:"jongno",lat:37.5951,lng:126.9635,open:"11:00",close:"17:00",closed:[1,2],cost:[15000,20000],park:1,wait:0,pop:66,img:""},
+  clubesp:    {n:"클럽에스프레소",c:"카페",area:"jongno",lat:37.5926,lng:126.9660,open:"09:00",close:"19:00",closed:[],cost:[6000,8000],park:1,wait:0,pop:55,img:""},
+  yoondj:     {n:"윤동주문학관",c:"전시",area:"jongno",lat:37.5921,lng:126.9670,open:"10:00",close:"18:00",closed:[1],cost:[0,0],park:0,wait:0,pop:57,img:""},
+  dtower:     {n:"디타워 광화문",c:"복합공간",area:"jongno",lat:37.5710,lng:126.9789,open:"11:00",close:"22:00",closed:[],cost:[12000,25000],park:1,wait:0,pop:65,img:""},
+  kyobo:      {n:"광화문 교보문고",c:"서점",area:"jongno",lat:37.5710,lng:126.9780,open:"09:30",close:"22:00",closed:[],cost:[0,0],park:1,wait:0,pop:80,img:""},
+  khistory:   {n:"대한민국역사박물관",c:"전시",area:"jongno",lat:37.5740,lng:126.9778,open:"10:00",close:"18:00",closed:[],cost:[0,0],park:0,wait:0,pop:54,img:""},
+  /* ── 마곡·잠실·강남·용산·서초 확장 ── */
+  onegrove:   {n:"원그로브",c:"복합공간",area:"magok",lat:37.5613,lng:126.8255,open:"10:30",close:"21:00",closed:[],cost:[10000,20000],park:1,wait:0,pop:62,img:""},
+  spacek:     {n:"스페이스K 서울",c:"전시",area:"magok",lat:37.5610,lng:126.8310,open:"10:00",close:"18:00",closed:[1],cost:[10000,20000],park:0,wait:0,pop:70,img:""},
+  lwaqua:     {n:"롯데월드 아쿠아리움",c:"전시",area:"jamsil",lat:37.5128,lng:127.1035,open:"10:00",close:"20:00",closed:[],cost:[35000,35000],park:1,wait:0,pop:76,img:""},
+  bongpi:     {n:"봉피양 방이점",c:"식당",area:"jamsil",lat:37.5102,lng:127.1260,open:"11:30",close:"22:00",closed:[],cost:[16000,36000],park:1,wait:0,pop:72,img:""},
+  soma:       {n:"소마미술관",c:"전시",area:"jamsil",lat:37.5168,lng:127.1181,open:"10:00",close:"18:00",closed:[1],cost:[10000,20000],park:1,wait:0,pop:58,img:""},
+  hdtrade:    {n:"현대백화점 무역센터점",c:"복합공간",area:"gangnam",lat:37.5085,lng:127.0596,open:"10:30",close:"20:00",closed:[],cost:[15000,30000],park:1,wait:0,pop:68,img:""},
+  nmufood:    {n:"국립중앙박물관 식당가",c:"식당",area:"itaewon",lat:37.5246,lng:126.9808,open:"10:00",close:"18:00",closed:[],cost:[10000,15000],park:1,wait:0,pop:48,img:""},
+  ipark:      {n:"아이파크몰 용산",c:"복합공간",area:"itaewon",lat:37.5293,lng:126.9654,open:"10:30",close:"22:00",closed:[],cost:[10000,20000],park:1,wait:0,pop:70,img:""},
+  cgvyongsan: {n:"CGV 용산아이파크몰",c:"액티비티",area:"itaewon",lat:37.5297,lng:126.9660,open:"10:00",close:"23:59",closed:[],cost:[15000,15000],park:1,wait:0,pop:74,img:""},
+  hangaram:   {n:"한가람미술관",c:"전시",area:"seocho",lat:37.4790,lng:127.0125,open:"10:00",close:"19:00",closed:[1],cost:[18000,22000],park:1,wait:0,pop:70,img:""},
+  hangaramd:  {n:"한가람디자인미술관",c:"전시",area:"seocho",lat:37.4801,lng:127.0128,open:"10:00",close:"19:00",closed:[1],cost:[5000,15000],park:1,wait:0,pop:52,img:""},
+  gugak:      {n:"국악박물관",c:"전시",area:"seocho",lat:37.4775,lng:127.0086,open:"09:00",close:"18:00",closed:[1],cost:[0,0],park:1,wait:0,pop:42,img:""},
 };
 /* 시드 루트 70개 — 전부 AI가 초안을 짜고 사람이 실존·휴무를 확인해서 ai:1이 붙는다.
    아직 아무도 안 다녀왔으므로 plan:1(계획 루트) · visits:0이 정직한 상태다.
@@ -2327,6 +2387,132 @@ const ROUTES=[
           {p:"cheonggye",stay:40,c:"광장시장에서 물길로 바로 내려가요. 계단으로 내려가니 짐은 가볍게요"},
           {p:"ddpplaza",stay:70,c:"실내 전시는 8시에 닫지만 바깥 곡면 산책로는 밤새 열려 있어요. 밤에 오는 게 정답이고요"},
           {p:"doota",stay:70,c:"자정까지 해요. 층마다 음악이 크게 나와 활기찬 분위기고요"}]},
+  /* ── 근교 차량·서울 차량·실내·당일 바베큐 (2026-08-14 리서치 검증분 16개) ── */
+  {id:"pj1",area:"paju",transport:"car",hot:0,likes:58,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"프로방스 점심, 헤이리는 걸어서",mood:"파스텔 마을에서 예술 마을로 넘어가요",
+   note:"블루메미술관이 월요일 휴관이고 헤이리 전시관들도 월요일에 많이 쉬어요. 주차는 두 마을 다 돼요",
+   stops:[{p:"provence",stay:80,c:"점심은 마을 안 식당가에서요. 가게마다 가격이 꽤 달라서 메뉴판 보고 골라 들어가는 게 안전해요"},
+          {p:"heyri",stay:90,c:"마을 전체가 갤러리 같은 동네예요. 골목 경사가 은근해서 편한 신발이 낫고요"},
+          {p:"blume",stay:60,c:"헤이리 안쪽이에요. 기획전 하나로 승부하는 규모라 한 시간이면 봐요"},
+          {p:"whiteblock",stay:70,c:"카페 이용하면 전시가 무료예요. 통유리 앞자리는 주말엔 금방 차요"}]},
+  {id:"pj2",area:"paju",transport:"car",hot:0,likes:66,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"임진강 장어는 1969년 그 집으로",mood:"밥집 하나 보고 가서 안보 관광까지 하고 와요",
+   note:"나루터집은 설날만 쉬어요. 곤돌라는 바람 불면 그날 운행을 접으니 당일 확인이 필요해요. 주차는 전부 되고 임진각만 유료예요",
+   stops:[{p:"naruter",stay:90,c:"1969년부터 하는 장어 노포예요. 1인 4만 원대라 예산은 여기에 몰아요"},
+          {p:"bangujeong",stay:40,c:"식당 바로 옆이라 걸어서 가요. 임진강 내려다보는 정자 하나가 전부니 길게 안 잡아도 돼요"},
+          {p:"imjingak",stay:70,c:"주차장이 커서 자리 걱정은 없어요. 정산은 나갈 때 하고요"},
+          {p:"gondola",stay:60,c:"곤돌라로 강 건너까지 다녀와요. 왕복 9천 원이고 기상 따라 서니 하늘 보고 타요"}]},
+  {id:"pj3",area:"paju",transport:"car",hot:0,likes:72,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"출판도시는 책보다 건물이 볼거리예요",mood:"서가 보러 갔다가 건축만 보다 와요",
+   note:"미메시스는 정규 휴관일이 없어요. 건물마다 주차가 다 되니 차로 옮겨 다니면 돼요. 아울렛 식당가는 저녁 8시 반까지고요",
+   stops:[{p:"pajuoutlet",stay:80,c:"점심은 식당가가 11시에 열어 오픈 직후가 한산해요. 주차도 무료고요"},
+          {p:"wisdomforest",stay:60,c:"천장까지 닿는 서가로 유명해요. 책은 그 자리에서 보는 방식이라 손이 가벼워야 해요"},
+          {p:"mimesis",stay:70,c:"알바루 시자가 설계한 곡면 건물이에요. 전시보다 건물 보러 오는 사람이 더 많아요"},
+          {p:"dirtytrunk",stay:70,c:"창고를 통째로 쓰는 카페라 자리는 많아요. 그래도 주말 오후엔 자리 찾아 한 바퀴 돌게 되고요"}]},
+  {id:"pj4",area:"paju",transport:"car",hot:0,likes:54,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"비 와도 굽는 오두막, 옳은휴식하루",mood:"지붕 아래서 굽고 예술마을에서 소화시켜요",
+   note:"옳은휴식하루가 수·목요일 휴무예요. 네이버 예약이 주말엔 금방 마감되니 미리 잡아야 해요. 식재료는 사 가는 방식이에요",
+   stops:[{p:"oreun",stay:180,c:"독립 오두막이라 지붕이 있어 비 와도 바베큐가 돼요. 12시간 통대여라 쫓기지 않고요"},
+          {p:"heyri",stay:70,c:"배 꺼뜨릴 겸 마을 골목을 걸어요. 전시관은 월요일 휴무가 많아 겉 구경 위주가 될 수도 있어요"},
+          {p:"blume",stay:50,c:"뭘 하는 전시인지 보고 들어가면 실패가 없어요. 규모가 아담해요"},
+          {p:"whiteblock",stay:60,c:"고기 냄새는 커피로 정리해요. 평일은 저녁 7시, 주말은 9시까지 해요"}]},
+  {id:"yp1",area:"yangpyeong",transport:"car",hot:0,likes:63,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"황해식당 냉면 먼저, 두물머리는 그다음",mood:"냉면 하나 먹으러 가서 강까지 보고 와요",
+   note:"황해식당 휴무가 월요일로 알려져 있는데 출처마다 달라 전화 확인이 안전해요. 세미원은 계절 따라 닫는 시간이 바뀌어요",
+   stops:[{p:"hwanghae",stay:60,c:"옥천냉면으로 부르는 그 집이에요. 저녁 6시 반이면 닫아서 무조건 점심에 넣어야 해요"},
+          {p:"dumulmeori",stay:70,c:"강 두 개가 만나는 자리예요. 그늘이 적어 한낮엔 모자가 필요해요"},
+          {p:"semiwon",stay:70,c:"두물머리에서 배다리 건너 이어져요. 연꽃은 여름이 절정이고 입장료가 있어요"},
+          {p:"terarosa",stay:60,c:"북한강 따라 올라가는 길목이에요. 창가 자리 경쟁이 좀 있어요"}]},
+  {id:"yi1",area:"yongin",transport:"car",hot:0,likes:49,visits:0,people:4,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"쉘터 바베큐 리림, 7월에 새로 났어요",mood:"굽는 데서 시작해 순댓국으로 닫아요",
+   note:"리림은 캠핏에서만 예약을 받고 오전권이 오후 3시에 끝나요. 제일식당이 수요일, 농촌테마파크가 월요일 휴무라 그 두 요일은 피해요",
+   stops:[{p:"ririm",stay:180,c:"7월에 정식 오픈한 캠크닉장이에요. 프라이빗 쉘터라 비 와도 되는데, 쉘터비에 인당 요금이 따로 붙어요"},
+          {p:"wawoo",stay:50,c:"누워 있는 불상으로 유명한 절이에요. 경내 오르막이 있어 걸음이 좀 걸리고요"},
+          {p:"yonginfarm",stay:60,c:"체험 시설 위주 공원인데 둘이 걷기에도 한적해요. 해 지기 전이 좋아요"},
+          {p:"jeilsik",stay:70,c:"1964년부터 하는 백암순대 원조집이에요. 순대국 1만 원, 모둠은 1만 8천이에요"}]},
+  {id:"gp1",area:"gimpo",transport:"car",hot:0,likes:47,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"수변에서 밥 먹고 한옥으로 넘어가요",mood:"물길 옆에서 시작해 온실에서 끝나요",
+   note:"아트빌리지 체험관이 월요일에 쉬어요. 글린공원은 저녁 7시면 닫으니 카페를 마지막에 두면 시간이 빠듯할 수 있어요",
+   stops:[{p:"laveniche",stay:80,c:"수로를 낀 상가라 밥 먹고 그대로 물가를 걷게 돼요. 뭘 먹을지는 들어가서 골라도 되고요"},
+          {p:"gimpoart",stay:70,c:"한옥 마당이 넓어 사진이 잘 나와요. 실내 전시관은 월요일에 닫혀 있고요"},
+          {p:"gimpobird",stay:60,c:"한강 하구를 낀 생태공원이에요. 그늘이 적어 한낮보다 해 기울 때가 편해요"},
+          {p:"glinpark",stay:70,c:"유리 온실 안에 자리가 있어서 비가 와도 앉아 있기 좋아요"}]},
+  {id:"yj1",area:"yangju",transport:"car",hot:0,likes:58,visits:0,people:4,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"계곡에서 굽고 온실에서 식혀요",mood:"텐트 아래서 구워서 비가 와도 되는 하루",
+   note:"바베큐장이 오전·오후 타임제라 시간을 먼저 잡아야 해요. 평일 6만 원, 주말 7만 원이고 홈페이지나 네이버로 예약해요. 가나아트파크는 월요일 휴관이에요",
+   stops:[{p:"songchubbq",stay:180,c:"글램핑 텐트 안에서 구워서 비가 와도 젖지 않아요. 타임제라 끝나는 시각이 정해져 있고요"},
+          {p:"ganaart",stay:80,c:"야외 조각이랑 실내 전시가 같이 있는 미술 공원이에요. 아이 동반이 많아 조용한 데이트를 원하면 평일이 나아요"},
+          {p:"orangerie",stay:70,c:"저수지 옆 대형 온실 카페라 유리 안에서 비를 봐요. 주말은 10시 반부터 열어요"}]},
+  {id:"j13",area:"jongno",transport:"car",hot:0,likes:69,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"석파정은 미술관 표로 들어가요",mood:"궁 뒤 언덕 동네를 차로 야금야금 돌아요",
+   note:"석파정 서울미술관이 월·화 휴관이에요. 이 동네는 역이 멀어 차가 답인데 주차가 다 소규모라 낮 일찍 도는 게 편해요",
+   stops:[{p:"jaha",stay:70,c:"미쉐린에 오른 만둣국집이에요. 주차 자리가 몇 대 없어 점심 피크는 피하는 게 나아요"},
+          {p:"seokpa",stay:90,c:"전시 보고 뒤편 석파정 정원까지 이어서 봐요. 오후 5시면 닫으니 늦게 가면 정원을 놓쳐요"},
+          {p:"clubesp",stay:60,c:"1990년부터 한 로스터리예요. 원두 고르면 그걸로 내려줘요"},
+          {p:"yoondj",stay:50,c:"버려진 물탱크를 고쳐 만든 전시실이 압권이에요. 무료고, 주차는 인근 공영에 대요"}]},
+  {id:"j14",area:"jongno",transport:"transit",hot:0,likes:75,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"비 오는 광화문, 지하로 다 이어져요",mood:"우산은 미술관 가는 한 구간만 펴요",
+   note:"만나는 곳은 광화문역 4번 출구. 국립현대미술관이 월요일 휴관이라 다른 요일에 가요. 역사박물관은 명절 당일만 쉬고요",
+   stops:[{p:"dtower",stay:70,c:"점심은 다섯 개 층 식당가에서 골라요. 12시 정각은 직장인 러시라 살짝 비켜 가는 게 나아요"},
+          {p:"kyobo",stay:60,c:"디타워에서 지하보도로 이어져 비를 안 맞아요. 설·추석 당일 말고는 늘 열려 있고요"},
+          {p:"khistory",stay:60,c:"무료 전시관이에요. 수요일이랑 토요일엔 밤 9시까지 해요"},
+          {p:"mmca",stay:90,c:"올여름부터 서도호 개인전이 크게 걸렸어요. 주말 오후엔 표 줄이 기니 예매가 편해요"}]},
+  {id:"mg5",area:"magok",transport:"car",hot:0,likes:81,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"12월까지만 걸리는 KAWS, 마곡",mood:"새로 난 몰에서 밥 먹고 전시로 넘어가요",
+   note:"온실이랑 스페이스K가 둘 다 월요일 휴관이에요. 스페이스K는 전용 주차가 마땅찮아 몰이나 식물원에 대고 걷는 게 편해요",
+   stops:[{p:"onegrove",stay:70,c:"올여름 문 연 몰이라 어딜 가도 새것이에요. 점심은 식당가에서요"},
+          {p:"spacek",stay:70,c:"KAWS전이 12월 27일까지 걸려 있어요. 규모 대비 보러 오는 사람이 많아 주말 낮은 붐벼요"},
+          {p:"botanic",stay:90,c:"온실 하나로 유명한 식물원이에요. 온실 표 5천 원, 야외 정원은 무료예요"},
+          {p:"lgart",stay:60,c:"안도 다다오가 지은 공연장이에요. 공연 없어도 로비 계단 공간만 보러 와도 돼요"}]},
+  {id:"js9",area:"jamsil",transport:"car",hot:0,likes:88,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"석촌호수까지 주차는 한 번만",mood:"차 빼는 순간이 곧 집에 가는 순간이에요",
+   note:"몰 지하에 한 번 대면 넷 다 걸어서 돼요. 전부 연중무휴라 요일을 안 타는 것도 장점이에요",
+   stops:[{p:"lwmall",stay:80,c:"점심은 지하 식당가에서요. 선택지가 많아서 오히려 고르는 데 시간이 걸려요"},
+          {p:"seokchon",stay:60,c:"몰에서 계단으로 바로 내려가요. 한 바퀴가 2.5km예요"},
+          {p:"lwaqua",stay:70,c:"몰 지하라 비 와도 그대로예요. 성인 3만 5천이라 예산은 미리 잡아두고요"},
+          {p:"lwtower",stay:70,c:"117층부터가 전망대예요. 해 넘어가는 시간에 맞추면 낮이랑 밤을 다 봐요"}]},
+  {id:"js10",area:"jamsil",transport:"car",hot:0,likes:71,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"봉피양 냉면으로 여는 올림픽공원",mood:"냉면 먹으러 갔다가 반나절 눌러앉게 돼요",
+   note:"공원 몽촌토성·미술관·박물관이 다 월요일 휴관이라 월요일은 통째로 피해요. 주차는 공원 대형 주차장이 편해요",
+   stops:[{p:"bongpi",stay:80,c:"평양냉면에 돼지갈비 곁들이는 집이에요. 발렛이 되니 차는 맡기면 돼요"},
+          {p:"olympic",stay:80,c:"몽촌토성 언덕이 공원의 중심이에요. 88잔디광장 쪽은 올해 공사 구역이 있어 돌아가게 돼요"},
+          {p:"soma",stay:70,c:"조각공원이랑 이어지는 미술관이에요. 이승택전이 9월 초까지 걸려 있고요"},
+          {p:"baekje",stay:60,c:"공원 옆이라 걸어서 가요. 무료인데 전시 규모가 커서 시간이 생각보다 들어요"}]},
+  {id:"js11",area:"jamsil",transport:"car",hot:0,likes:92,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"비 오는 날 정답은 롯데월드 실내존",mood:"우산 없이 밤 10시까지 버티는 하루예요",
+   note:"전부 한 건물군이라 밖에 나갈 일이 없어요. 어드벤처 자유이용권이 비싸니 예산은 넉넉히 잡아요",
+   stops:[{p:"lwmall",stay:70,c:"어드벤처 열기 전에 점심부터 해결해요. 식당가는 지하가 제일 넓어요"},
+          {p:"lotteworld",stay:180,c:"실내존만 돌아도 반나절이에요. 인기 기구는 매직패스 유무로 대기가 갈리고요"},
+          {p:"lwaqua",stay:60,c:"어드벤처에서 몰 통로로 이어져요. 메인 수조 터널이 하이라이트라 마지막에 봐요"},
+          {p:"lwtower",stay:70,c:"마무리는 123층 야경이에요. 밤 10시 반까지라 쫓기지 않아요"}]},
+  {id:"g8",area:"gangnam",transport:"car",hot:0,likes:77,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"코엑스, 지하로만 걸어도 하루가 가요",mood:"실내 동선인데 마무리는 절 마당이에요",
+   note:"백화점이 한 달에 한 번 쉬니 가기 전에 휴점일만 확인해요. 코엑스 주차장에 대면 봉은사까지 다 걸어서 돼요",
+   stops:[{p:"hdtrade",stay:70,c:"점심은 백화점 식당가가 몰보다 줄이 짧아요. 코엑스랑 연결돼 있어 이동도 실내고요"},
+          {p:"starfield",stay:60,c:"13미터 서가 아래가 만남의 광장이에요. 앉을 자리는 2층 계단석이 잘 비어요"},
+          {p:"aquarium",stay:80,c:"성인 3만 원대라 오늘 예산의 반이 여기로 가요. 그만큼 체류는 길게 잡고요"},
+          {p:"bongeun",stay:50,c:"길 하나 건너면 절이에요. 우산 쓸 일은 이 횡단보도가 전부고, 경내는 밤까지 열려 있어요"}]},
+  {id:"i7",area:"itaewon",transport:"car",hot:0,likes:84,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"박물관 반나절, 저녁은 아이맥스",mood:"무료 전시로 시작해 영화로 닫는 실내 하루",
+   note:"박물관은 1월 1일과 명절에 쉬어요. 두 곳 다 지하 주차가 커서 차가 편하고, 몰은 용산역이랑 붙어 있어요",
+   stops:[{p:"nmuseum",stay:150,c:"상설관만 봐도 반나절이에요. 다 볼 욕심 말고 층 하나를 정해 도는 쪽이 남는 게 많아요"},
+          {p:"nmufood",stay:60,c:"단지 안에서 점심을 해결해요. 거울못 보이는 자리가 인기라 조금 서둘러야 잡아요"},
+          {p:"ipark",stay:70,c:"용산역 붙은 몰이에요. 영화 시간까지 층 구경으로 때워요"},
+          {p:"cgvyongsan",stay:150,c:"아이맥스관 크기로 전국에서 손꼽히는 지점이에요. 가운데 자리는 예매가 필수고요"}]},
+  {id:"yd7",area:"yeouido",transport:"car",hot:0,likes:86,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"뱅크시 보고 한강까지, 여의도",mood:"백화점에서 시작해 강 한복판에서 끝나요",
+   note:"더현대가 셋째 월요일에 쉬어요. 뱅크시전은 11월 초까지고요. 노들섬 주차는 30분에 천 원이에요",
+   stops:[{p:"hyundai",stay:90,c:"점심 먹고 전시장 ALT.1로 가요. 뱅크시전이 11월 초까지라 늦으면 놓쳐요"},
+          {p:"ifc",stay:60,c:"더현대에서 지하로 이어져요. 커피는 사람 적은 이쪽에서 마셔요"},
+          {p:"yeouidohan",stay:70,c:"주차장이 공원 안에 있어요. 강바람 맞으며 걷다 보면 소화가 돼요"},
+          {p:"nodeul",stay:60,c:"한강대교 중간 섬이에요. 강 양쪽이 다 보여서 마무리 산책이 그림 같고, 주차는 30분에 천 원이에요"}]},
+  {id:"sc4",area:"seocho",transport:"transit",hot:0,likes:61,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
+   title:"한가람 두 관을 하루에 다 보기",mood:"한 단지 안에서 전시만 세 곳 돌아요",
+   note:"미술관 계열이 다 월요일 휴관이에요. 남부터미널역 5번 출구에서 걸어 올라가거나 셔틀버스를 타요",
+   stops:[{p:"sac",stay:70,c:"점심은 단지 안 식당가에서요. 야외 계단 좌석은 한여름 낮엔 피하는 게 낫고요"},
+          {p:"hangaram",stay:90,c:"보테로전이 8월 말까지 걸려 있어요. 끝물이라 주말 오후엔 줄을 각오해야 해요"},
+          {p:"hangaramd",stay:60,c:"미술관 바로 옆 관이에요. 이어 보면 표값이 아깝지 않아요"},
+          {p:"gugak",stay:50,c:"국악원 안 무료 전시관이에요. 살짝 언덕길이라 마지막이 편해요"}]},
 ];
 /* ═════ 루트 스펙 — "이게 나한테 맞나"를 본문 읽기 전에 판정하는 값들 ═════
    데이트 코스 142개 전수 분석(루트_기준.md 2.5절)에서 나온 6칸이다.
@@ -2748,21 +2934,30 @@ function toggleFlag(k){
 /* 날짜·시간 입력 — 네이티브 위젯은 표시 형식을 브라우저가 정해서 좁은 화면에서 잘린다.
    우리가 그린 텍스트(26/08/07(금)) 위에 투명한 네이티브 입력을 덮어, 보이는 건 우리가 정하고
    피커는 네이티브를 그대로 쓴다. showPicker()는 지원이 갈려서 쓰지 않는다. */
+/* ⚠️ iOS는 피커를 돌리는 도중 change가 오는데, 그때 render()로 입력창을 갈아끼우면
+   피커가 붙어 있던 노드가 사라져 최종 선택이 유실된다("날짜가 안 바뀐다").
+   → input(고르는 중)엔 상태·표시 글자만 갱신하고, 전체 render는 피커가 닫힌 뒤(blur)로 미룬다. */
+function dtxUpdate(inp,tx){ const s=inp.closest(".dfield").querySelector(".dtx"); if(s) s.textContent=tx; }
+function dTx(val){ const d=new Date(val+"T00:00");
+  return `${String(d.getFullYear()).slice(2)}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}(${DAYS[d.getDay()]})`; }
+/* 데스크톱은 입력 가운데를 눌러도 피커가 안 뜬다(달력 아이콘이 투명이라 못 찾음) → 클릭 시 showPicker().
+   미지원 브라우저는 조용히 넘어가고(모바일은 탭만으로 열림), 열린 상태에서 또 부르면 나는 예외도 삼킨다. */
+const openPicker="try{this.showPicker()}catch(e){}";
 function dField(val,on){
-  const d=new Date(val+"T00:00");
-  const tx=`${String(d.getFullYear()).slice(2)}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}(${DAYS[d.getDay()]})`;
-  return `<label class="dfield d">${IC.cal}<span class="dtx">${tx}</span>
-    <input type="date" value="${val}" onchange="${on}" aria-label="날짜"></label>`;
+  return `<label class="dfield d">${IC.cal}<span class="dtx">${dTx(val)}</span>
+    <input type="date" value="${val}" onclick="${openPicker}" oninput="${on};dtxUpdate(this,dTx(this.value))"
+      onchange="${on};dtxUpdate(this,dTx(this.value))" onblur="render()" aria-label="날짜"></label>`;
 }
 function tField(val,on){
   return `<label class="dfield t">${IC.clock}<span class="dtx">${hm(toMin(val))}</span>
-    <input type="time" step="900" value="${val}" onchange="${on}" aria-label="시각"></label>`;
+    <input type="time" step="900" value="${val}" onclick="${openPicker}" oninput="${on};dtxUpdate(this,hm(toMin(this.value)))"
+      onchange="${on};dtxUpdate(this,hm(toMin(this.value)))" onblur="render()" aria-label="시각"></label>`;
 }
 function condBar(){
   return `<div class="cond">
     <div class="r"><span class="lab">언제</span>
-      ${dField(S.date,"S.date=this.value;render()")}
-      ${tField(S.time,"S.time=this.value;render()")}</div>
+      ${dField(S.date,"S.date=this.value")}
+      ${tField(S.time,"S.time=this.value")}</div>
     <div class="r"><span class="lab">어떻게</span><div class="seg">
       <button class="flat ${S.transport==="all"?"on":""}" onclick="S.transport='all';render()">전체</button>
       <button class="flat ${S.transport==="transit"?"on":""}" onclick="S.transport='transit';render()">${IC.subway}대중교통</button>
@@ -2938,10 +3133,9 @@ function routeCard(r,mode,i){
         <span>${IC.card}<b>${wonRange(...totalCost(c,r.transport,S.people))}</b> <span style="font-weight:600">${plabel(S.people)}명</span></span>
       </div>
       <div class="byl"><span class="av">${r.av}</span>
-        <span class="who"><b>${AREAS.find(a=>a.id===r.area).n}</b> · ${r.by}</span>
+        <span class="who">${r.by}</span>
         <span class="lk">${IC.bmk}${saveCount(r)}</span>
-        <span class="lk">${IC.reroute}${rerouteCount(r)}</span>
-        <span class="lk">${r.plan?`${IC.flag}아직 안 감`:`${IC.check}${r.visits}명`}</span></div>
+        <span class="lk">${IC.reroute}${rerouteCount(r)}</span></div>
     </div></button></div>`;
 }
 
@@ -2968,6 +3162,10 @@ function sections(){
       rows:list.filter(r=>r.hot)},
     fame:{title:"인터넷에서 유명한 루트",kick:"화제의 루트",desc:"아이돌 성지순례 · 애니 배경지 · 외국인 여행객 인기 루트",
       rows:list.filter(r=>r.fame)},
+    /* 비 오는 날 — 날씨 API가 없으니 "오늘 비가 온다"고 단정하지 않는다(절대 제약 7).
+       우리가 아는 건 스톱 카테고리로 계산한 실내 비중뿐이라 그것만 말한다. */
+    rain:{title:"비 와도 되는 루트",kick:"비 오는 날",desc:"실내 비중이 높아 우산 쓰는 시간이 짧아요",
+      rows:list.filter(r=>indoorRate(r)>=.6).sort((a,b)=>indoorRate(b)-indoorRate(a))},
     /* '취향 기반'은 뺐다 — 조건이 "전시나 카페가 하나라도 있으면"이라 사실상 전부 걸렸다.
        실제 취향 데이터가 없는데 개인화한 척하면 나머지 추천의 신뢰까지 깎는다.
        진짜 취향 추천은 다녀온 곳·좋아요가 쌓인 뒤에 만든다. */
@@ -3030,6 +3228,7 @@ function home(){
       <button class="rmore flat" aria-label="장소 전체 보기" onclick="go('places')">
         <i>${IC.next}</i><span>더보기</span></button></div>
     ${sec("hot",S2.hot,2)}
+    ${sec("rain",S2.rain,4)}
     ${S.favs.size?sec("near",S2.near,4)
       :`<div class="empty"><div class="ic">${IC.star}</div>위에서 자주 가는 지역을 눌러보세요.<br>그 근처 루트를 여기에 모아드려요.</div>`}
     ${sec("fame",S2.fame,4)}
@@ -3484,8 +3683,8 @@ function createView(){
     <div class="step"><div class="no">STEP 1</div><h3>언제 만나요?</h3><div class="box">
       <div class="cond" style="margin:0;padding:0;box-shadow:none;background:none">
         <div class="r"><span class="lab">만나기</span>
-          ${dField(d.date,"S.draft.date=this.value;render()")}
-          ${tField(d.time,"S.draft.time=this.value;render()")}</div></div>
+          ${dField(d.date,"S.draft.date=this.value")}
+          ${tField(d.time,"S.draft.time=this.value")}</div></div>
       ${pv?`<div class="meet">${IC.clock}<span><b>${hm(pv.startAt)}</b>에 만나면
         <b>${hm(pv.endLo)}쯤</b> 끝나요 · ${durRange(pv.totalLo,pv.totalHi)}</span></div>`:""}
       ${pv&&pv.blocked?`<div class="warnline" style="margin-top:10px">${pv.blockNames.join(" · ")}</div>`:""}
