@@ -361,10 +361,14 @@ svg{display:block}
 .stpl{flex:0 0 76px;display:flex;flex-direction:column;gap:7px}
 .stpl .lk{width:76px;justify-content:center;padding:6px 0;min-height:0;font-size:11.5px;gap:4px}
 .stp .nmrow{display:flex;align-items:baseline;gap:8px}
-.stp .nmrow .nm{flex:1;min-width:0}
-.more2{flex:0 0 auto;font-size:11.5px;color:var(--sub);font-weight:700;white-space:nowrap;
-  padding:2px 0;text-decoration:underline;text-underline-offset:2px}
-.stp .nm{font-size:16.5px;font-weight:700;letter-spacing:-.042em}
+/* 스팟 이름 자체가 장소 상세로 가는 버튼이다 (예전엔 옆에 '담긴 루트' 버튼이 따로 있었다).
+   버튼이라 브라우저 기본 스타일이 붙으므로 전부 벗겨서 글자로 보이게 한다.
+   ⚠️ font 관련은 반드시 이 규칙 안에 둔다 — `.stp .nmrow .nm`(0,0,3,0)이 `.stp .nm`(0,0,2,0)을
+   이기므로, 여기에 font:inherit를 쓰면 크기·굵기가 통째로 죽는다(실제로 15px/400으로 렌더됐다). */
+.stp .nmrow .nm{flex:1;min-width:0;background:none;border:0;padding:0;margin:0;min-height:0;
+  text-align:left;color:inherit;font-family:inherit;cursor:pointer;
+  font-size:16.5px;font-weight:700;letter-spacing:-.042em}
+.stp .nmrow .nm:active{opacity:.6}
 .stp .tm{font-size:12.5px;color:var(--sub);margin-top:3px;font-weight:600}
 .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .tg{font-size:11px;background:var(--chip);color:var(--sub);border-radius:var(--r-s);padding:4px 7px;font-weight:700}
@@ -619,7 +623,6 @@ svg{display:block}
 .tg.warn{background:var(--warn-2);color:var(--warn);border-color:transparent}
 .tg.ok{background:var(--chip-2);color:var(--sub);border-color:transparent}
 /* 인기는 핑크(--point), 갈 수 있음은 라임(--accent). 강조를 한 색으로만 쓰면 위계가 안 보인다 */
-.tg.pop{background:var(--point-2);color:var(--point-dk);border-color:transparent;font-weight:700}
 /* 사진 위 알약만 예외로 유리 재질 유지 — 이미지 위에선 테두리보다 대비가 먼저다 */
 .pill{box-shadow:none}
 
@@ -984,10 +987,6 @@ button.research:active{transform:translateX(-50%);opacity:.6}
    prefers-reduced-motion이면 위 전역 규칙이 애니메이션을 꺼준다 */
 @keyframes likepop{0%{transform:scale(1)}45%{transform:scale(1.4)}100%{transform:scale(1)}}
 .likepop svg{animation:likepop .32s var(--ease)}
-/* '문 닫은 것 같아요' — 조용한 텍스트 버튼. 기록은 이 기기(localStorage)에만 남는다 */
-.flwrap{display:inline-flex;align-items:center;gap:6px}
-.flbtn{font-size:11px;font-weight:600;color:var(--dim);background:none;border:0;padding:2px 0;
-  text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 /* 끝맺음 — 캘린더 담기와 완주 */
 .pend{margin:14px 24px 0;display:flex;flex-direction:column;gap:10px}
 .pend>.mini{justify-content:center;min-height:46px}
@@ -1317,9 +1316,12 @@ const PLACES={
   snu:        {n:"서울대학교 캠퍼스",c:"복합공간",out:1,area:"gwanak",lat:37.4600,lng:126.9520,open:"00:00",close:"23:59",closed:[],cost:[0,10000],park:1,wait:0,pop:72,img:"서울로"},
   sharosu:    {n:"샤로수길",         c:"골목",   area:"gwanak", lat:37.4800,lng:126.9525,open:"11:00",close:"23:00",closed:[],cost:[10000,28000],park:0,wait:1,pop:67,img:"을지로"},
   /* 마곡·강서 보강 — 서울식물원 하나로는 루트가 안 나온다 */
-  gyeomjae:   {n:"겸재정선미술관",   c:"전시",   area:"magok",  lat:37.5540,lng:126.8365,open:"10:00",close:"18:00",closed:[1],cost:[1000,1000],park:1,wait:0,pop:49,img:"국립현대미술관"},
-  heojun:     {n:"허준박물관",       c:"전시",   area:"magok",  lat:37.5545,lng:126.8395,open:"10:00",close:"18:00",closed:[1],cost:[1000,1000],park:1,wait:0,pop:47,img:"국립중앙박물관"},
-  yangcheon:  {n:"양천향교",         c:"고궁",   area:"magok",  lat:37.5555,lng:126.8385,open:"09:00",close:"18:00",closed:[],cost:[0,0],park:0,wait:0,pop:44,img:"덕수궁"},
+  /* 2026-08-16 좌표 정정 — 셋 다 1.8~2.1km 어긋나 있었다(화곡 쪽을 가리켰다).
+     사용자가 준 도로명주소를 공공데이터 상가정보의 같은 도로 좌표로 확정했다:
+     양천로47길 40번=37.57222,126.83781 / 허준로 91번=37.56783,126.85181 / 양천로47나길 21·27번=37.5720,126.8390 */
+  gyeomjae:   {n:"겸재정선미술관",   c:"전시",   area:"magok",  lat:37.5722,lng:126.8378,open:"10:00",close:"18:00",closed:[1],cost:[1000,1000],park:1,wait:0,pop:49,img:"국립현대미술관"},
+  heojun:     {n:"허준박물관",       c:"전시",   area:"magok",  lat:37.5679,lng:126.8518,open:"10:00",close:"18:00",closed:[1],cost:[1000,1000],park:1,wait:0,pop:47,img:"국립중앙박물관"},
+  yangcheon:  {n:"양천향교",         c:"고궁",   area:"magok",  lat:37.5725,lng:126.8395,open:"09:00",close:"18:00",closed:[],cost:[0,0],park:0,wait:0,pop:44,img:"덕수궁"},
   /* 지역이 얇아 루트끼리 구성이 겹치던 곳 보강 */
   gwanghui:   {n:"광희문",           c:"고궁",   area:"ddp",    lat:37.5657,lng:127.0093,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:51,img:"덕수궁"},
   doota:      {n:"두타몰",           c:"복합공간",area:"ddp",   lat:37.5670,lng:127.0095,open:"10:30",close:"24:00",closed:[1],cost:[10000,40000],park:1,wait:0,pop:64,img:"롯데월드몰"},
@@ -1456,6 +1458,14 @@ const PLACES={
   vivana:     {n:"비바나폴리",c:"식당",area:"magok",lat:37.56041,lng:126.82750,kid:"670948298",open:"",close:"",closed:[],cost:[0,0],park:0,wait:0,pop:53,img:""},
   sonapat:    {n:"파티세리소나 마곡점",c:"카페",area:"magok",lat:37.56268,lng:126.82360,kid:"1076203353",open:"",close:"",closed:[],cost:[0,0],park:0,wait:0,pop:50,img:""},
   gulli:      {n:"굴리",c:"카페",area:"magok",lat:37.56367,lng:126.82531,kid:"1068511253",open:"",close:"",closed:[],cost:[0,0],park:0,wait:0,pop:45,img:""},
+  /* ── 강서·마곡 2차 (같은 출처 · 영업시간 미확인) ── */
+  laura:      {n:"라우라",c:"식당",area:"magok",lat:37.56047,lng:126.83439,kid:"1076202386",open:"",close:"",closed:[],cost:[0,0],park:0,wait:0,pop:54,img:""},
+  loiseau:    {n:"르와조 마곡",c:"카페",area:"magok",lat:37.55828,lng:126.82928,kid:"1068510380",open:"",close:"",closed:[],cost:[0,0],park:0,wait:0,pop:48,img:""},
+  songthai:   {n:"쏭타이치앙마이 마곡직영점",c:"식당",area:"magok",lat:37.56055,lng:126.83390,kid:"670949123",open:"",close:"",closed:[],cost:[0,0],park:0,wait:0,pop:57,img:""},
+  janjan:     {n:"잔잔하게",c:"식당",area:"magok",lat:37.56808,lng:126.82542,kid:"1076204025",open:"",close:"",closed:[],cost:[0,0],park:0,wait:0,pop:50,img:""},
+  teheb:      {n:"떼헤브",c:"카페",area:"magok",lat:37.56987,lng:126.82498,kid:"643116079",open:"",close:"",closed:[],cost:[0,0],park:0,wait:0,pop:46,img:""},
+  tarde:      {n:"타르데마 베이커리 서울식물원",c:"카페",area:"magok",lat:37.57099,lng:126.83812,kid:"1107775779",open:"",close:"",closed:[],cost:[0,0],park:0,wait:0,pop:51,img:""},
+  katsu:      {n:"카츠륜",c:"식당",area:"magok",lat:37.56039,lng:126.82821,kid:"1068511449",open:"",close:"",closed:[],cost:[0,0],park:0,wait:0,pop:56,img:""},
 };
 /* 시드 루트 70개 — 전부 AI가 초안을 짜고 사람이 실존·휴무를 확인해서 ai:1이 붙는다.
    아직 아무도 안 다녀왔으므로 plan:1(계획 루트) · visits:0이 정직한 상태다.
@@ -1964,13 +1974,13 @@ const ROUTES=[
    stops:[{p:"botanic",stay:120,c:"온실만 유료고 나머지는 무료예요. 안에 앉을 데가 계속 있어 오래 있기 좋아요"},
           {p:"lgart",stay:60,c:"식물원 옆이고 공연 없는 날도 로비랑 서점은 열려요. 지하로 연결돼 비가 와도 되고요"},
           {p:"hyundai",stay:90,c:"주차가 넉넉해요. 저녁은 지하 식당가, 밤 10시까지 하고요"},
-          {p:"gyeomjae",stay:60,c:"식물원에서 차로 10분. 주차장이 작아 근처 공영을 같이 보면 좋아요"}]},
+          {p:"gyeomjae",stay:60,c:"식물원 동쪽으로 나오면 금방이에요. 주차장이 작아 근처 공영을 같이 보면 좋아요"}]},
   {id:"m2",area:"magok",transport:"transit",hot:0,likes:36,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",
    title:"티켓 시간에 하루를 맞추는 마곡",mood:"티켓 시간부터 잡고 앞을 채워요",
    note:"공연 일정은 미리 확인하세요. 식물원 온실은 월요일 휴무예요",
    stops:[{p:"botanic",stay:100,c:"마곡나루역에서 바로예요. 온실 밖은 그늘이 적어 오전이 시원해요"},
           {p:"lgart",stay:130,c:"역까지 되돌아 나오면 돼요. 공연 전엔 로비 서점에서 시간 보내기 좋고요"},
-          {p:"gyeomjae",stay:60,move:"subway",c:"아트센터에서 9호선 한 번. 작아서 한 시간이면 다 보고, 월요일은 쉬어요"},
+          {p:"gyeomjae",stay:60,c:"아트센터에서 걸어갈 만해요. 작아서 한 시간이면 다 보고, 월요일은 쉬어요"},
           {p:"heojun",stay:50,c:"공연 시간 전에 들르기 좋아요. 월요일은 휴관이고요"}]},
 
   /* ── 문래·영등포 ── */
@@ -2181,7 +2191,7 @@ const ROUTES=[
   {id:"mg3",area:"magok",transport:"transit",hot:0,likes:52,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",
    title:"관람료 천원짜리 미술관 두 곳",
    mood:"둘 다 월요일에 쉬는 게 유일한 함정",
-   note:"미술관과 박물관 모두 월요일 휴관이에요. 세 곳이 걸어서 5분 안쪽",
+   note:"미술관과 박물관 모두 월요일 휴관이에요. 미술관과 향교는 붙어 있고 허준박물관만 가양역 쪽으로 떨어져 있어요",
    stops:[{p:"gyeomjae",stay:70,c:"관람료 천원이에요. 한강 습지 쪽 전망이 좋고, 겨울엔 5시에 입장이 끊겨요"},
           {p:"yangcheon",stay:40,c:"서울에 하나 남은 향교예요. 사람이 없어서 오히려 조용히 둘러보기 좋아요"},
           {p:"heojun",stay:60,c:"동의보감 중심 전시예요. 직접 만져보는 체험이 있어 시간이 잘 가요"},
@@ -2191,9 +2201,9 @@ const ROUTES=[
    mood:"실내가 많아서 날씨를 안 타요",
    note:"온실과 박물관 모두 월요일 휴무라 월요일은 피하세요",
    stops:[{p:"botanic",stay:120,c:"온실만 유료예요. 안에 앉을 데가 계속 있어 오래 있기 좋아요"},
-          {p:"gyeomjae",stay:60,c:"차로 10분 남짓. 주차장이 작아 근처 공영을 같이 보면 좋아요"},
+          {p:"gyeomjae",stay:60,c:"식물원 바로 동쪽이에요. 주차장이 작아 근처 공영을 같이 보면 좋아요"},
           {p:"yangcheon",stay:50,c:"미술관에서 걸어서 5분. 작아서 금방 보고, 그늘이 적어 오전이 시원해요"},
-          {p:"heojun",stay:50,c:"겸재정선미술관 바로 옆이라 묶어서 보면 돼요"}]},
+          {p:"heojun",stay:50,c:"여기만 가양역 쪽으로 좀 떨어져 있어요. 동의보감 전시라 시간을 따로 잡는 게 나아요"}]},
   /* ── 노원·태릉 3 (2026-08-09 · 2.5절 공식 적용) ── */
   {id:"nw1",area:"nowon",transport:"transit",hot:0,likes:71,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",
    title:"도깨비시장에서 사서 폐선 따라 걷기",mood:"공릉역에서 화랑대까지 계속 걷기만 하면 돼요",
@@ -2535,6 +2545,7 @@ const ROUTES=[
    title:"백반집 옆에 카페 옆에 쌀국수집, 서울식물원 가는 길",mood:"밥집 쪽을 먼저 정하고 식물원을 끼워 넣었어요",
    note:"식물원 온실은 월요일 휴관이에요. 밥집 두 곳은 영업시간을 모르는 채로 담았으니 저녁은 대안을 하나 봐두는 게 나아요",
    stops:[{p:"bongibap",stay:70,c:"백반집이에요. 바로 옆이 카페우드진이라 밥 먹고 커피까지 골목 밖으로 안 나가도 돼요"},
+          {p:"woodjin",stay:40,c:"봉이밥에서 60미터라 사실상 같은 골목이에요. 식물원까지 걸을 채비를 여기서 하고 나가면 되고요"},
           {p:"botanic",stay:100,c:"온실만 표를 끊고 야외 정원은 그냥 들어가요. 월요일엔 온실이 닫혀요"},
           {p:"lgart",stay:60,c:"식물원 쪽에서 걸어 내려오면 나와요. 공연을 안 봐도 로비랑 서점은 열어둬요"},
           {p:"saigonyun",stay:80,c:"베트남 음식점이라 저녁으로 뒀어요. 점심 먹은 골목으로 되돌아오는 셈이라 길 찾을 일은 없고요"}]},
@@ -2545,6 +2556,35 @@ const ROUTES=[
           {p:"onegrove",stay:80,c:"올여름 문 연 몰이에요. 여기선 밥까지 해결하지 말고 한 바퀴만 돌기로 했어요"},
           {p:"sonapat",stay:45,c:"빵집이에요. 몰에서 나와 조금 걸어야 하고, 닫혀 있으면 근처 굴리도 같은 빵집이에요"},
           {p:"vivana",stay:80,c:"피자집이라 마지막에 뒀어요. 몰 쪽으로 되돌아 걷는 자리예요"}]},
+  {id:"gs4",area:"magok",transport:"transit",hot:0,likes:17,visits:0,people:2,plan:1,ai:1,by:"강서산책러",av:"🚶",checked:"2026.08",
+   title:"전시 하나 보려고 그 옆 세 곳을 같이 담았어요",mood:"스페이스K 반경 300미터에서 안 나가요",
+   note:"월요일은 스페이스K가 쉬는 날이라 이 순서가 통째로 어그러져요. 식당 세 곳은 문 여는 시간을 못 찾았어요",
+   stops:[{p:"laura",stay:70,c:"경양식으로 등록된 집이라 점심 자리로 골랐어요. 전시장까지 300미터라 먹고 바로 올라가면 되고요"},
+          {p:"spacek",stay:70,c:"월요일 휴무가 확실한 곳은 이 루트에서 여기뿐이에요. 무슨 전시가 걸려 있는지는 그때그때 달라지고요"},
+          {p:"loiseau",stay:45,c:"전시장에서 340미터쯤 되는 카페예요. 저녁 자리로 넘어가는 사이를 여기로 메웠는데, 몇 시에 닫는지는 못 알아냈어요"},
+          {p:"songthai",stay:80,c:"베트남식으로 등록된 마곡 직영점이에요. 낮에 먹은 경양식이랑 안 겹치게 저녁을 이쪽으로 갈랐어요"}]},
+  {id:"gs5",area:"magok",transport:"transit",hot:0,likes:22,visits:0,people:2,plan:1,ai:1,by:"강서산책러",av:"🚶",checked:"2026.08",
+   title:"밥 두 번 먹는 사이에 공연이 있어요",mood:"끼니를 놓치기 쉬운 공연 날에 맞춰 짰어요",
+   note:"공연이 있는 날인지부터 보고 나머지를 붙이는 편이 나아요. 밥집 두 곳과 빵집은 문 여는 시간을 확인 못 했고요",
+   stops:[{p:"janjan",stay:70,c:"한정식이랑 백반으로 묶여 있는 집이에요. 아트센터까지 500미터가 안 돼서 점심을 여기서 열어요"},
+          {p:"lgart",stay:130,c:"공연이 있으면 여기서 두 시간 넘게 묶여요. 그래서 점심을 일찍 먹고 오는 쪽으로 짰어요"},
+          {p:"teheb",stay:40,c:"빵이랑 도넛 쪽으로 등록된 곳이에요. 공연 끝나고 저녁까지 시간이 뜨면 여기서 한 번 끊고 가려고 넣었어요"},
+          {p:"saigonyun",stay:80,c:"떼헤브에서 200미터가 채 안 돼요. 점심에 먹은 백반이랑 안 겹치게 마지막은 여기예요"}]},
+  {id:"gs6",area:"magok",transport:"transit",hot:0,likes:20,visits:0,people:2,plan:1,ai:1,by:"강서산책러",av:"🚶",checked:"2026.08",
+   title:"식물원 다음이 미술관, 향교까지 다 걸어서",mood:"따로 가는 데인 줄 알았던 세 곳이 한 줄로 이어져요",
+   note:"월요일엔 식물원 온실과 겸재정선미술관이 같이 쉬어요. 봉이밥과 타르데마는 몇 시에 문을 여는지 못 찾았으니 끼니는 대안을 하나 봐두는 게 나아요",
+   stops:[{p:"bongibap",stay:70,c:"식물원 서쪽 골목에 있는 백반집이에요. 여기서 정문 쪽까지 650미터라 밥 먹고 바로 걷기 시작하면 되고요"},
+          {p:"botanic",stay:100,c:"온실 표를 끊을지는 뒤에 걸을 거리를 보고 정하는 게 나아요. 여기서 겸재정선미술관까지 358미터거든요"},
+          {p:"gyeomjae",stay:60,c:"겸재 정선이 양천현감으로 지낸 동네라 미술관을 여기 세웠어요. 표값이 천 원이라 잠깐만 볼 생각으로 들어가도 아깝지 않고요"},
+          {p:"yangcheon",stay:45,c:"미술관 나와서 153미터예요. 서울에 남은 향교가 여기 하나라는 건 이번에 지도 보다가 알았어요"},
+          {p:"tarde",stay:40,c:"향교에서 208미터, 식물원 쪽으로 되돌아 걷는 자리에 있는 빵집이에요. 몇 시에 닫는지는 못 알아냈어요"}]},
+  {id:"gs7",area:"magok",transport:"transit",hot:0,likes:15,visits:0,people:2,plan:1,ai:1,by:"강서산책러",av:"🚶",checked:"2026.08",
+   title:"몰은 가운데에 두고 끼니를 양쪽 끝에 뒀어요",mood:"마지막 한 구간 빼면 전부 300미터 안쪽이에요",
+   note:"시간을 아는 곳은 원그로브뿐이에요. 나머지 세 곳은 여닫는 때를 못 찾았으니 마지막 중국집은 문을 확인하고 움직이는 편이 나아요",
+   stops:[{p:"katsu",stay:70,c:"이름은 돈가스 같은데 등록은 일식 회·초밥으로 돼 있어요. 뭘 파는지가 갈리는 집이라 들어가서 메뉴부터 보게 될 것 같고요"},
+          {p:"onegrove",stay:80,c:"여기서 259미터 떨어진 밥집을 먼저 잡은 이유가 이거예요. 열 시 반부터 여니까 오전에 먼저 오면 셔터만 보고 돌아서요"},
+          {p:"gulli",stay:45,c:"몰에서 북쪽으로 264미터 올라가면 나오는 빵집이에요. 저녁까지 시간이 뜨면 여기서 한 번 끊는 자리로 뒀어요"},
+          {p:"ilmimi",stay:70,c:"마지막 한 구간만 790미터로 떨어져 있어요. 중국집이라 처음에 먹은 일식이랑 안 겹치게 끝을 이쪽으로 뒀고요"}]},
 ];
 /* ═════ 루트 스펙 — "이게 나한테 맞나"를 본문 읽기 전에 판정하는 값들 ═════
    데이트 코스 142개 전수 분석(루트_기준.md 2.5절)에서 나온 6칸이다.
@@ -2882,9 +2922,7 @@ const S={view:"home",routeId:null,placeId:null,listKey:null,
   folderTab:"전체",
   myRoutes:[],                // 내가 만들거나 리그램한 루트
   budLo:0,budHi:30,weather:"",ptab:"routes",placeCat:"",placeQ:"",placeN:40,
-  stack:[],scrollMem:{},memos:{},memoEdit:null,reroutes:new Set(),
-  flagged:new Set()};   // '문 닫은 것 같아요' 신고 — 서버가 없어 이 기기(localStorage)에만 남는다
-try{ JSON.parse(localStorage.getItem("spots.flagged")||"[]").forEach(k=>S.flagged.add(k)); }catch(_){}
+  stack:[],scrollMem:{},memos:{},memoEdit:null,reroutes:new Set()};
 const iso=()=>`${S.date}T${S.time}:00`;
 let ANIM=true;
 const memKey=()=>S.view+(S.routeId||"")+(S.placeId||"")+(S.listKey||"");
@@ -2935,7 +2973,6 @@ const likeCount=k=>Math.round((PLACES[k].pop||50)*1.4)+(S.likes.has(k)?1:0);
    내가 저장하면 +1이 바로 보이고, reroute()가 올리는 regrams도 그대로 합산된다. */
 const saveCount=r=>Math.round((r.likes||0)*.6)+(S.saved.has(r.id)?1:0);
 const rerouteCount=r=>Math.round((r.likes||0)*.15)+(r.regrams||0);
-const popWord=p=>p>=88?"많이들 찾는 곳":p>=72?"평이 좋은 곳":"조용한 편";
 function toggleLike(k){
   S.likes.has(k)?S.likes.delete(k):S.likes.add(k);
   // 화면 전체를 다시 그리면 지도가 새로 만들어져 끊긴다 — 이 버튼만 고친다
@@ -2954,23 +2991,8 @@ function toggleFav(id){
           :`'${a.n}' 즐겨찾기를 해제했어요`);
   render();
 }
-/* '문 닫은 것 같아요' — 서버가 없으니 이 기기(localStorage)에만 기록하고 '확인 중' 배지를 단다.
-   토글류라 render()를 부르지 않는다 — 같은 스팟이 화면에 여러 번 있어도 data-flag로 전부 갈아끼운다. */
-const flagHTML=(k,sp)=>{
-  const on=S.flagged.has(k), act=`event.stopPropagation();toggleFlag('${k}')`, lab=on?"되돌리기":"문 닫은 것 같아요";
-  // 따라가기(sp=1)에서는 버튼 안(<button class="pbody">)에 들어가므로 중첩 <button>이 안 되게 span[role=button]으로
-  const btn=sp?`<span class="flbtn" role="button" tabindex="0" onclick="${act}"
-      onkeydown="if(event.key==='Enter'){${act}}">${lab}</span>`
-    :`<button class="flbtn" onclick="${act}">${lab}</button>`;
-  return `<span class="flwrap" data-flag="${k}" data-sp="${sp?1:0}">${on?`<span class="tg warn">확인 중</span>`:""}${btn}</span>`;
-};
-function toggleFlag(k){
-  const on=!S.flagged.has(k);
-  on?S.flagged.add(k):S.flagged.delete(k);
-  try{ localStorage.setItem("spots.flagged",JSON.stringify([...S.flagged])); }catch(_){}
-  document.querySelectorAll(`[data-flag="${k}"]`).forEach(el=>{ el.outerHTML=flagHTML(k,el.dataset.sp==="1"); });
-  toast(on?"기록했어요 — 이 기기에서 '확인 중'으로 표시돼요":"기록을 지웠어요");
-}
+/* '문 닫은 것 같아요' 신고는 2026-08-16에 걷어냈다 — 기기에만 남는 신고라 아무 데도 안 가고,
+   폐업 제보는 스팟 단위 댓글이 생기면 거기서 받는 게 맞다는 사용자 판단. */
 
 /* ═════ 조각 ═════ */
 /* 날짜·시간 입력 — 네이티브 위젯은 표시 형식을 브라우저가 정해서 좁은 화면에서 잘린다.
@@ -3375,18 +3397,17 @@ function routeView(){
           aria-label="${s.place.n} 좋아요">${IC.heart}<b>${likeCount(s.p)}</b></button>
       </div>
       <div class="in">
-        <div class="nmrow"><div class="nm">${s.place.n}</div>
-          <button class="more2 flat" onclick="go('place','${s.p}')">담긴 루트</button></div>
+        <div class="nmrow"><button class="nm" onclick="go('place','${s.p}')"
+            aria-label="${s.place.n} 장소 정보">${s.place.n}</button></div>
         <div class="tm">${s.place.c} · ${perText(s.place)}</div>
         ${s.c?`<div class="cm">${s.c}</div>`:""}
         ${canCheck?memoHTML(r.id,s.p):""}
-        <div class="tags">
-          <span class="tg pop">${popWord(s.place.pop)}</span>
-          ${s.place.wait?`<span class="tg">웨이팅 있음</span>`:""}
-          ${s.place.park?`<span class="tg">주차 가능</span>`:""}
-          ${s.been?`<span class="tg ok">다녀온 곳</span>`:""}
-          ${s.status==="ok"?"":`<span class="tg ${bad?"bad":"warn"}">${s.why}</span>`}
-          ${flagHTML(s.p)}</div>
+        ${(()=>{ /* 붙을 태그가 하나도 없으면 빈 줄이 여백만 남기므로 아예 안 그린다 */
+          const tg=[s.place.wait?`<span class="tg">웨이팅 있음</span>`:"",
+                    s.place.park?`<span class="tg">주차 가능</span>`:"",
+                    s.been?`<span class="tg ok">다녀온 곳</span>`:"",
+                    s.status==="ok"?"":`<span class="tg ${bad?"bad":"warn"}">${s.why}</span>`].filter(Boolean);
+          return tg.length?`<div class="tags">${tg.join("")}</div>`:""; })()}
       </div></div>`;
   }).join("");
   return `<div class="hero">${ph(hp.img,CT[hp.c]||"park",r.id.charCodeAt(1)*7)}
@@ -4112,7 +4133,6 @@ function playRows(c,i){
             ${tags.length?`<span class="tags">${tags.map(([t,x])=>
               `<span class="tg ${t}">${x}</span>`).join("")}</span>`:""}
             ${s.c?`<span class="pq">${s.c}</span>`:""}
-            ${flagHTML(s.p,1)}
           </span>
         </button>
         <div class="pact">
