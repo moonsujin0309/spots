@@ -761,6 +761,8 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .shot .go{color:var(--accent-tx)}
 .ta{width:100%;background:var(--chip);border:0;border-radius:var(--r-m);padding:13px 13px 28px;color:var(--fg);
   resize:none;outline:none;min-height:66px;font-weight:600}
+.ta.one{min-height:0;padding:13px 62px 13px 13px}
+.optm{font-size:11.5px;font-weight:700;color:var(--dim);vertical-align:2px;margin-left:5px}
 .tawrap{position:relative}
 .tacount{position:absolute;right:12px;bottom:9px;font-size:11.5px;font-weight:700;color:var(--dim);
   pointer-events:none;font-variant-numeric:tabular-nums}
@@ -3687,7 +3689,7 @@ function onSearch(v){ S.q=v; runApiSearch(v); paintZone(); }
 function createView(){
   const d=S.draft;
   const pv=d.stops.length>=2?computeRoute({...d,id:"draft"},`${d.date}T${d.time}:00`):null;
-  const ready=d.stops.length>=2&&[...d.mood.trim()].length>=MOOD_MIN;
+  const ready=d.stops.length>=2&&[...d.title.trim()].length>=TITLE_MIN;
   // 루트를 짤 땐 아직 안 간 상태가 기본. 다녀온 표시는 저장한 뒤 루트 화면에서 한다.
   S.draft.plan=1;
   return `<div class="top"><h1>루트 만들기</h1></div>
@@ -3724,28 +3726,47 @@ function createView(){
         <span style="font-size:10.5px;opacity:.72;font-weight:600">${v.note}</span></button>`).join("")}
     </div></div></div>
 
-    <div class="step"><div class="no">STEP 5</div><h3>한마디로 소개하면?</h3><div class="box">
+    <div class="step"><div class="no">STEP 5</div><h3>루트 이름을 정해주세요</h3><div class="box">
       <div class="tawrap">
-        <textarea class="ta" maxlength="${MOOD_MAX}" placeholder="예: 숲 산책하고 어니언 빵 먹는, 딱 반나절짜리 성수 데이트"
+        <input class="ta one" maxlength="${TITLE_MAX}" placeholder="예: 서울숲만 걸어도 반나절"
+          oninput="onTitle(this.value)" value="${d.title.replace(/"/g,"&quot;")}">
+        <span class="tacount ${titleLen()<TITLE_MIN?"bad":""}" id="titleCount">${titleLen()}/${TITLE_MAX}</span>
+      </div></div></div>
+
+    <div class="step"><div class="no">STEP 6</div><h3>한마디로 소개하면? <span class="optm">선택</span></h3><div class="box">
+      <div class="tawrap">
+        <textarea class="ta" maxlength="${MOOD_MAX}" placeholder="예: 내리자마자 걷기 시작해서 끝까지 걸어요"
           oninput="onMood(this.value)">${d.mood}</textarea>
-        <span class="tacount ${moodLen()<MOOD_MIN?"bad":""}" id="moodCount">${moodLen()}/${MOOD_MAX}</span>
+        <span class="tacount" id="moodCount">${moodLen()}/${MOOD_MAX}</span>
       </div>
       <div style="font-size:12px;color:var(--dim);font-weight:600;margin-top:8px">
-        3자 이상 적어주세요 — 이 문장이 루트 제목이 돼요.</div></div></div>
+        비워둬도 저장돼요. 카드에서 이름 아래 한 줄로 붙어요.</div></div></div>
 
     <button class="big" id="previewBtn" ${ready?"":"disabled"} onclick="go('preview')">루트 미리보기</button>`;
 }
-const MOOD_MAX=40, MOOD_MIN=3;
+/* 제목과 한마디는 다른 것이다 — 제목은 루트를 부르는 이름, 한마디는 그 아래 붙는 부연.
+   시드 루트는 원래 둘이 나뉘어 있었는데(title "서울숲만 걸어도 반나절" / mood "내리자마자 걷기…")
+   만들기만 한마디 하나를 받아 title에도 같이 넣고 있었다. 그래서 유저 루트는 카드에서
+   `r.mood!==r.title` 조건에 걸려 한마디가 아예 안 떴다. 32차에 분리. */
+const TITLE_MAX=25, TITLE_MIN=2;
+const MOOD_MAX=40;
+const titleLen=()=>[...S.draft.title.trim()].length;
 const moodLen=()=>[...S.draft.mood.trim()].length;
 /* 한 글자 칠 때마다 render()를 돌리면 입력창이 새로 만들어져 한글 조합이 깨진다.
    그래서 여기서는 글자수·버튼 활성화만 직접 건드린다. */
 function onMood(v){
   S.draft.mood=v;
-  const n=[...v.trim()].length;
   const c=document.getElementById("moodCount");
-  if(c){ c.textContent=`${[...v].length}/${MOOD_MAX}`; c.classList.toggle("bad",n<MOOD_MIN); }
+  if(c) c.textContent=`${[...v].length}/${MOOD_MAX}`;   // 선택 항목이라 bad 표시를 하지 않는다
+}
+/* 미리보기를 여는 조건은 이제 제목이다(32차, 사용자 결정). 31차의 "제목을 게이트에서 뺀다"는 뒤집혔다 */
+function onTitle(v){
+  S.draft.title=v;
+  const n=[...v.trim()].length;
+  const c=document.getElementById("titleCount");
+  if(c){ c.textContent=`${[...v].length}/${TITLE_MAX}`; c.classList.toggle("bad",n<TITLE_MIN); }
   const b=document.getElementById("previewBtn");
-  if(b) b.disabled=!(S.draft.stops.length>=2&&n>=MOOD_MIN);
+  if(b) b.disabled=!(S.draft.stops.length>=2&&n>=TITLE_MIN);
 }
 function delPhoto(p){ if(S.draft.photos) delete S.draft.photos[p]; render(); }
 const photoCount=()=>Object.values(S.draft.photos||{}).reduce((a,b)=>a+b,0);
@@ -3755,7 +3776,7 @@ function draftRoute(id){
   return {id:id||"draft",area:PLACES[d.stops[0].p].area,transport:d.transport,people:d.people,
     plan:d.plan,by:"나",av:"🙂",likes:0,visits:0,regrams:0,
     via:d.via&&d.via.length?[...d.via]:undefined, quoteOf:d.quoteOf,
-    title:d.mood.trim(),mood:d.mood.trim(),note:"",
+    title:d.title.trim(),mood:d.mood.trim(),note:"",
     date:d.date,time:d.time,stops:d.stops.map(s=>({...s}))};
 }
 function moveStop(i,k){
@@ -3922,7 +3943,7 @@ function reroute(id){
 function quote(id){
   const src=ROUTES.find(r=>r.id===id); if(!src) return;
   S.draft={date:S.date,time:S.time,transport:src.transport,people:src.people,
-    stops:src.stops.map(s=>({...s})),mood:src.mood,
+    stops:src.stops.map(s=>({...s})),title:src.title,mood:src.mood||"",plan:1,photos:{},
     via:[...(src.via||[]),src.by], quoteOf:id};
   toast("고쳐서 내 루트로 만들어보세요"); go("create");
 }
