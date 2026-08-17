@@ -2875,10 +2875,13 @@ const routeUrl=id=>location.origin+location.pathname+"?r="+encodeURIComponent(id
    ⚠️ 텍스트 공유(share/copySpots)와 역할이 다르다 — 이건 자랑·유입, 저건 약속 잡기.
       그래서 버튼을 따로 둔다. 링크는 텍스트 쪽이 들고 가므로 이미지엔 워드마크만 넣는다. */
 /* 정사각(1080)으로 줄였다 — 4:5는 담는 정보에 비해 빈 곳이 많았고, 카톡에서도 정사각이 덜 잘린다 */
-const CARD={w:1080,h:1080,map:706};
+/* 정사각(1080). 지도 영역과 글 영역을 확실히 가른다 —
+   전에는 실행 라벨을 지도 위에 얹었더니 경로와 스팟 이름을 가렸다. 글은 지도 밖에만 둔다. */
+const CARD={w:1080,h:1080,map:566};
 const CARD_FONT=`"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif`;
 /* 보는 사람의 테마와 무관하게 늘 같은 그림이어야 해서 다크 팔레트를 고정으로 쓴다 */
-const CARD_C={bg:"#0f0e17",panel:"#191627",fg:"#f6f4ff",sub:"#a29cc4",line:"#2b2545",accent:"#d4ff00"};
+const CARD_C={bg:"#0f0e17",map:"#15141f",fg:"#f6f4ff",sub:"#a29cc4",dim:"#6f6890",
+  line:"#2b2545",accent:"#d4ff00",point:"#ff007a",ink:"#0b0a12"};
 
 /* 도보 시간은 앱의 보행속도(4.5km/h)를 그대로 쓰고, 표기는 legRange에 맡긴다.
    점 추정("약 28분")은 카카오맵과 다르면 '틀린 값'이 되므로 범위로만 낸다(절대 제약 7) */
@@ -2890,27 +2893,28 @@ function rrect(x,rc,rd){
   x.moveTo(a+rd,b); x.arcTo(a+w,b,a+w,b+h,rd); x.arcTo(a+w,b+h,a,b+h,rd);
   x.arcTo(a,b+h,a,b,rd); x.arcTo(a,b,a+w,b,rd); x.closePath();
 }
-/* 알약 라벨. 앱 지도의 오버레이와 같은 모양(검은 바탕 + 라임 테두리)으로 맞춘다.
-   자리는 후보를 돌면서 이미 놓인 것과 안 겹치는 첫 자리를 고른다 — 안 되면 마지막 후보에 그냥 둔다. */
+/* 알약 라벨. 자리는 후보를 돌면서 이미 놓인 것과 안 겹치는 첫 자리를 고른다.
+   후보가 상하뿐이면 스팟이 몰린 루트에서 이름 넷 중 하나가 통째로 사라진다 → 대각·좌우까지 둔다. */
 function pill(x,text,cx,cy,opt,placed){
-  const o=Object.assign({size:30,weight:800,fg:"#ffffff",bd:CARD_C.accent,bg:"#0b0a12",pad:16,clear:0},opt||{});
+  const o=Object.assign({size:29,weight:800,fg:"#ffffff",bd:null,bg:CARD_C.ink,pad:15,clear:0,alpha:.92},opt||{});
   x.font=`${o.weight} ${o.size}px ${CARD_FONT}`;
   const tw=x.measureText(text).width, w=tw+o.pad*2, h=o.size+o.pad;
-  const vy=o.clear+h/2+7, hx=o.clear+w/2+11;
-  /* 아래 → 위 → 옆 → 대각 → 더 멀리. 스팟이 몰려 있는 루트가 많아서 후보가 넉넉해야
-     이름이 통째로 빠지지 않는다(상하만 두면 4곳 중 1곳이 사라졌다) */
+  const vy=o.clear+h/2+8, hx=o.clear+w/2+12;
   const cand=[[0,vy],[0,-vy],[hx,0],[-hx,0],[hx,vy],[-hx,vy],[hx,-vy],[-hx,-vy],
-              [0,vy+h],[0,-vy-h],[hx+w*.4,vy+h],[-hx-w*.4,vy+h]];
+              [0,vy+h],[0,-vy-h],[hx+w*.35,vy+h],[-hx-w*.35,vy+h]];
   let rc=null;
   for(const[dx,dy]of cand){
     const t=[cx+dx-w/2,cy+dy-h/2,w,h];
-    if(t[0]<6||t[0]+t[2]>CARD.w-6||t[1]<6||t[1]+t[3]>CARD.map-6) continue;
+    if(t[0]<14||t[0]+t[2]>CARD.w-14||t[1]<14||t[1]+t[3]>CARD.map-14) continue;
     if(!placed.some(p=>t[0]<p[0]+p[2]+4&&t[0]+t[2]+4>p[0]&&t[1]<p[1]+p[3]+4&&t[1]+t[3]+4>p[1])){ rc=t; break; }
   }
   if(!rc) return null;
   placed.push(rc);
-  rrect(x,rc,h/2); x.fillStyle=o.bg; x.globalAlpha=.94; x.fill(); x.globalAlpha=1;
-  if(o.bd){ x.strokeStyle=o.bd; x.lineWidth=3; x.stroke(); }
+  x.save();
+  x.shadowColor="rgba(0,0,0,.55)"; x.shadowBlur=12; x.shadowOffsetY=3;
+  rrect(x,rc,h/2); x.fillStyle=o.bg; x.globalAlpha=o.alpha; x.fill();
+  x.restore();
+  if(o.bd){ rrect(x,rc,h/2); x.strokeStyle=o.bd; x.lineWidth=2.5; x.stroke(); }
   x.fillStyle=o.fg; x.textAlign="center"; x.textBaseline="middle";
   x.fillText(text,rc[0]+rc[2]/2,rc[1]+rc[3]/2+1);
   return rc;
@@ -2921,17 +2925,24 @@ function drawShareCard(r,c){
   cv.width=CARD.w; cv.height=CARD.h;
   const x=cv.getContext("2d");
   const F=(w,s)=>x.font=`${w} ${s}px ${CARD_FONT}`;
+  const L=76, cw=CARD.w-L*2;
 
   x.fillStyle=CARD_C.bg; x.fillRect(0,0,CARD.w,CARD.h);
 
-  /* ── 경로 그림 ──
-     라벨이 붙을 자리를 남겨야 해서 여백을 넉넉히 잡는다.
+  /* ── 지도 영역 ──
+     완전한 검정은 답답해서 살짝 밝은 판을 깔고 눈금을 옅게 넣는다(배경이 지형은 아니므로 꾸미지 않는다).
      위도 1도와 경도 1도의 실제 거리가 다르다(서울 기준 경도가 약 0.79배) → 보정해야 방향이 안 틀어진다.
      실제 경로(도보·차)는 그 좌표까지 화면에 담아야 길이 바깥으로 잘리지 않는다. */
+  x.fillStyle=CARD_C.map; x.fillRect(0,0,CARD.w,CARD.map);
+  x.save(); x.strokeStyle="rgba(255,255,255,.05)"; x.lineWidth=1;
+  for(let g=0;g<=CARD.w;g+=90){ x.beginPath(); x.moveTo(g+.5,0); x.lineTo(g+.5,CARD.map); x.stroke(); }
+  for(let g=0;g<=CARD.map;g+=90){ x.beginPath(); x.moveTo(0,g+.5); x.lineTo(CARD.w,g+.5); x.stroke(); }
+  x.restore();
+
   const RP=c.stops.slice(0,-1).map((s,i)=>s.leg?cachedPath(s.place,c.stops[i+1].place,s.leg.mode):null);
   const all=c.stops.map(s=>({lat:s.place.lat,lng:s.place.lng}))
     .concat(...RP.filter(Boolean).map(p=>p.map(q=>({lat:q[0],lng:q[1]}))));
-  const pad=124, bw=CARD.w-pad*2, bh=CARD.map-pad*2;
+  const pad=118, bw=CARD.w-pad*2, bh=CARD.map-pad*2;
   const la=all.map(p=>p.lat), ln=all.map(p=>p.lng);
   const lat0=Math.min(...la), lat1=Math.max(...la), lng0=Math.min(...ln), lng1=Math.max(...ln);
   const sLat=Math.max(lat1-lat0,.0015), sLng=Math.max((lng1-lng0)*.79,.0015);
@@ -2939,6 +2950,13 @@ function drawShareCard(r,c){
   const ox=pad+(bw-sLng*k)/2, oy=pad+(bh-sLat*k)/2;
   const PX=p=>ox+((p.lng-lng0)*.79)*k, PY=p=>oy+(lat1-p.lat)*k;
   const xy=c.stops.map(s=>[PX(s.place),PY(s.place)]);
+
+  // 경로 뒤에 옅은 초록빛 — 까맣기만 한 화면을 띄운다
+  const gcx=xy.reduce((a,p)=>a+p[0],0)/xy.length, gcy=xy.reduce((a,p)=>a+p[1],0)/xy.length;
+  const glow=x.createRadialGradient(gcx,gcy,0,gcx,gcy,Math.max(bw,bh)*.7);
+  glow.addColorStop(0,"rgba(212,255,0,.13)"); glow.addColorStop(.55,"rgba(212,255,0,.05)");
+  glow.addColorStop(1,"rgba(212,255,0,0)");
+  x.fillStyle=glow; x.fillRect(0,0,CARD.w,CARD.map);
 
   /* 앱 지도와 같은 규칙 — 실제 경로를 아는 구간은 네온 3겹, 모르는 구간(지하철)은 점선.
      선 모양만으로 "이건 실제 길 / 이건 도식"이 구분돼야 오해가 없다. */
@@ -2952,77 +2970,75 @@ function drawShareCard(r,c){
     const rp=RP[i];
     const pts=rp&&rp.length>1?rp.map(q=>[PX({lat:q[0],lng:q[1]}),PY({lat:q[0],lng:q[1]})]):[xy[i],xy[i+1]];
     if(rp&&rp.length>1){
-      stroke(pts,"#0b0a12",17,.9); stroke(pts,CARD_C.accent,10); stroke(pts,"#ffffff",2.5,.35);
+      stroke(pts,CARD_C.ink,18,.85); stroke(pts,CARD_C.accent,10); stroke(pts,"#ffffff",2.5,.32);
     }else{
-      stroke(pts,CARD_C.accent,6,.95,[3,13]);
+      stroke(pts,CARD_C.ink,12,.6); stroke(pts,CARD_C.accent,6,.95,[3,14]);
     }
     mid[i]=pts[Math.floor(pts.length/2)];
   });
 
   const placed=[];
-  // 핀을 먼저 자리로 등록해야 라벨이 핀 위로 안 올라온다
-  xy.forEach(p=>placed.push([p[0]-34,p[1]-34,68,68]));
+  xy.forEach(p=>placed.push([p[0]-33,p[1]-33,66,66]));   // 핀 자리를 먼저 잡아야 라벨이 안 올라탄다
 
   /* 구간 칩 — 앱 지도와 같이 점 추정(분)을 쓴다. 지도 위 칩은 이동수단을 가리키는 표시라
      텍스트의 범위 표기(legRange)와 역할이 다르다. */
   c.stops.slice(0,-1).forEach((s,i)=>{
     if(!s.leg||!mid[i]) return;
     const nm=s.leg.mode==="mix"?"환승":MODE[s.leg.mode].label;
-    pill(x,`${nm} ${s.leg.min}분`,mid[i][0],mid[i][1],{size:27,pad:14},placed);
+    pill(x,`${nm} ${s.leg.min}분`,mid[i][0],mid[i][1],{size:26,pad:13,bd:CARD_C.accent,fg:CARD_C.accent},placed);
   });
+  // 스팟 이름 — 1번부터 자리를 잡아 앞 순서가 좋은 자리를 갖는다
+  c.stops.forEach((s,i)=>pill(x,s.place.n,xy[i][0],xy[i][1],{size:29,clear:33},placed));
 
-  // 스팟 이름 — 스샷의 검은 알약. 테두리는 빼서 구간 칩과 구분한다
-  c.stops.forEach((s,i)=>{
-    pill(x,s.place.n,xy[i][0],xy[i][1],{size:30,bd:null,clear:34},placed);
-  });
+  /* 핀 — 뒤에서부터 그려 1번이 맨 위에 온다. 양 끝(출발·도착)은 앱 지도처럼 핫핑크. */
+  for(let i=xy.length-1;i>=0;i--){
+    const p=xy[i], end=i===0||i===xy.length-1;
+    x.save(); x.shadowColor="rgba(0,0,0,.6)"; x.shadowBlur=14; x.shadowOffsetY=4;
+    x.beginPath(); x.arc(p[0],p[1],30,0,7);
+    x.fillStyle=end?CARD_C.point:CARD_C.accent; x.fill(); x.restore();
+    x.beginPath(); x.arc(p[0],p[1],30,0,7);
+    x.strokeStyle=CARD_C.ink; x.lineWidth=7; x.stroke();
+    F(800,30); x.fillStyle=end?"#ffffff":CARD_C.ink;
+    x.textAlign="center"; x.textBaseline="middle"; x.fillText(String(i+1),p[0],p[1]+1);
+  }
 
-  // 핀 — 라임 원 + 어두운 테두리 + 번호
-  xy.forEach((p,i)=>{
-    x.beginPath(); x.arc(p[0],p[1],31,0,7);
-    x.fillStyle=CARD_C.accent; x.fill();
-    x.strokeStyle="#0b0a12"; x.lineWidth=8; x.stroke();
-    F(800,31); x.fillStyle="#0b0a12"; x.textAlign="center"; x.textBaseline="middle";
-    x.fillText(String(i+1),p[0],p[1]+1);
-  });
+  // 지도에서 글 영역으로 부드럽게 넘긴다
+  const fade=x.createLinearGradient(0,CARD.map-90,0,CARD.map);
+  fade.addColorStop(0,"rgba(15,14,23,0)"); fade.addColorStop(1,CARD_C.bg);
+  x.fillStyle=fade; x.fillRect(0,CARD.map-90,CARD.w,90);
 
-  // 라벨이 선 위에 겹쳐도 읽히도록 아래쪽을 어둡게 깐다
-  const g=x.createLinearGradient(0,CARD.map-300,0,CARD.map);
-  g.addColorStop(0,"rgba(15,14,23,0)"); g.addColorStop(.6,"rgba(15,14,23,.93)"); g.addColorStop(1,CARD_C.bg);
-  x.fillStyle=g; x.fillRect(0,CARD.map-300,CARD.w,300);
+  // 워드마크
+  F(800,32); x.fillStyle=CARD_C.sub; x.textAlign="right"; x.textBaseline="alphabetic";
+  x.globalAlpha=.7; x.fillText("spots",CARD.w-L,62); x.globalAlpha=1;
 
-  /* ── 실행 라벨 ── "이 코스 진짜 갈 수 있나"에 답하는 줄. 대중교통이면 주차는 쓰지 않는다 */
-  const L=74;
-  x.textAlign="left"; x.textBaseline="alphabetic";
+  /* ── 글 영역 ── 위계를 셋으로 끊는다: 메타(작게) → 제목(주인공) → 한마디(보조).
+     실행 라벨은 카드 맨 아래에 고정해 어느 루트든 끝나는 모양이 같게 한다. */
+  x.textAlign="left";
+  const d=new Date(`${r.date||S.date}T00:00:00`);
+  F(700,28); x.fillStyle=CARD_C.dim;
+  x.fillText(`${d.getMonth()+1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})   ·   ${plabel(S.people)}명   ·   ${c.stops.length}곳`,L,CARD.map+62);
+
+  F(800,58); x.fillStyle=CARD_C.fg;
+  const tl=wrapText(x,r.title,cw,2);
+  let ty=CARD.map+136;
+  tl.forEach((ln,i)=>x.fillText(ln,L,ty+i*68));
+  ty+=(tl.length-1)*68;
+
+  if(r.mood&&r.mood!==r.title){
+    F(600,32); x.fillStyle=CARD_C.sub;
+    wrapText(x,r.mood,cw,2).forEach((ln,i)=>x.fillText(ln,L,ty+50+i*42));
+  }
+
+  /* 실행 라벨 — 바닥 고정. "이 코스 진짜 갈 수 있나"에 답하는 줄이라 마지막에 눈이 닿게 둔다.
+     대중교통이면 주차는 쓰지 않는다. */
   const l2=[];
   if(c.walkKm>0.3) l2.push(`도보 ${walkText(c.walkKm)}`);
   l2.push(`1인 ${totalText(c,r.transport,S.people)}`);
   if(r.transport==="car") l2.push("주차 필요");
-  F(800,46); x.fillStyle=CARD_C.accent;
-  x.fillText(`${TRANSPORT[r.transport].label} · ${durRange(c.totalLo,c.totalHi)}`,L,CARD.map-104);
-  F(600,35); x.fillStyle=CARD_C.sub; x.fillText(l2.join(" · "),L,CARD.map-56);
-
-  // 워드마크 — 이미지만 보고도 어디서 온 건지 알아야 한다
-  F(800,34); x.fillStyle=CARD_C.sub; x.textAlign="right";
-  x.globalAlpha=.75; x.fillText("spots",CARD.w-L,64); x.globalAlpha=1;
-
-  /* ── 하단 ── 날짜·인원 → 제목 → 한마디. 간격을 좁혀 빈 곳을 줄였다 */
-  x.textAlign="left";
-  x.fillStyle=CARD_C.line; x.fillRect(L,CARD.map+4,CARD.w-L*2,3);
-  const cw=CARD.w-L*2;
-  const d=new Date(`${r.date||S.date}T00:00:00`);
-  F(700,31); x.fillStyle=CARD_C.sub;
-  x.fillText(`${d.getMonth()+1}월 ${d.getDate()}일 (${DAYS[d.getDay()]}) · ${plabel(S.people)}명 · ${c.stops.length}곳`,L,CARD.map+70);
-
-  F(800,54); x.fillStyle=CARD_C.fg;
-  const tl=wrapText(x,r.title,cw,2);
-  let ty=CARD.map+136;
-  tl.forEach((ln,i)=>x.fillText(ln,L,ty+i*62));
-  ty+=tl.length*62;   // 실제로 그린 줄 수만큼 내려야 아래 블록과 안 겹친다
-
-  if(r.mood&&r.mood!==r.title){
-    F(600,33); x.fillStyle=CARD_C.sub;
-    wrapText(x,r.mood,cw,2).forEach((ln,i)=>x.fillText(ln,L,ty+8+i*44));
-  }
+  x.fillStyle=CARD_C.line; x.fillRect(L,CARD.h-166,cw,2);
+  F(800,42); x.fillStyle=CARD_C.accent;
+  x.fillText(`${TRANSPORT[r.transport].label}  ·  ${durRange(c.totalLo,c.totalHi)}`,L,CARD.h-102);
+  F(600,31); x.fillStyle=CARD_C.sub; x.fillText(l2.join("  ·  "),L,CARD.h-54);
   return cv;
 }
 /* 캔버스엔 줄바꿈이 없다 — 글자 단위로 재서 폭을 넘기면 끊는다(한글은 단어 경계가 약해 글자 단위가 맞다).
