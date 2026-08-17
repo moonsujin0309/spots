@@ -1212,7 +1212,6 @@ const PLACES={
   seoulforest:{n:"서울숲",c:"공원",area:"seongsu",lat:37.5444,lng:127.0374,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:90,img:"서울숲"},
   understand: {n:"언더스탠드에비뉴",c:"복합공간",out:1,area:"seongsu",lat:37.5445,lng:127.0447,open:"11:00",close:"21:00",closed:[],cost:[0,20000],park:0,wait:0,pop:66,img:"수제화거리"},
   onion:      {n:"어니언 성수",c:"카페",area:"seongsu",lat:37.5447,lng:127.0559,open:"09:00",close:"22:00",closed:[],cost:[8000,16000],park:0,wait:1,pop:92,img:"onion"},
-  grandpa:    {n:"할아버지공장",c:"카페",area:"seongsu",lat:37.5442,lng:127.0568,open:"11:00",close:"22:00",closed:[],cost:[8000,17000],park:0,wait:1,pop:75,img:"을지로"},
   yeonbang:   {n:"성수연방",c:"복합공간",area:"seongsu",lat:37.5417,lng:127.0561,open:"11:00",close:"21:00",closed:[],cost:[10000,25000],park:0,wait:0,pop:74,img:"yeonbang"},
   ssshoe:     {n:"성수동 수제화거리",c:"골목",area:"seongsu",lat:37.5448,lng:127.0555,open:"10:00",close:"19:00",closed:[0],cost:[0,80000],park:0,wait:0,pop:58,img:"수제화거리"},
   ttukseom:   {n:"뚝섬유원지",c:"공원",area:"seongsu",lat:37.5310,lng:127.0668,open:"00:00",close:"23:59",closed:[],cost:[0,5000],park:1,wait:0,pop:70,img:"망원한강공원"},
@@ -1231,7 +1230,7 @@ const PLACES={
   mmca:       {n:"국립현대미술관 서울",c:"전시",area:"jongno",lat:37.5785,lng:126.9800,open:"10:00",close:"18:00",closed:[1],cost:[2000,5000],park:1,wait:0,pop:85,img:"국립현대미술관"},
   craft:      {n:"서울공예박물관",c:"전시",area:"jongno",lat:37.5770,lng:126.9815,open:"10:00",close:"18:00",closed:[1],cost:[0,0],park:0,wait:0,pop:62,img:"국립중앙박물관"},
   bukchon:    {n:"북촌한옥마을",c:"골목",area:"jongno",lat:37.5826,lng:126.9830,open:"00:00",close:"23:59",closed:[],cost:[0,15000],park:0,wait:0,pop:87,img:"북촌한옥마을"},
-  seochon:    {n:"서촌 골목",c:"골목",area:"jongno",lat:37.5790,lng:126.9710,open:"00:00",close:"23:59",closed:[],cost:[8000,25000],park:0,wait:0,pop:71,img:"익선동"},
+  seochon:    {n:"서촌 골목",c:"골목",area:"jongno",lat:37.5790,lng:126.9710,nokakao:1,open:"00:00",close:"23:59",closed:[],cost:[8000,25000],park:0,wait:0,pop:71,img:"익선동"},
   tongin:     {n:"통인시장",c:"시장",area:"jongno",lat:37.5800,lng:126.9700,open:"09:00",close:"20:00",closed:[1],cost:[6000,14000],park:0,wait:1,pop:76,img:"통인시장"},
   ssamzie:    {n:"인사동 쌈지길",c:"복합공간",area:"jongno",lat:37.5735,lng:126.9855,open:"10:30",close:"20:30",closed:[],cost:[0,30000],park:0,wait:0,pop:79,img:"남대문시장"},
   ikseon:     {n:"익선동 한옥거리",c:"골목",area:"jongno",lat:37.5741,lng:126.9905,open:"00:00",close:"23:59",closed:[],cost:[15000,35000],park:0,wait:1,pop:86,img:"익선동"},
@@ -1239,7 +1238,7 @@ const PLACES={
   cheonggye:  {n:"청계천",c:"공원",area:"jongno",lat:37.5690,lng:126.9790,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:78,img:"청계천"},
   /* ── 을지로·명동 ── */
   ddp:        {n:"동대문디자인플라자",c:"전시",area:"euljiro",lat:37.5665,lng:127.0090,open:"10:00",close:"20:00",closed:[],cost:[0,15000],park:1,wait:0,pop:90,img:"DDP"},
-  euljiroalley:{n:"을지로 노포골목",c:"골목",area:"euljiro",lat:37.5660,lng:126.9915,open:"11:00",close:"23:00",closed:[0],cost:[12000,30000],park:0,wait:1,pop:80,img:"을지로"},
+  euljiroalley:{n:"을지로 노포골목",c:"골목",area:"euljiro",lat:37.5660,lng:126.9915,nokakao:1,open:"11:00",close:"23:00",closed:[0],cost:[12000,30000],park:0,wait:1,pop:80,img:"을지로"},
   myeongdong: {n:"명동거리",c:"골목",area:"euljiro",lat:37.5636,lng:126.9830,open:"10:00",close:"22:00",closed:[],cost:[5000,40000],park:0,wait:0,pop:92,img:"명동거리"},
   namdaemun:  {n:"남대문시장",c:"시장",area:"euljiro",lat:37.5595,lng:126.9775,open:"09:00",close:"21:00",closed:[0],cost:[6000,20000],park:0,wait:0,pop:84,img:"남대문시장"},
   seoullo:    {n:"서울로7017",c:"공원",area:"euljiro",lat:37.5560,lng:126.9720,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:68,img:"서울로"},
@@ -1254,7 +1253,7 @@ const PLACES={
   nmuseum:    {n:"국립중앙박물관",c:"전시",area:"itaewon",lat:37.5240,lng:126.9803,open:"10:00",close:"18:00",closed:[],cost:[0,0],park:1,wait:0,pop:93,img:"국립중앙박물관"},
   namsan:     {n:"남산공원",c:"공원",area:"itaewon",lat:37.5512,lng:126.9882,open:"00:00",close:"23:59",closed:[],cost:[0,16000],park:1,wait:0,pop:88,img:"남산공원"},
   haebang:    {n:"해방촌 신흥시장",c:"골목",area:"itaewon",lat:37.5450,lng:126.9860,open:"11:00",close:"23:00",closed:[],cost:[10000,30000],park:0,wait:0,pop:65,img:"남대문시장"},
-  antique:    {n:"이태원 앤티크가구거리",c:"골목",area:"itaewon",lat:37.5350,lng:126.9960,open:"11:00",close:"19:00",closed:[0],cost:[0,50000],park:0,wait:0,pop:49,img:"이태원동"},
+  antique:    {n:"이태원 앤티크가구거리",c:"골목",area:"itaewon",lat:37.5350,lng:126.9960,nokakao:1,open:"11:00",close:"19:00",closed:[0],cost:[0,50000],park:0,wait:0,pop:49,img:"이태원동"},
   gyeongri:   {n:"경리단길",c:"골목",area:"itaewon",lat:37.5405,lng:126.9885,open:"00:00",close:"23:59",closed:[],cost:[12000,35000],park:0,wait:0,pop:60,img:"명동거리"},
   /* ── 여의도 ── */
   hyundai:    {n:"더현대 서울",c:"복합공간",area:"yeouido",lat:37.5259,lng:126.9285,open:"10:30",close:"20:00",closed:[],cost:[10000,40000],park:1,wait:1,pop:91,img:"더현대서울"},
@@ -1267,7 +1266,7 @@ const PLACES={
   sebit:      {n:"세빛섬",c:"복합공간",area:"banpo",lat:37.5127,lng:126.9950,open:"10:00",close:"22:00",closed:[],cost:[15000,35000],park:1,wait:0,pop:85,img:"세빛섬"},
   nodeul:     {n:"노들섬",c:"복합공간",out:1,area:"banpo",lat:37.5175,lng:126.9585,open:"00:00",close:"23:59",closed:[],cost:[0,20000],park:1,wait:0,pop:72,img:"노들섬"},
   seorae:     {n:"서래마을",c:"골목",area:"banpo",lat:37.4988,lng:126.9950,open:"00:00",close:"23:59",closed:[],cost:[12000,40000],park:0,wait:0,pop:64,img:"익선동"},
-  express:    {n:"고속터미널 지하상가",c:"복합공간",area:"banpo",lat:37.5045,lng:127.0045,open:"10:00",close:"22:00",closed:[],cost:[5000,30000],park:1,wait:0,pop:66,img:"롯데월드몰"},
+  express:    {n:"고속터미널 지하상가",c:"복합공간",area:"banpo",lat:37.5045,lng:127.0045,nokakao:1,open:"10:00",close:"22:00",closed:[],cost:[5000,30000],park:1,wait:0,pop:66,img:"롯데월드몰"},
   /* ── 잠실·송파 ── */
   lwtower:    {n:"서울스카이 전망대",c:"전시",area:"jamsil",lat:37.5125,lng:127.1025,open:"10:30",close:"22:00",closed:[],cost:[27000,31000],park:1,wait:1,pop:93,img:"롯데월드타워"},
   lwmall:     {n:"롯데월드몰",c:"복합공간",area:"jamsil",lat:37.5130,lng:127.1040,open:"10:30",close:"22:00",closed:[],cost:[8000,40000],park:1,wait:0,pop:81,img:"롯데월드몰"},
@@ -1281,7 +1280,7 @@ const PLACES={
   aquarium:   {n:"코엑스 아쿠아리움",c:"전시",area:"gangnam",lat:37.5125,lng:127.0600,open:"10:00",close:"20:00",closed:[],cost:[28000,33000],park:1,wait:1,pop:80,img:"아쿠아리움"},
   bongeun:    {n:"봉은사",c:"고궁",area:"gangnam",lat:37.5145,lng:127.0575,open:"05:00",close:"22:00",closed:[],cost:[0,0],park:1,wait:0,pop:75,img:"봉은사"},
   seonjeong:  {n:"선정릉",c:"고궁",area:"gangnam",lat:37.5090,lng:127.0435,open:"09:00",close:"18:00",closed:[1],cost:[1000,1000],park:1,wait:0,pop:61,img:"선정릉"},
-  gangnamdol: {n:"강남돌 아트토이거리",c:"복합공간",out:1,area:"gangnam",lat:37.5273,lng:127.0400,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:73,img:"압구정"},
+  gangnamdol: {n:"한류스타거리",c:"복합공간",out:1,area:"gangnam",lat:37.5273,lng:127.0400,kid:"26621895",open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:73,img:"압구정"},
   garosu:     {n:"가로수길",c:"골목",area:"gangnam",lat:37.5205,lng:127.0230,open:"11:00",close:"22:00",closed:[],cost:[10000,40000],park:0,wait:0,pop:78,img:"수제화거리"},
   /* ── 마곡 ── */
   botanic:    {n:"서울식물원",c:"전시",area:"magok",lat:37.5698,lng:126.8351,open:"09:30",close:"18:00",closed:[1],cost:[5000,5000],park:1,wait:0,pop:88,img:"서울식물원"},
@@ -1307,13 +1306,13 @@ const PLACES={
   ddpmarket:  {n:"동대문종합시장",   c:"시장",   area:"ddp",    lat:37.5705,lng:127.0075,open:"08:00",close:"18:00",closed:[0],cost:[5000,20000],park:0,wait:0,pop:66,img:"남대문시장"},
   /* 서대문·연희 */
   ansan:      {n:"안산자락길",       c:"공원",   area:"yeonhui",lat:37.5760,lng:126.9450,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:75,img:"관악산"},
-  yeonhuigol: {n:"연희동 골목",      c:"골목",   area:"yeonhui",lat:37.5690,lng:126.9310,open:"00:00",close:"23:59",closed:[],cost:[10000,30000],park:0,wait:0,pop:70,img:"익선동"},
-  hongje:     {n:"홍제천 산책로",    c:"공원",   area:"yeonhui",lat:37.5830,lng:126.9400,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:58,img:"청계천"},
+  yeonhuigol: {n:"연희동 골목",      c:"골목",   area:"yeonhui",lat:37.5690,lng:126.9310,nokakao:1,open:"00:00",close:"23:59",closed:[],cost:[10000,30000],park:0,wait:0,pop:70,img:"익선동"},
+  hongje:     {n:"홍제천 산책로",    c:"공원",   area:"yeonhui",lat:37.5830,lng:126.9400,nokakao:1,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:58,img:"청계천"},
   prison:     {n:"서대문형무소역사관",c:"전시",  area:"yeonhui",lat:37.5745,lng:126.9560,open:"09:30",close:"18:00",closed:[1],cost:[3000,3000],park:1,wait:0,pop:77,img:"서대문형무소"},
   /* 관악·서울대 */
   nakseong:   {n:"낙성대공원",       c:"공원",   area:"gwanak", lat:37.4770,lng:126.9605,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:61,img:"여의도공원"},
   gwanaksan:  {n:"관악산",           c:"공원",   area:"gwanak", lat:37.4450,lng:126.9640,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:78,img:"관악산"},
-  snu:        {n:"서울대학교 캠퍼스",c:"복합공간",out:1,area:"gwanak",lat:37.4600,lng:126.9520,open:"00:00",close:"23:59",closed:[],cost:[0,10000],park:1,wait:0,pop:72,img:"서울로"},
+  snu:        {n:"서울대학교 캠퍼스",c:"복합공간",out:1,area:"gwanak",lat:37.4600,lng:126.9520,kid:"11137036",open:"00:00",close:"23:59",closed:[],cost:[0,10000],park:1,wait:0,pop:72,img:"서울로"},
   sharosu:    {n:"샤로수길",         c:"골목",   area:"gwanak", lat:37.4800,lng:126.9525,open:"11:00",close:"23:00",closed:[],cost:[10000,28000],park:0,wait:1,pop:67,img:"을지로"},
   /* 마곡·강서 보강 — 서울식물원 하나로는 루트가 안 나온다 */
   /* 2026-08-16 좌표 정정 — 셋 다 1.8~2.1km 어긋나 있었다(화곡 쪽을 가리켰다).
@@ -1327,21 +1326,21 @@ const PLACES={
   doota:      {n:"두타몰",           c:"복합공간",area:"ddp",   lat:37.5670,lng:127.0095,open:"10:30",close:"24:00",closed:[1],cost:[10000,40000],park:1,wait:0,pop:64,img:"롯데월드몰"},
   hyundaiapgu:{n:"현대백화점 압구정본점",c:"복합공간",area:"apgu",lat:37.5270,lng:127.0290,open:"10:30",close:"20:00",closed:[],cost:[15000,50000],park:1,wait:0,pop:70,img:"더현대서울"},
   hakdong:    {n:"학동공원",         c:"공원",   area:"apgu",   lat:37.5175,lng:127.0345,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:45,img:"여의도공원"},
-  moa:        {n:"서울대미술관",     c:"전시",   area:"gwanak", lat:37.4635,lng:126.9490,open:"10:00",close:"18:00",closed:[1],cost:[0,3000],park:1,wait:0,pop:48,img:"국립현대미술관"},
-  sillim:     {n:"신림 순대타운",    c:"시장",   area:"gwanak", lat:37.4845,lng:126.9295,open:"11:00",close:"23:00",closed:[],cost:[9000,18000],park:0,wait:1,pop:63,img:"남대문시장"},
+  moa:        {n:"서울대미술관",     c:"전시",   area:"gwanak", lat:37.4635,lng:126.9490,kid:"10500732",open:"10:00",close:"18:00",closed:[1],cost:[0,3000],park:1,wait:0,pop:48,img:"국립현대미술관"},
+  sillim:     {n:"신림 순대타운",    c:"시장",   area:"gwanak", lat:37.4845,lng:126.9295,nokakao:1,open:"11:00",close:"23:00",closed:[],cost:[9000,18000],park:0,wait:1,pop:63,img:"남대문시장"},
   gwangnaru:  {n:"광나루한강공원",   c:"공원",   area:"konkuk", lat:37.5455,lng:127.1120,open:"00:00",close:"23:59",closed:[],cost:[0,8000],park:1,wait:0,pop:59,img:"여의도한강공원"},
   konkukst:   {n:"건대 맛의거리",    c:"골목",   area:"konkuk", lat:37.5395,lng:127.0700,open:"11:00",close:"02:00",closed:[],cost:[10000,25000],park:0,wait:1,pop:74,img:"명동거리"},
-  dorimcheon: {n:"도림천 산책로",    c:"공원",   area:"mullae", lat:37.5085,lng:126.8985,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:42,img:"청계천"},
+  dorimcheon: {n:"도림천 산책로",    c:"공원",   area:"mullae", lat:37.5085,lng:126.8985,nokakao:1,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:42,img:"청계천"},
   yeongpark:  {n:"영등포공원",       c:"공원",   area:"mullae", lat:37.5185,lng:126.9020,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:44,img:"여의도공원"},
   natural:    {n:"서대문자연사박물관",c:"전시",  area:"yeonhui",lat:37.5790,lng:126.9345,open:"09:00",close:"18:00",closed:[1],cost:[2000,6000],park:1,wait:0,pop:57,img:"한성백제박물관"},
-  sinchon:    {n:"신촌 연세로",      c:"골목",   area:"yeonhui",lat:37.5570,lng:126.9370,open:"00:00",close:"23:59",closed:[],cost:[8000,22000],park:0,wait:0,pop:68,img:"명동거리"},
+  sinchon:    {n:"신촌 연세로",      c:"골목",   area:"yeonhui",lat:37.5570,lng:126.9370,nokakao:1,open:"00:00",close:"23:59",closed:[],cost:[8000,22000],park:0,wait:0,pop:68,img:"명동거리"},
   /* ── 노원·태릉 ── */
   gongneungdok:{n:"공릉동 도깨비시장",c:"시장",area:"nowon",lat:37.6252,lng:127.0736,open:"10:00",close:"21:00",closed:[],cost:[6000,15000],park:0,wait:0,pop:55,img:"통인시장"},
   seoultech:  {n:"서울과학기술대",c:"공원",area:"nowon",lat:37.6318,lng:127.0776,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:42,img:"대학로"},
   gyeongchun: {n:"경춘선숲길",c:"공원",area:"nowon",lat:37.6212,lng:127.0755,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:60,img:"경의선숲길"},
   hwarangdae: {n:"화랑대철도공원",c:"공원",area:"nowon",lat:37.6203,lng:127.0838,open:"10:00",close:"22:00",closed:[1],cost:[0,0],park:1,wait:0,pop:64,img:"서울로"},
   bulbit:     {n:"노원불빛정원",c:"공원",area:"nowon",lat:37.6199,lng:127.0846,open:"18:00",close:"22:00",closed:[1],cost:[0,0],park:1,wait:0,pop:58,img:"청계천"},
-  taegangneung:{n:"태릉·강릉",c:"고궁",area:"nowon",lat:37.6175,lng:127.0888,open:"09:00",close:"18:00",closed:[1],cost:[1000,1000],park:1,wait:0,pop:52,img:"선정릉"},
+  taegangneung:{n:"태릉·강릉",c:"고궁",area:"nowon",lat:37.6175,lng:127.0888,kid:"8109407",open:"09:00",close:"18:00",closed:[1],cost:[1000,1000],park:1,wait:0,pop:52,img:"선정릉"},
   nowonarts:  {n:"노원문화예술회관",c:"전시",area:"nowon",lat:37.6540,lng:127.0603,open:"09:00",close:"18:00",closed:[1],cost:[0,15000],park:1,wait:0,pop:40,img:"국립현대미술관"},
   suraksan:   {n:"수락산",c:"공원",area:"nowon",lat:37.6784,lng:127.0693,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:50,img:"관악산"},
   /* ── 도봉·수유 ── */
@@ -1357,7 +1356,7 @@ const PLACES={
   ephanok:    {n:"은평한옥마을",c:"골목",area:"eunpyeong",lat:37.6357,lng:126.9316,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:64,img:"북촌한옥마을"},
   jinkwansa:  {n:"진관사",c:"고궁",area:"eunpyeong",lat:37.6403,lng:126.9367,open:"08:00",close:"18:00",closed:[],cost:[0,0],park:1,wait:0,pop:58,img:"봉은사"},
   epmuseum:   {n:"은평역사한옥박물관",c:"전시",area:"eunpyeong",lat:37.6350,lng:126.9310,open:"10:00",close:"17:30",closed:[1],cost:[1000,1000],park:1,wait:0,pop:44,img:"한성백제박물관"},
-  setiseo:    {n:"셋이서문학관",c:"전시",area:"eunpyeong",lat:37.6360,lng:126.9322,open:"10:00",close:"17:00",closed:[1],cost:[0,0],park:0,wait:0,pop:36,img:"덕수궁"},
+  setiseo:    {n:"셋이서문학관",c:"전시",area:"eunpyeong",lat:37.6360,lng:126.9322,nokakao:1,open:"10:00",close:"17:00",closed:[1],cost:[0,0],park:0,wait:0,pop:36,img:"덕수궁"},
   yeonsinnae: {n:"연신내 로데오거리",c:"골목",area:"eunpyeong",lat:37.6190,lng:126.9210,open:"11:00",close:"23:00",closed:[],cost:[8000,20000],park:0,wait:1,pop:62,img:"을지로"},
   bulgwangcheon:{n:"불광천",c:"공원",area:"eunpyeong",lat:37.6015,lng:126.9155,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:48,img:"청계천"},
   bukhansanseong:{n:"북한산성 입구",c:"공원",area:"eunpyeong",lat:37.6455,lng:126.9455,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:56,img:"관악산"},
@@ -1374,8 +1373,8 @@ const PLACES={
   saeyuksin:  {n:"사육신공원",c:"공원",area:"dongjak",lat:37.5125,lng:126.9433,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:44,img:"낙산공원"},
   saetgang:   {n:"샛강생태공원",c:"공원",area:"dongjak",lat:37.5199,lng:126.9297,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:42,img:"망원한강공원"},
   boramae:    {n:"보라매공원",c:"공원",area:"dongjak",lat:37.4924,lng:126.9199,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:58,img:"여의도공원"},
-  jungangdae: {n:"중앙대 흑석캠퍼스",c:"공원",area:"dongjak",lat:37.5050,lng:126.9575,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:40,img:"대학로"},
-  heukseokgil:{n:"흑석동 먹자골목",c:"골목",area:"dongjak",lat:37.5063,lng:126.9600,open:"11:00",close:"23:00",closed:[],cost:[8000,18000],park:0,wait:0,pop:46,img:"을지로"},
+  jungangdae: {n:"중앙대 흑석캠퍼스",c:"공원",area:"dongjak",lat:37.5050,lng:126.9575,kid:"11160006",open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:40,img:"대학로"},
+  heukseokgil:{n:"흑석동 먹자골목",c:"골목",area:"dongjak",lat:37.5063,lng:126.9600,nokakao:1,open:"11:00",close:"23:00",closed:[],cost:[8000,18000],park:0,wait:0,pop:46,img:"을지로"},
   /* ── 구로·금천 ── */
   gurosijang: {n:"구로시장",c:"시장",area:"guro",lat:37.4954,lng:126.8873,open:"09:00",close:"21:00",closed:[],cost:[5000,14000],park:0,wait:0,pop:50,img:"통인시장"},
   pureun:     {n:"푸른수목원",c:"공원",area:"guro",lat:37.4869,lng:126.8225,open:"05:00",close:"22:00",closed:[],cost:[0,0],park:1,wait:0,pop:58,img:"서울식물원"},
@@ -1395,10 +1394,10 @@ const PLACES={
   /* ── 파주 (2026-08-14 웹 검증 — 좌표는 OSM. 도로근사·단지 내 근사 좌표는 STATUS '다음 할 일'에서 핀 재확인 대상) ── */
   provence:   {n:"프로방스 마을",c:"복합공간",out:1,area:"paju",lat:37.8018,lng:126.6874,open:"10:00",close:"22:00",closed:[],cost:[15000,25000],park:1,wait:0,pop:66,img:""},
   heyri:      {n:"헤이리 예술마을",c:"복합공간",out:1,area:"paju",lat:37.7888,lng:126.6992,open:"00:00",close:"23:59",closed:[],cost:[0,10000],park:1,wait:0,pop:74,img:""},
-  whiteblock: {n:"아트센터 화이트블럭",c:"카페",area:"paju",lat:37.7900,lng:126.7000,open:"10:30",close:"19:00",closed:[],cost:[7000,10000],park:1,wait:0,pop:58,img:""},
+  whiteblock: {n:"아트센터 화이트블럭",c:"카페",area:"paju",lat:37.7900,lng:126.7000,kid:"26584835",open:"10:30",close:"19:00",closed:[],cost:[7000,10000],park:1,wait:0,pop:58,img:""},
   blume:      {n:"블루메미술관",c:"전시",area:"paju",lat:37.7878,lng:126.7004,open:"10:00",close:"18:00",closed:[1],cost:[5000,10000],park:1,wait:0,pop:52,img:""},
   naruter:    {n:"반구정 나루터집",c:"식당",area:"paju",lat:37.8669,lng:126.7520,open:"11:30",close:"22:00",closed:[],cost:[40000,50000],park:1,wait:0,pop:62,img:""},
-  bangujeong: {n:"황희정승 유적지 반구정",c:"고궁",area:"paju",lat:37.8673,lng:126.7517,open:"09:00",close:"18:00",closed:[],cost:[1000,2000],park:1,wait:0,pop:45,img:""},
+  bangujeong: {n:"황희정승 유적지 반구정",c:"고궁",area:"paju",lat:37.8673,lng:126.7517,kid:"10410329",open:"09:00",close:"18:00",closed:[],cost:[1000,2000],park:1,wait:0,pop:45,img:""},
   imjingak:   {n:"임진각 평화누리공원",c:"공원",area:"paju",lat:37.8894,lng:126.7435,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:78,img:""},
   gondola:    {n:"임진각 평화곤돌라",c:"액티비티",area:"paju",lat:37.8902,lng:126.7425,open:"09:00",close:"18:00",closed:[],cost:[9000,9000],park:1,wait:0,pop:64,img:""},
   pajuoutlet: {n:"롯데프리미엄아울렛 파주점",c:"복합공간",area:"paju",lat:37.7184,lng:126.6918,open:"10:30",close:"20:30",closed:[],cost:[10000,20000],park:1,wait:0,pop:60,img:""},
@@ -1418,8 +1417,8 @@ const PLACES={
   wawoo:      {n:"와우정사",c:"고궁",area:"yongin",lat:37.1939,lng:127.2780,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:52,img:""},
   /* ── 김포 ── */
   laveniche:  {n:"라베니체",c:"복합공간",out:1,area:"gimpo",lat:37.6406,lng:126.6797,open:"11:00",close:"22:00",closed:[],cost:[10000,20000],park:1,wait:0,pop:62,img:""},
-  gimpoart:   {n:"김포아트빌리지 한옥마을",c:"복합공간",out:1,area:"gimpo",lat:37.6454,lng:126.6958,open:"09:00",close:"18:00",closed:[1],cost:[0,5000],park:1,wait:0,pop:58,img:""},
-  glinpark:   {n:"글린공원",c:"카페",area:"gimpo",lat:37.6499,lng:126.6502,open:"10:00",close:"19:00",closed:[],cost:[9000,13000],park:1,wait:0,pop:60,img:""},
+  gimpoart:   {n:"김포아트빌리지 한옥마을",c:"복합공간",out:1,area:"gimpo",lat:37.6454,lng:126.6958,kid:"669705582",open:"09:00",close:"18:00",closed:[1],cost:[0,5000],park:1,wait:0,pop:58,img:""},
+  glinpark:   {n:"글린공원",c:"카페",area:"gimpo",lat:37.6499,lng:126.6502,nokakao:1,open:"10:00",close:"19:00",closed:[],cost:[9000,13000],park:1,wait:0,pop:60,img:""},
   gimpobird:  {n:"김포한강야생조류생태공원",c:"공원",area:"gimpo",lat:37.6593,lng:126.6872,open:"00:00",close:"23:59",closed:[],cost:[0,0],park:1,wait:0,pop:48,img:""},
   /* ── 양주·장흥 ── */
   songchubbq: {n:"송추계곡 글램핑 셀프바베큐장",c:"복합공간",area:"yangju",lat:37.7127,lng:126.9851,open:"10:00",close:"21:00",closed:[],cost:[60000,70000],park:1,wait:0,pop:52,img:""},
@@ -1431,7 +1430,7 @@ const PLACES={
   clubesp:    {n:"클럽에스프레소",c:"카페",area:"jongno",lat:37.5926,lng:126.9660,open:"09:00",close:"19:00",closed:[],cost:[6000,8000],park:1,wait:0,pop:55,img:""},
   yoondj:     {n:"윤동주문학관",c:"전시",area:"jongno",lat:37.5921,lng:126.9670,open:"10:00",close:"18:00",closed:[1],cost:[0,0],park:0,wait:0,pop:57,img:""},
   dtower:     {n:"디타워 광화문",c:"복합공간",area:"jongno",lat:37.5710,lng:126.9789,open:"11:00",close:"22:00",closed:[],cost:[12000,25000],park:1,wait:0,pop:65,img:""},
-  kyobo:      {n:"광화문 교보문고",c:"서점",area:"jongno",lat:37.5710,lng:126.9780,open:"09:30",close:"22:00",closed:[],cost:[0,0],park:1,wait:0,pop:80,img:""},
+  kyobo:      {n:"광화문 교보문고",c:"서점",area:"jongno",lat:37.5710,lng:126.9780,kid:"8196057",open:"09:30",close:"22:00",closed:[],cost:[0,0],park:1,wait:0,pop:80,img:""},
   khistory:   {n:"대한민국역사박물관",c:"전시",area:"jongno",lat:37.5740,lng:126.9778,open:"10:00",close:"18:00",closed:[],cost:[0,0],park:0,wait:0,pop:54,img:""},
   /* ── 마곡·잠실·강남·용산·서초 확장 ── */
   onegrove:   {n:"원그로브",c:"복합공간",area:"magok",lat:37.5613,lng:126.8255,open:"10:30",close:"21:00",closed:[],cost:[10000,20000],park:1,wait:0,pop:62,img:""},
@@ -1440,7 +1439,7 @@ const PLACES={
   bongpi:     {n:"봉피양 방이점",c:"식당",area:"jamsil",lat:37.5102,lng:127.1260,open:"11:30",close:"22:00",closed:[],cost:[16000,36000],park:1,wait:0,pop:72,img:""},
   soma:       {n:"소마미술관",c:"전시",area:"jamsil",lat:37.5168,lng:127.1181,open:"10:00",close:"18:00",closed:[1],cost:[10000,20000],park:1,wait:0,pop:58,img:""},
   hdtrade:    {n:"현대백화점 무역센터점",c:"복합공간",area:"gangnam",lat:37.5085,lng:127.0596,open:"10:30",close:"20:00",closed:[],cost:[15000,30000],park:1,wait:0,pop:68,img:""},
-  nmufood:    {n:"국립중앙박물관 식당가",c:"식당",area:"itaewon",lat:37.5246,lng:126.9808,open:"10:00",close:"18:00",closed:[],cost:[10000,15000],park:1,wait:0,pop:48,img:""},
+  nmufood:    {n:"국립중앙박물관 식당가",c:"식당",area:"itaewon",lat:37.5246,lng:126.9808,nokakao:1,open:"10:00",close:"18:00",closed:[],cost:[10000,15000],park:1,wait:0,pop:48,img:""},
   ipark:      {n:"아이파크몰 용산",c:"복합공간",area:"itaewon",lat:37.5293,lng:126.9654,open:"10:30",close:"22:00",closed:[],cost:[10000,20000],park:1,wait:0,pop:70,img:""},
   cgvyongsan: {n:"CGV 용산아이파크몰",c:"액티비티",area:"itaewon",lat:37.5297,lng:126.9660,open:"10:00",close:"23:59",closed:[],cost:[15000,15000],park:1,wait:0,pop:74,img:""},
   hangaram:   {n:"한가람미술관",c:"전시",area:"seocho",lat:37.4790,lng:127.0125,open:"10:00",close:"19:00",closed:[1],cost:[18000,22000],park:1,wait:0,pop:70,img:""},
@@ -1479,13 +1478,6 @@ const ROUTES=[
           {p:"understand",stay:50,c:"컨테이너 116개를 쌓아 만든 골목이에요. 청년 가게가 많고 2층 테라스가 앉기 좋아요"},
           {p:"yeonbang",stay:60,c:"1층 소품샵, 3층 옥상 카페. 사진은 옥상에서 찍고 내려오면 돼요"},
           {p:"onion",stay:60,c:"공장 그대로 둔 천장이 시원해요. 조용히 얘기하려면 2층 구석, 주말 2시쯤은 자리가 귀해요"}]},
-  {id:"s2",area:"seongsu",transport:"transit",hot:1,likes:118,visits:0,people:3,plan:1,ai:1,by:"스팟스 Official",av:"🤩",
-   title:"두 시간은 앉아 있게 되는 할아버지공장",mood:"천장 높아서 소리 울리는 건 감수해야 해요",
-   note:"할아버지공장은 밤 10시까지지만 주문은 9시에 끊어요",
-   stops:[{p:"yeonbang",stay:60,c:"1층 소품샵 → 2층 편집숍 → 옥상 카페 순으로 올라가면 안 겹쳐요. 계단이 많은 편이고요"},
-          {p:"grandpa",stay:70,c:"공장 층고를 그대로 살려서 앉아 있으면 시간이 잘 가요. 겨울엔 안쪽 자리가 따뜻해요"},
-          {p:"seoulforest",stay:50,c:"해 질 때 한 바퀴로 마무리하기 좋아요. 안쪽은 조명이 적어 바깥 산책로가 편해요"},
-          {p:"understand",stay:60,c:"서울숲 나오는 길에 걸려요. 여기서 저녁을 먹어도 되고 커피만 해도 되고요"}]},
   {id:"s3",area:"seongsu",transport:"transit",hot:0,likes:52,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",
    title:"11시 전에 가야 앉는 어니언",mood:"성수는 오전에 훑어야 사람이 없어요",
    note:"수제화거리는 일요일 쉬는 집이 많아요. 성수역 3번 출구에서 시작",
@@ -1500,20 +1492,6 @@ const ROUTES=[
           {p:"seoulforest",stay:60,c:"차로 10분 안쪽이에요. 밤에는 남문 쪽 주차장 입구가 찾기 쉬워요"},
           {p:"onion",stay:60,c:"밤에도 열려서 한강 갔다 앉기 좋아요. 조용히 얘기하려면 2층 구석 자리요"},
           {p:"understand",stay:50,c:"돗자리 정리하고 커피 한잔 하기 좋아요. 문 닫는 시간이 일러 해 지기 전에요"}]},
-  {id:"s5",area:"seongsu",transport:"transit",hot:0,likes:71,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",
-   title:"노을은 뚝섬에서, 저녁은 성수에서",mood:"강에서 시작해 동네로 들어오는 역방향",
-   note:"뚝섬유원지역에서 성수까지 지하철 두 정거장이에요",
-   stops:[{p:"ttukseom",stay:70,c:"자벌레 전망대가 무료예요. 통유리로 강이 보여서 노을 때가 제일 좋아요"},
-          {p:"seoulforest",stay:50,c:"뚝섬유원지에서 다리 건너 20분. 해 지고는 가로등 있는 큰길이 걷기 편해요"},
-          {p:"grandpa",stay:70,c:"성수이로7가길이에요. 저녁엔 자리가 나는 편이고 마감은 이른 편이에요"},
-          {p:"ssshoe",stay:40,c:"성수역 밑 골목이에요. 저녁엔 공방이 닫혀 간판 구경 위주가 되고요"}]},
-  {id:"s6",area:"seongsu",transport:"transit",hot:0,likes:39,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",
-   title:"비 와도 안 젖는 성수",mood:"실내만 이어 붙여서 젖을 데가 없어요",
-   note:"세 곳 다 실내라 날씨를 안 타요. 비 오는 날은 카페가 더 붐비고요",
-   stops:[{p:"yeonbang",stay:70,c:"비 오면 여기 한 건물에서 다 돼요. 1층 소품샵부터 3층 식당까지 층만 옮기면 끝"},
-          {p:"understand",stay:60,c:"실내 통로로만 다녀도 한 시간은 가요. 밥은 컨테이너 안쪽 식당가에서요"},
-          {p:"onion",stay:70,c:"비 오는 날 창가 자리가 특히 좋아요. 오후엔 자리가 빨리 차요"},
-          {p:"grandpa",stay:60,c:"비 오면 여기가 제일 붐빌 만큼 인기예요. 층고가 높아 소리는 울리는 편이고요"}]},
   {id:"s7",area:"seongsu",transport:"transit",hot:1,likes:203,visits:0,people:2,plan:1,ai:1,fame:"아이돌 성지순례",by:"스팟스 Official",av:"🤩",
    title:"영상에서 본 성수, 그 순서대로",mood:"사람 제일 없는 건 의외로 평일 아침",
    note:"주말 오후엔 사람이 많아 같은 각도로 찍으려면 좀 기다리게 돼요",
@@ -1920,7 +1898,7 @@ const ROUTES=[
   {id:"g1",area:"gangnam",transport:"transit",hot:0,likes:298,visits:0,people:2,plan:1,ai:1,fame:"아이돌 성지순례",by:"스팟스 Official",av:"🤩",
    title:"길에 서 있는 아트토이부터 도서관까지",mood:"길에 선 조형물 보고 실내로 들어가 쉬어요",
    note:"아트토이는 야외라 비 오면 보기 어려워요. 코엑스는 삼성역에서 지하로 연결돼요",
-   stops:[{p:"gangnamdol",stay:60,c:"압구정로데오역에서 청담사거리까지 1km에 17개예요. 오전엔 인도가 한산해 찍기 좋아요"},
+   stops:[{p:"gangnamdol",stay:60,c:"압구정로데오역에서 청담사거리까지 1km에 아트토이 '강남돌'이 17개 서 있어요. 오전엔 인도가 한산해 찍기 좋아요"},
           {p:"starfield",stay:50,c:"13m 서가가 볼거리예요. 커피는 도서관 둘러싼 카페에서 사서 앉으면 되고요"},
           {p:"aquarium",stay:90,c:"주말은 온라인 예매가 편해요. 통로가 좁은 편이라 천천히 도는 게 좋아요"},
           {p:"bongeun",stay:60,c:"코엑스에서 길 하나 건너면 돼요. 도심 한복판인데 확 조용해져요"}]},
@@ -1948,7 +1926,7 @@ const ROUTES=[
   {id:"g5",area:"gangnam",transport:"transit",hot:0,likes:225,visits:0,people:3,plan:1,ai:1,fame:"아이돌 성지순례",by:"스팟스 Official",av:"🤩",
    title:"1km 안에 아트토이 열일곱 개",mood:"열일곱 개를 다 찾으면 두 시간이 가요",
    note:"야외 구간이라 날씨를 타요. 비 오면 다음으로 미루는 게 나아요",
-   stops:[{p:"gangnamdol",stay:70,c:"17개를 다 보면 1km예요. 하나씩 찾는 재미가 있고요"},
+   stops:[{p:"gangnamdol",stay:70,c:"K팝 스타를 캐릭터로 만든 아트토이 '강남돌' 17개를 다 보면 1km예요. 하나씩 찾는 재미가 있고요"},
           {p:"apgurodeo",stay:70,c:"바로 이어져요. 커피 한잔은 이 골목에서 끊고 가면 좋고요"},
           {p:"dosan",stay:50,c:"로데오에서 가로수길로 넘어가는 길에 있어요. 잠깐 앉아 가기 딱이에요"},
           {p:"garosu",stay:70,c:"로데오에서 걸어 넘어가요. 저녁은 뒤쪽 세로수길 골목이 조용해요"}]},
@@ -2379,7 +2357,7 @@ const ROUTES=[
           {p:"mangwon",stay:70,c:"숲길 끝에서 15분. 저녁은 여기서 — 반찬이랑 튀김은 7시 전이 종류가 많아요"}]},
   {id:"pl2",area:"apgu",transport:"transit",hot:0,likes:93,visits:0,people:2,plan:1,ai:1,by:"스팟스 Official",av:"🤩",checked:"2026.08",fame:"아이돌 성지순례",
    title:"아트토이 열일곱 개를 한 줄로 잇는 길",mood:"돈 안 쓰고 볼 수 있는 게 이 동네에 있다는",
-   stops:[{p:"gangnamdol",stay:70,c:"압구정로데오에서 청담사거리까지 1km에 열일곱 개예요. 오전이 찍기 좋고요"},
+   stops:[{p:"gangnamdol",stay:70,c:"압구정로데오에서 청담사거리까지 1km에 아트토이 '강남돌'이 열일곱 개예요. 오전이 찍기 좋고요"},
           {p:"apgurodeo",stay:60,c:"중간에 한 번 끊고 커피 한잔 하기 좋아요. 골목마다 가게 성격이 다르고요"},
           {p:"cheongdam",stay:50,c:"사람이 적어 걷기 편해요. 가로수가 정돈돼 사진도 잘 나오고요"},
           {p:"galleria",stay:60,c:"화장실이랑 앉을 데가 확실해 중간 기착지로 좋아요. 지하 식품관도 있고요"},
@@ -2790,6 +2768,15 @@ const KK_MODE={walk:"walk",bus:"traffic",subway:"traffic",mix:"traffic",car:"car
    지역명은 '연남·홍대'처럼 둘이 붙은 게 있어서 앞부분만 쓴다(검색어가 길면 오히려 안 잡힌다). */
 const kakaoPlaceURL=p=>{
   if(p.kid) return `https://place.map.kakao.com/${p.kid}`;
+  /* nokakao:1 = **카카오 장소 검색으로 찾아지지 않는 곳.** 두 종류가 섞여 있다.
+     ① 골목·상가·산책로 같은 구역형 스톱(4.8 "구역은 폐업하지 않는다") — 애초에 POI가 아니다
+     ② 실존하는데 카카오에 등록이 없는 시설 — 셋이서문학관(서울시 공식 자료로 확인),
+        글린공원(한국관광공사 등재, 김포 양촌읍). **없는 곳이 아니니 지우면 안 된다.**
+     여기에 검색 링크를 걸면 빈 결과이거나 엉뚱한 가게가 잡힌다 — 실측으로 '흑석동 먹자골목'→
+     '시청 먹자골목', '신촌 연세로'→'현대백화점 신촌점'이 나왔다. 그래서 좌표로 지도를 연다.
+     ⚠️ 220곳 전수 검색으로 확인된 곳에만 붙인다. 같은 '골목' 분류라도 북촌한옥마을·가로수길·
+        명동거리는 카카오에 제대로 등록돼 있어 검색이 맞다(26곳 중 4곳만 해당됐다). */
+  if(p.nokakao) return `https://map.kakao.com/link/map/${kkPt(p)}`;
   const a=AREAS.find(x=>x.id===p.area), w=a?a.n.split("·")[0]:"";
   // '어니언 성수'·'노량진수산시장'처럼 이름에 이미 지역이 들어간 곳은 두 번 붙이지 않는다
   const q=(!w||p.n.includes(w))?p.n:`${w} ${p.n}`;
