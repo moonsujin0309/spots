@@ -2973,7 +2973,11 @@ function share(id){
 function spotListText(id){
   const r=ROUTES.find(x=>x.id===id); if(!r) return "";
   const c=computeRoute(r,iso()), d=new Date(iso());
-  const head=`${d.getMonth()+1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})\n${r.title}\n${routeUrl(id)}`;
+  // 링크는 '이름+지역'으로 카카오맵을 검색해 넘기는 자동 매치다(kid가 있는 곳만 정확).
+  // 엉뚱한 가게가 잡힐 수 있으니 받는 사람에게 그 사실을 숨기지 않는다.
+  const head=`📅${d.getMonth()+1}월 ${d.getDate()}일 (${DAYS[d.getDay()]})\n`
+    +`🗺️ ${r.title}\n🔗  ${routeUrl(id)}\n\n`
+    +`<상세 정보>\n*자동생성으로 실제 정보 확인이 필요해요!`;
   const body=c.stops.map((s,i)=>`${i+1}. ${s.place.n} (${s.place.c})\n${kakaoPlaceURL(s.place)}`).join("\n\n");
   return `${head}\n\n${body}`;
 }
