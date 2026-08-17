@@ -2933,6 +2933,13 @@ const S={view:"home",routeId:null,placeId:null,listKey:null,
   budLo:0,budHi:30,weather:"",ptab:"routes",placeCat:"",placeQ:"",placeN:40,
   stack:[],scrollMem:{},memos:{},memoEdit:null,reroutes:new Set()};
 const iso=()=>`${S.date}T${S.time}:00`;
+/* 다녀온 곳은 브라우저에 남긴다 — 안 그러면 '다녀왔어요'가 새로고침 한 번에 지워져 버튼이 죽는다.
+   저장하는 건 **장소 키뿐**이다. 좌표·주소는 안 넣는다(3절 제약 1) — 다녀온 표시는 지도에
+   안 그리므로 키만으로 충분하다. 서버가 없으니 기기·브라우저마다 따로 쌓인다(URL 공유형의 대가).
+   PLACES에 없는 키는 버린다 — 유저가 담았다가 사라진 커스텀 장소가 쌓이지 않게. */
+const VKEY="spots.visited";
+try{ JSON.parse(localStorage.getItem(VKEY)||"[]").filter(k=>PLACES[k]).forEach(k=>S.visited.add(k)); }catch(_){}
+function saveVisited(){ try{ localStorage.setItem(VKEY,JSON.stringify([...S.visited])); }catch(_){} }
 let ANIM=true;
 const memKey=()=>S.view+(S.routeId||"")+(S.placeId||"")+(S.listKey||"");
 function go(v,id){
@@ -3004,10 +3011,11 @@ function toggleSave(id){ S.saved.has(id)?S.saved.delete(id):S.saved.add(id);
 function markRouteVisited(id){
   const r=ROUTES.find(x=>x.id===id), all=r.stops.every(s=>S.visited.has(s.p));
   r.stops.forEach(s=>all?S.visited.delete(s.p):S.visited.add(s.p));
+  saveVisited();
   toast(all?"다녀온 표시를 해제했어요":`${r.stops.length}곳을 다녀온 곳으로 기록했어요`);
   render();
 }
-function togglePlace(p){ S.visited.has(p)?S.visited.delete(p):S.visited.add(p); render(); }
+function togglePlace(p){ S.visited.has(p)?S.visited.delete(p):S.visited.add(p); saveVisited(); render(); }
 /* 좋아요는 '스팟'에, 저장은 '루트'에. 둘이 겹치지 않게 역할을 나눴다. */
 const likeCount=k=>Math.round((PLACES[k].pop||50)*1.4)+(S.likes.has(k)?1:0);
 /* 루트의 저장·리루트 수 — likeCount와 같은 관례의 파생값(루트 likes에서 결정적으로, 랜덤 없음).
@@ -3943,7 +3951,7 @@ function previewView(){
 }
 function publish(){
   const d=S.draft;
-  if(!d.plan) d.stops.forEach(s=>S.visited.add(s.p));
+  if(!d.plan){ d.stops.forEach(s=>S.visited.add(s.p)); saveVisited(); }
   const id="my"+(++myN);
   const r=draftRoute(id);
   ROUTES.unshift(r); S.myRoutes.push(id);      // 실제로 게시된 것처럼 목록에 올린다
@@ -4249,6 +4257,7 @@ function playCheck(k){
   const r=S.playRoute; if(!r) return;
   const key=r.stops[k].p;
   S.visited.has(key)?S.visited.delete(key):S.visited.add(key);
+  saveVisited();
   const c=computeRoute(r,`${r.date}T${r.time}:00`);
   const i=Math.max(0,Math.min(S.playIdx,c.stops.length-1));
   const set=(id,html)=>{ const el=document.getElementById(id); if(el) el.innerHTML=html; };
