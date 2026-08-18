@@ -2530,7 +2530,12 @@ const ROUTES=[
    데이트 코스 142개 전수 분석(루트_기준.md 2.5절)에서 나온 6칸이다.
    총액·교통비·주차는 그 아래 kv가 맡는다 — 저건 "실행" 정보고 이건 "판단" 정보다. */
 
-ROUTES.forEach(r=>{ if(!r.checked) r.checked="2026.08"; });
+/* 올린 날 — 루트가 실제로 들어온 날. STATUS 작업 로그에 회차별 날짜가 남아 있는 건 그대로 쓰고,
+   기록이 없는 초기 루트는 일괄값을 준다(사용자 확정 2026-08-19). 새로 만드는 루트는 publish()가 그날을 찍는다. */
+const POSTED_BATCH={gs1:"2026.08.16",gs2:"2026.08.16",gs3:"2026.08.16",   // 28차
+  gs4:"2026.08.16",gs5:"2026.08.16",                                      // 29차
+  gs6:"2026.08.17",gs7:"2026.08.17"};                                     // 30차
+ROUTES.forEach(r=>{ if(!r.posted) r.posted=POSTED_BATCH[r.id]||"2026.08.01"; });
 
 /* 날씨 — 예전엔 '계절'로 갈랐다. 원본 아카이브가 그렇게 분류했기 때문인데,
    실제로 사람이 찾는 건 "봄에 갈 데"가 아니라 "오늘 비 오는데 갈 데"였다.
@@ -4184,7 +4189,7 @@ function publish(){
   if(!d.plan){ d.stops.forEach(s=>S.visited.add(s.p)); saveVisited(); }
   const id="my"+(++myN);
   const r=draftRoute(id);
-  r.posted=new Date().toISOString().slice(0,7).replace('-','.');   // 새 루트는 올린 달을 실제로 찍는다
+  r.posted=ymd(new Date()).replace(/-/g,'.');   // 올린 날(연.월.일). toISOString은 UTC라 새벽에 올리면 하루 전으로 찍힌다 — ymd는 로컬
   ROUTES.unshift(r); S.myRoutes.push(id);      // 실제로 게시된 것처럼 목록에 올린다
   S.draft={title:"",mood:"",transport:"transit",people:2,plan:1,photos:{},date:S.date,time:S.time,stops:[]};
   S.stack=[];                                   // 미리보기·만들기로 되돌아가지 않게 흐름을 끊는다
