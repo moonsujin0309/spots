@@ -49,7 +49,7 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
   --bg:#f4f3fa; --card:#ffffff; --card2:#f0eef8; --fg:#17142a; --sub:#5d5780; --dim:#666179;
   --line:#e6e2f2;
   --accent:#d4ff00; --on-accent:#141200; --accent-2:#eef9c0; --accent-dk:#a8cc00; --accent-tx:#5a7300;
-  --point:#ff007a; --point-ink:#ffffff; --point-2:#ffe4f0; --point-dk:#c2005c;
+  --point:#ff007a; --point-ink:#ffffff; --point-2:#ffe4f0; --point-dk:#c2005c; --point-tx:#c2005c;
   /* 경고색도 브랜드 핫핑크 계열로 — 이전 크림슨(#e11d48)은 포인트색과 부딪혔다 */
   --warn:#c2184b; --warn-2:#ffe1ec; --warn-dk:#bd0043; --warn-ink:#ffffff;
   --ok:#141200; --ok-2:#d4ff00; --chip:#efedf7; --chip-2:#e3dff2;
@@ -77,7 +77,7 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
   --bg:#0f0e17; --card:#191627; --card2:#201c33; --fg:#f6f4ff; --sub:#a29cc4; --dim:#9692af;
   --line:#2b2545;
   --accent:#d4ff00; --on-accent:#141200; --accent-2:#26300a; --accent-dk:#93b300; --accent-tx:#d4ff00;
-  --point:#ff007a; --point-ink:#ffffff; --point-2:#380a2b; --point-dk:#a30050;
+  --point:#ff007a; --point-ink:#ffffff; --point-2:#380a2b; --point-dk:#a30050; --point-tx:#ff52a5;
   --warn:#ff5c95; --warn-2:#3d1028; --warn-dk:#a3004a; --warn-ink:#2b0715;
   --ok:#141200; --ok-2:#d4ff00; --chip:#231e3a; --chip-2:#2f294c;
   --img-line:rgba(255,255,255,.10);
@@ -725,8 +725,6 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   align-items:center;gap:4px 8px;padding:12px 0;box-shadow:inset 0 -1px 0 var(--line)}
 .pk:last-child{box-shadow:none}
 .pk>.grip{grid-area:grip}
-.pk .no2{grid-area:no;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--on-accent);
-  font-size:12px;font-weight:700;display:grid;place-items:center}
 .pk>.ph{grid-area:thumb;width:44px;height:44px;border-radius:var(--r-m)}
 .pk .g{grid-area:name;min-width:0}
 .pk .rm{grid-area:rm;color:var(--dim);font-size:17px;padding:8px 4px;justify-self:end}
@@ -743,9 +741,6 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   touch-action:none;cursor:grab}
 .grip svg{width:17px;height:17px}
 .pk.dragging{background:var(--accent-2);border-radius:var(--r-m);box-shadow:var(--e2)}
-.pk.first{background:var(--accent-2);border-radius:var(--r-m);padding-left:6px;padding-right:6px;
-  box-shadow:inset 0 0 0 1.5px var(--accent)}
-.pk.first .no2{width:26px;height:26px;flex:0 0 26px;font-size:13px}
 .meetbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
   color:var(--accent-tx);margin-bottom:2px}
 .meetbadge svg{width:12px;height:12px}
@@ -830,17 +825,36 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .meta .mw i{display:grid;place-items:center;color:var(--accent-tx)}
 .meta .mw svg{width:13px;height:13px}
 /* 작성자 한 줄 — 누구인지와 그에 대한 행동을 한 줄에 묶는다 */
-.wline{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;
-  box-shadow:inset 0 1px 0 var(--line)}
-.wt{flex:1}
-.summary .av{width:34px;height:34px;flex:0 0 34px;font-size:17px}
-.wt{min-width:0;flex:1}
-.wt b{display:block;font-size:13px;font-weight:800;letter-spacing:-.03em;
+/* 예전엔 아바타+이름+부가정보+버튼3개를 303px 한 줄에 다 밀어넣어 이름이 잘리고 버튼이 붙어 있었다.
+   '누가 올렸나'는 이 화면의 주인공이 아니므로 한 줄로 조용히 내리고,
+   액션은 아래 줄에서 라벨을 달아 여유를 준다. */
+.wline{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:12px;
+  box-shadow:inset 0 1px 0 var(--line);min-width:0}
+.summary .av{width:22px;height:22px;flex:0 0 22px;font-size:12px}
+.wt{min-width:0;flex:1;display:flex;align-items:center;gap:4px;
+  font-size:12px;overflow:hidden;white-space:nowrap}
+.wdot{color:var(--dim);flex:0 0 auto}
+.wt em{font-style:normal;color:var(--dim);font-weight:600;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wt em{display:block;font-style:normal;font-size:11px;color:var(--dim);font-weight:600;margin-top:2px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wa{display:flex;align-items:center;gap:4px;flex:0 0 auto}
-.wa .mini{padding:8px 8px;min-height:34px;font-size:12px}
+/* 액션 줄 — 아이콘만 있던 걸 라벨과 함께 낸다. 아이콘 하나로는 리루트와 인용이 구분이 안 됐다 */
+.wacts{display:flex;gap:6px;margin-top:8px}
+.wact{flex:1;min-height:36px;display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  background:var(--chip);border-radius:var(--r-m);font-size:12px;font-weight:700;color:var(--sub);
+  padding:0 6px;white-space:nowrap}
+.wact svg{width:14px;height:14px;flex:0 0 14px}
+.wact b{font-weight:800;font-variant-numeric:tabular-nums;margin-left:2px}  /* 텍스트 노드라 flex gap이 안 먹는다 */
+/* 리루트 수는 '인기' 지표다 — 4.3의 의미 배분대로 라임이 아니라 핫핑크 */
+.wact.o{background:var(--point);color:var(--point-ink)}
+/* 지도 캡션 + 재생 버튼 — 캡션은 흐르고 버튼은 오른쪽 구석에 고정 */
+.ft{display:flex;align-items:center;gap:8px}
+.ft>span{flex:1;min-width:0}
+.ftplay{flex:0 0 32px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;
+  background:var(--accent);color:var(--on-accent);box-shadow:var(--shadow-sm);position:relative}
+.ftplay svg{width:14px;height:14px}
+/* 재생 중에는 핫핑크 — '지금 돌아가는 중'이라는 신호는 라임(실행 가능)과 뜻이 다르다 */
+.ftplay.on{background:var(--point);color:var(--point-ink)}
+.ftplay::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:44px;height:44px}
 .ib2{width:34px;height:34px;border-radius:var(--r-m);background:var(--chip);
   display:inline-flex;align-items:center;justify-content:center;gap:2px;font-size:11px;font-weight:800}
 .ib2 svg{width:15px;height:15px}
@@ -908,6 +922,8 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .pfol{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;
   font-size:13px;color:var(--dim);font-weight:600}
 .pfol b{color:var(--fg);font-weight:800;margin-right:4px}
+/* 받은 리루트 = 남이 내 루트를 가져간 횟수 = 인기 지표. 4.3 배분대로 라임이 아니라 핫핑크 */
+.pregram b{color:var(--point-tx)}   /* 핑크를 글자로 쓸 땐 눌러쓴 값 — 원색은 흰 배경에서 3.8:1 */
 /* 탭 — 밑줄만으로 현재 위치를 표시한다. 개수는 라벨 안에 붙여 위아래로 흩어지지 않게 */
 .ptabs{display:flex;margin:16px 24px 0;box-shadow:inset 0 -1px 0 var(--border)}
 .ptabs button{flex:1;position:relative;padding:12px 4px 12px;font-size:13px;
@@ -1146,6 +1162,8 @@ const IC={
   cal:S_('<rect x="3.6" y="5.2" width="16.8" height="15.2" rx="3"/><path d="M3.6 10h16.8M8.4 3.4v3.4M15.6 3.4v3.4"/>'),
   grip:S_('<path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/>'),
   bus:S_('<rect x="4.4" y="3.8" width="15.2" height="12.6" rx="2.6"/><path d="M4.4 11.6h15.2M8.2 3.8v-.4h7.6v.4"/><circle cx="8.2" cy="14" r=".9" fill="currentColor" stroke="none"/><circle cx="15.8" cy="14" r=".9" fill="currentColor" stroke="none"/><path d="M7.2 16.4 6 20.4M16.8 16.4 18 20.4"/>'),
+  play:S_('<path d="M8.4 5.6 18.6 12 8.4 18.4Z"/>',1),
+  pause:S_('<path d="M9.4 5.6h2.5v12.8H9.4zM14.1 5.6h2.5v12.8h-2.5z"/>',1),
 };
 // 지도 안에 넣을 아이콘 원본 패스 (24×24 기준)
 const ICP={
@@ -3557,7 +3575,7 @@ function statRow(r,c){
   const st=[["소요",durRange(c.totalLo,c.totalHi)],
     [plabel(S.people)+"명 비용",totalText(c,r.transport,S.people)],
     r.transport==="car"?["이동 거리",c.distKm.toFixed(1)+"km"]
-      :["걷는 거리",c.walkKm.toFixed(1)+"km"]];
+      :["걷는 시간",walkText(c.walkKm)]];
   return `<div class="rstat">${st.map(([k,v])=>
     `<div><b>${v}</b><span>${k}</span></div>`).join("")}</div>`;
 }
@@ -3575,10 +3593,12 @@ function metaRow(r,c){
 }
 
 /* 실행 정보 한 줄 — 출발/종료·스팟 수·확인 시점. 판단이 끝난 뒤에 읽는 값이라 아래로 내렸다 */
-const specMeta=(r,c)=>`<div class="smeta">
-  <span><b>${hm(c.startAt)}</b> 출발 → <b>${hm(c.endLo)}</b>쯤 종료</span>
-  <span>들르는 곳 <b>${c.stops.length}곳</b></span>
-  <span>영업 확인 <b>${r.checked}</b></span></div>`;
+/* 예전엔 출발→종료·들르는 곳·영업 확인 세 개를 달았는데 전부 걷어냈다.
+   출발→종료는 "도착 시각은 따라가기가 맡는다"는 이 화면의 규칙과 충돌했고,
+   들르는 곳 수는 아래 지도 캡션과 타임라인이 이미 말한다.
+   영업 확인은 136개 루트가 전부 "2026.08"이라 정보량이 0이었다.
+   남긴 건 올린 날 하나 — r.posted 가 있을 때만 그린다(없으면 줄 자체가 안 생긴다). */
+const specMeta=(r,c)=>r.posted?`<div class="smeta"><span>올린 날 <b>${r.posted}</b></span></div>`:"";
 
 
 /* ═════ 장소로 보기 ═════
@@ -3663,14 +3683,14 @@ function routeView(){
       ${metaRow(r,c)}
       <div class="wline">
         <span class="av">${r.av}</span>
-        <div class="wt"><b>${bylineHTML(r)}</b>
-          <em>${r.plan?"아직 안 다녀온 루트":`${r.people}명이 다녀옴`}</em></div>
-        <span class="wa">
-          ${own?"":`<button class="ib2 ${S.reroutes.has(r.id)?"o":""}" onclick="reroute('${r.id}')"
-            aria-label="리루트 ${rerouteCount(r)}">${IC.reroute}<b>${rerouteCount(r)}</b></button>
-          <button class="ib2" onclick="quote('${r.id}')" aria-label="고쳐서 내 루트로">${IC.pen}</button>`}
-          <button class="mini ${isFollowing(r.by)?"o":""}" onclick="toggleFollow('${r.by}')">
-            ${isFollowing(r.by)?"팔로우 중":"팔로우"}</button></span>
+        <div class="wt">${bylineHTML(r)}<span class="wdot">·</span><em>${r.plan?"아직 안 다녀온 루트":`${r.people}명이 다녀옴`}</em></div>
+      </div>
+      <div class="wacts">
+        ${own?"":`<button class="wact ${S.reroutes.has(r.id)?"o":""}" onclick="reroute('${r.id}')"
+          aria-label="리루트 ${rerouteCount(r)}">${IC.reroute}리루트<b>${rerouteCount(r)}</b></button>
+        <button class="wact" onclick="quote('${r.id}')">${IC.pen}고쳐서 쓰기</button>`}
+        <button class="wact ${isFollowing(r.by)?"o":""}" onclick="toggleFollow('${r.by}')">
+          ${isFollowing(r.by)?"팔로우 중":"팔로우"}</button>
       </div>
       ${specMeta(r,c)}
     </div>
@@ -3683,7 +3703,7 @@ function routeView(){
       ?`${DAYS[d.getDay()]}요일 ${hm(toMin(S.time))} 출발이면 — ${c.blockNames.join(", ")}`
       :`${DAYS[d.getDay()]}요일 ${hm(toMin(S.time))} 출발, 전부 갈 수 있어요`}</div>
     <div class="map">${hasL()?`<div class="lmap" id="rmap"></div>`:mapSVG(c.stops)}
-      <div class="ft">순서대로 ${c.stops.length}곳 · 이동 ${c.distKm.toFixed(1)}km (걷는 거리 ${c.walkKm.toFixed(1)}km)${c.waits?` · 웨이팅 ${c.waits}곳(머무는 시간에 포함)`:""}</div></div>
+      <div class="ft">순서대로 ${c.stops.length}곳 · 이동 ${c.distKm.toFixed(1)}km (걷기 ${walkText(c.walkKm)})${c.waits?` · 웨이팅 ${c.waits}곳(머무는 시간에 포함)`:""}</div></div>
     <div class="tl">${tl}</div>
     <div class="fabpad"></div>
     <div class="fab">
@@ -4146,7 +4166,7 @@ function previewView(){
         <div><div class="k">${plabel(r.people)}명 총액</div><div class="v">${IC.card}${totalText(c,r.transport,r.people)}</div></div>
         <div><div class="k">교통비</div><div class="v">${IC[TRANSPORT[r.transport].ic]}${(c.fareCar+c.fare*peopleN(r.people)).toLocaleString()}원</div></div>
         <div><div class="k">이동 거리</div><div class="v">${IC[t.ic]}${c.distKm.toFixed(1)}km</div></div>
-        <div><div class="k">걷는 거리</div><div class="v">${IC.walk}${c.walkKm.toFixed(1)}km</div></div>
+        <div><div class="k">걷는 시간</div><div class="v">${IC.walk}${walkText(c.walkKm)}</div></div>
       </div></div>
     <div class="bar ${c.blocked?"x":"o"}">${c.blocked
       ?`${DAYS[dt.getDay()]}요일 ${hm(toMin(d.time))} 출발이면 — ${c.blockNames.join(", ")}`
@@ -4164,6 +4184,7 @@ function publish(){
   if(!d.plan){ d.stops.forEach(s=>S.visited.add(s.p)); saveVisited(); }
   const id="my"+(++myN);
   const r=draftRoute(id);
+  r.posted=new Date().toISOString().slice(0,7).replace('-','.');   // 새 루트는 올린 달을 실제로 찍는다
   ROUTES.unshift(r); S.myRoutes.push(id);      // 실제로 게시된 것처럼 목록에 올린다
   S.draft={title:"",mood:"",transport:"transit",people:2,plan:1,photos:{},date:S.date,time:S.time,stops:[]};
   S.stack=[];                                   // 미리보기·만들기로 되돌아가지 않게 흐름을 끊는다
@@ -4274,7 +4295,10 @@ function stopRows(){
     const v=PLACES[s.p];
     return `<div class="pk card1" data-i="${i}">
       <div class="stp">
-        ${ph(v.img,CT[v.c]||"park",v.n.length,"",`<span class="bd">${i+1}</span>`)}
+        ${ph(v.img,CT[v.c]||"park",v.n.length,"",
+          // 루트 상세와 같은 규칙 — 양 끝만 출발/도착(.bd.ep = 핫핑크)이라 읽는 순서가 드러난다
+          `<span class="bd${i===0||i===d.stops.length-1?" ep":""}">${
+            i===0?"출발":i===d.stops.length-1?"도착":i+1}</span>`)}
         <div class="in">
           <div class="nm">${v.n}</div>
           <div class="tm">${i===0?`${hm(toMin(d.time))} 만나서 출발`:`${v.c}`}${v.approx?" · 위치 미확정":""}</div>
@@ -4423,7 +4447,7 @@ function playView(){
       <h1 style="font-size:20px">${r.title}</h1>
       <div class="note">${hm(c.startAt)} 출발 · ${c.stops.length}곳 · ${durRange(c.totalLo,c.totalHi)}</div></div>
     <div class="map" style="margin-top:8px">${hasL()?`<div class="lmap" id="pmap" style="height:300px"></div>`:mapSVG(c.stops,300,i)}
-      <div class="ft">지도 핀과 아래 목록은 서로 따라가요 · 선은 실제 걷는 길이에요</div></div>
+      <div class="ft"><span>지도 핀과 아래 목록은 서로 따라가요 · 선은 실제 걷는 길이에요</span><button class="ftplay" id="ftplay" onclick="playToggle()" aria-label="루트 재생">${IC.play}</button></div>
     <div class="prail"><div class="prls" id="prail">${playRail(c,i)}</div>
       <span class="prp" id="pprog">${playProg(c)}</span></div>
     <div class="plst" id="plst">${playRows(c,i)}</div>
@@ -4431,6 +4455,66 @@ function playView(){
     <div class="hint">지도의 선은 <b>실제 길</b>을 따라 그리지만, 소요 시간·거리 숫자는
       <b>직선거리 기준 예상치</b>예요 — 걷기·대기 시간을 더해 잡은 값이라 실제와 다를 수 있어요.
       정확한 건 각 구간의 <b>길찾기</b>에서 확인하세요.</div>`;
+}
+/* ═══ 루트 재생 ═══
+   구간 선을 한 번에 다 보여주면 "어느 쪽으로 흐르는지"가 안 읽힌다.
+   기본 선을 흐리게 깔고 그 위로 진한 선이 스팟 순서대로 지나가게 한다.
+   ⚠️ 지도가 없을 때(SVG 폴백)는 그릴 대상이 없으므로 아무것도 하지 않는다. */
+/* ⚠️ requestAnimationFrame 을 쓰지 않는다 — 탭이 화면에 안 떠 있으면 rAF는 아예 호출되지 않아
+   (실측: 1초에 0회) 재생이 멈춘 채로 버튼만 '멈춤'으로 남는다. setTimeout 은 그런 상황에서도
+   느려질 뿐 진행은 한다. 1.1초짜리 선 애니메이션이라 16ms 타이머로도 부드러움 차이가 없다. */
+let playAnim=null;
+const PLAY_MS=1100;               // 구간 하나를 지나는 시간
+const PLAY_TICK=16;
+function playLines(m,fn){ (m.__legLines||[]).forEach(ls=>(ls||[]).forEach(fn)); }
+function playReset(m,toStart){
+  if(playAnim){ clearTimeout(playAnim.t); playAnim=null; }
+  if(m){
+    playLines(m,o=>o.setOptions({strokeOpacity:o.__opa}));      // 흐리게 했던 걸 되돌린다
+    if(m.__runner){ m.__runner.setMap(null); m.__runner=null; }
+  }
+  const b=document.getElementById("ftplay");
+  if(b){ b.innerHTML=IC.play; b.setAttribute("aria-label","루트 재생"); b.classList.remove("on"); }
+  if(toStart) playFocus(0);
+}
+function playToggle(){
+  const m=LM.pmap;
+  if(!m){ toast("지도를 불러오지 못해 재생할 수 없어요"); return; }
+  if(playAnim){ playReset(m,true); return; }        // 멈춤 → 끝내고 처음으로
+  const legs=(m.__legPts||[]).filter(Boolean);
+  if(!legs.length){ toast("그릴 구간이 없어요"); return; }
+  const b=document.getElementById("ftplay");
+  if(b){ b.innerHTML=IC.pause; b.setAttribute("aria-label","재생 멈추기"); b.classList.add("on"); }
+  playLines(m,o=>o.setOptions({strokeOpacity:o.__opa*0.22}));   // 기본 선은 반투명으로 눕힌다
+  m.__runner=new kakao.maps.Polyline({path:[],strokeColor:"#d4ff00",strokeWeight:8,
+    strokeOpacity:1,strokeStyle:"solid",zIndex:70});
+  m.__runner.setMap(m);
+  playFocus(0);
+  // 모션을 줄이는 설정이면 끝 상태만 보여주고 멈춘다
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){
+    const all=[]; (m.__legPts||[]).forEach(pp=>(pp||[]).forEach(q=>all.push(q)));
+    m.__runner.setPath(all); playFocus((m.__legPts||[]).filter(Boolean).length);
+    setTimeout(()=>playReset(m,false),700); return;
+  }
+  const traveled=[];
+  let leg=0, t0=performance.now();
+  playAnim={t:0};
+  const step=now=>{
+    // 화면이 바뀌었거나 지도가 다시 만들어졌으면 조용히 끝낸다
+    if(S.view!=="play"||LM.pmap!==m){ playReset(null,false); return; }
+    const pts=m.__legPts[leg]||[];
+    if(pts.length<2){ leg++; t0=now; if(leg>=m.__legPts.length){ playReset(m,false); return; } playAnim.t=setTimeout(()=>step(performance.now()),PLAY_TICK); return; }
+    const p=Math.min(1,(now-t0)/PLAY_MS);
+    const n=Math.max(1,Math.floor(p*(pts.length-1)));
+    m.__runner.setPath(traveled.concat(pts.slice(0,n+1)));
+    if(p>=1){
+      traveled.push(...pts);
+      leg++; t0=now; playFocus(Math.min(leg,m.__pins.length-1));
+      if(leg>=m.__legPts.length){ setTimeout(()=>playReset(m,false),900); return; }
+    }
+    playAnim.t=setTimeout(()=>step(performance.now()),PLAY_TICK);
+  };
+  playAnim.t=setTimeout(()=>step(performance.now()),PLAY_TICK);
 }
 /* 지도를 다시 만들지 않고 강조만 옮긴다. 새로 만들면 화면이 '툭' 끊긴다. */
 function playFocus(k){
@@ -4904,7 +4988,7 @@ function profileView(){
       <div class="pfol">
         <button class="flat" onclick="S.folLab=S.folLab?'':'팔로잉';render()"><b>${S.follows.size}</b>팔로잉</button>
         <button class="flat"><b>0</b>팔로워</button>
-        <span><b>${regrams}</b>받은 리루트</span></div>
+        <span class="pregram"><b>${regrams}</b>받은 리루트</span></div>
       <div class="plv">
         <div class="plvhd">${IC.star}<b>${cur.n}</b>
           <span>${next?nextHint(next,next.min-sc):"최고 등급이에요"}</span></div>
@@ -5034,6 +5118,7 @@ const LM={};
 const LL=(lat,lng)=>new kakao.maps.LatLng(lat,lng);
 function killMap(id){
   const m=LM[id];
+  if(id==="pmap") playReset(null,false);   // 지도를 지우면 재생도 끝난다
   if(m){ (m.__ov||[]).forEach(o=>o.setMap(null)); if(m.__ro) m.__ro.disconnect(); delete LM[id]; }
 }
 function baseMap(el,center,level){
@@ -5060,6 +5145,7 @@ function addOv(m,list,lat,lng,html,opt){
 function addLine(m,list,pts,color,weight,opacity,style){
   const o=new kakao.maps.Polyline({path:pts.map(p=>LL(p[0],p[1])),strokeColor:color,
     strokeWeight:weight,strokeOpacity:opacity==null?1:opacity,strokeStyle:style||"solid"});
+  o.__opa=opacity==null?1:opacity;   // 재생 애니메이션이 흐렸다 되돌릴 때 쓴다
   o.setMap(m); list.push(o); return o;
 }
 // Leaflet의 flyTo 대체 — 레벨을 먼저 맞추고 부드럽게 이동한다
@@ -5092,6 +5178,7 @@ function mountRouteMap(id,stops,focus,onPin,zoomIn){
   const m=baseMap(el,{lat:pts[0][0],lng:pts[0][1]},5);
   LM[id]=m;
   m.__legs=[];   // 구간 칩 직접 참조 — playFocus가 far를 옮길 때 DOM 쿼리 대신 이걸 순회한다
+  m.__legLines=[]; m.__legPts=[];   // 재생 애니메이션 — 구간별 선 객체와 그려진 경로
   stops.forEach((s,i)=>{
     const next=stops[i+1]; if(!next||!s.leg) return;
     const a=pts[i],b=pts[i+1], straight=[a,b], real=!!VAL_COST[s.leg.mode];
@@ -5101,6 +5188,7 @@ function mountRouteMap(id,stops,focus,onPin,zoomIn){
         addLine(m,m.__ov,straight,"#d4ff00",8),
         addLine(m,m.__ov,straight,"#ffffff",2,.35)]
       :[addLine(m,m.__ov,straight,"#d4ff00",5,.95,"shortdash")];
+    m.__legLines[i]=lines; m.__legPts[i]=straight.map(q=>LL(q[0],q[1]));
     const icons=s.leg.mode==="mix"?["subway","bus"]:[s.leg.mode];
     // 따라가기(focus>=0)는 선택 앞뒤 구간 칩만 진하게 — 리스트(.pleg)와 같은 규칙
     addOv(m,m.__ov,(a[0]+b[0])/2,(a[1]+b[1])/2,
@@ -5112,6 +5200,7 @@ function mountRouteMap(id,stops,focus,onPin,zoomIn){
       if(LM[id]!==m||!path||path.length<2) return;   // 그 사이 화면이 바뀌었으면 버린다
       const ll=path.map(q=>LL(q[0],q[1]));
       lines.forEach(o=>o.setPath(ll));
+      m.__legPts[i]=ll;   // 실제 도로 경로가 오면 재생도 그 길을 따라간다
       // 구간 칩도 직선 중점이 아니라 실제 경로의 가운데로 옮긴다
       chip.setPosition(ll[Math.floor(ll.length/2)]);
     });
