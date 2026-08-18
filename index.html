@@ -46,12 +46,12 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
   --shadow-lg:0 10px 15px -3px rgb(31 26 58 / .12), 0 4px 6px -4px rgb(31 26 58 / .12);
 
   /* ── 색 (변경 없음) ── */
-  --bg:#f4f3fa; --card:#ffffff; --card2:#f0eef8; --fg:#17142a; --sub:#5d5780; --dim:#8d87a8;
+  --bg:#f4f3fa; --card:#ffffff; --card2:#f0eef8; --fg:#17142a; --sub:#5d5780; --dim:#666179;
   --line:#e6e2f2;
   --accent:#d4ff00; --on-accent:#141200; --accent-2:#eef9c0; --accent-dk:#a8cc00; --accent-tx:#5a7300;
   --point:#ff007a; --point-ink:#ffffff; --point-2:#ffe4f0; --point-dk:#c2005c;
   /* 경고색도 브랜드 핫핑크 계열로 — 이전 크림슨(#e11d48)은 포인트색과 부딪혔다 */
-  --warn:#ff1f63; --warn-2:#ffe1ec; --warn-dk:#bd0043;
+  --warn:#c2184b; --warn-2:#ffe1ec; --warn-dk:#bd0043; --warn-ink:#ffffff;
   --ok:#141200; --ok-2:#d4ff00; --chip:#efedf7; --chip-2:#e3dff2;
   --img-line:rgba(23,20,42,.10);
   --ink:#14121f; --ink-fg:#f6f4ff; --g-dk:#c6c1da;
@@ -74,11 +74,11 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
 /* 다크 — 색은 그대로, 그림자만 더 짙게. 커스텀 속성은 사용 시점에 풀리므로
    --shadow-*만 다시 정의하면 --e1/--e2가 자동으로 따라온다 */
 :root[data-theme="dark"]{
-  --bg:#0f0e17; --card:#191627; --card2:#201c33; --fg:#f6f4ff; --sub:#a29cc4; --dim:#6d6790;
+  --bg:#0f0e17; --card:#191627; --card2:#201c33; --fg:#f6f4ff; --sub:#a29cc4; --dim:#9692af;
   --line:#2b2545;
   --accent:#d4ff00; --on-accent:#141200; --accent-2:#26300a; --accent-dk:#93b300; --accent-tx:#d4ff00;
   --point:#ff007a; --point-ink:#ffffff; --point-2:#380a2b; --point-dk:#a30050;
-  --warn:#ff5c95; --warn-2:#3d1028; --warn-dk:#a3004a;
+  --warn:#ff5c95; --warn-2:#3d1028; --warn-dk:#a3004a; --warn-ink:#2b0715;
   --ok:#141200; --ok-2:#d4ff00; --chip:#231e3a; --chip-2:#2f294c;
   --img-line:rgba(255,255,255,.12);
   --ink:#0b0a12; --ink-fg:#f6f4ff; --g-dk:#14111f;
@@ -266,7 +266,7 @@ svg{display:block}
   backdrop-filter:blur(10px);border-radius:999px;padding:4.5px 9px;display:inline-flex;align-items:center;gap:4px;
   border:.5px solid rgba(255,255,255,.16)}
 .pill svg{width:11px;height:11px}
-.pill.bad{background:var(--warn);border-color:transparent}
+.pill.bad{background:var(--warn);color:var(--warn-ink);border-color:transparent}
 .pill.hot{background:var(--point);color:var(--point-ink);border-color:transparent}
 .pill.been{background:rgba(28,32,30,.72);border-color:transparent}
 .aib{font-size:9.5px;font-weight:700;letter-spacing:.04em;color:#fff;
@@ -350,7 +350,7 @@ svg{display:block}
 .stp .ph{width:76px;height:76px;border-radius:var(--r-m);flex:0 0 76px}
 .stp .bd{position:absolute;top:0;left:0;width:22px;height:22px;border-bottom-right-radius:11px;
   background:var(--accent);color:var(--on-accent);font-size:11.5px;font-weight:700;display:grid;place-items:center;z-index:5}
-.stp.x .bd{background:var(--warn)} .stp.been .bd{background:var(--dim)}
+.stp.x .bd{background:var(--warn);color:var(--warn-ink)} .stp.been .bd{background:var(--dim);color:var(--card)}
 /* 출발·도착만 포인트 컬러(핫핑크). 화면이 전부 라임이라 루트의 양 끝이 묻혔다 */
 .stp .bd.ep{width:auto;min-width:22px;padding:0 7px;border-bottom-right-radius:12px;
   background:var(--point);color:var(--point-ink);letter-spacing:-.02em}
@@ -372,7 +372,7 @@ svg{display:block}
 .stp .tm{font-size:12.5px;color:var(--sub);margin-top:3px;font-weight:600}
 .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .tg{font-size:11px;background:var(--chip);color:var(--sub);border-radius:var(--r-s);padding:4px 7px;font-weight:700}
-.tg.bad{background:var(--warn);color:#fff}
+.tg.bad{background:var(--warn);color:var(--warn-ink)}
 .tg.warn{background:var(--warn-2);color:var(--warn)}
 /* '다녀온 곳'은 성공 상태가 아니라 이미 소비한 상태 → 강조하지 않고 중성 회색 */
 .tg.ok{background:var(--chip-2);color:var(--sub)}
@@ -542,7 +542,7 @@ svg{display:block}
 .lpin b{position:absolute;top:-5px;right:-5px;width:22px;height:22px;border-radius:50%;
   background:var(--accent);color:var(--on-accent);font-size:11px;display:grid;place-items:center;
   border:2px solid var(--ink)}
-.lpin.bad b{background:var(--warn);color:#fff}
+.lpin.bad b{background:var(--warn);color:var(--warn-ink)}
 .lpin.been b{background:var(--dim);color:#fff}
 .ltip{background:var(--ink);color:var(--ink-fg);border:1.4px solid var(--accent);
   border-radius:999px;font-size:11px;font-weight:700;
@@ -619,7 +619,7 @@ svg{display:block}
 /* 배지 — shadcn Badge: 옅은 바탕 + 테두리, 두께감 없음 */
 .tg{background:var(--muted);color:var(--muted-foreground);border:1px solid var(--border);
   box-shadow:none;font-weight:600}
-.tg.bad{background:var(--destructive);color:#fff;border-color:transparent;box-shadow:none}
+.tg.bad{background:var(--destructive);color:var(--warn-ink);border-color:transparent;box-shadow:none}
 .tg.warn{background:var(--warn-2);color:var(--warn);border-color:transparent}
 .tg.ok{background:var(--chip-2);color:var(--sub);border-color:transparent}
 /* 인기는 핑크(--point), 갈 수 있음은 라임(--accent). 강조를 한 색으로만 쓰면 위계가 안 보인다 */
@@ -1070,6 +1070,23 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   border-radius:999px;z-index:60;opacity:0;pointer-events:none;backdrop-filter:blur(10px);
   transition-property:opacity,transform;transition-duration:.24s;transition-timing-function:var(--ease)}
 #toast.on{opacity:1;transform:translate(-50%,0) scale(1)}
+/* ── 탭 타겟 44px 보정 (2026-08-18 UI/UX 감사) ──
+   WCAG 2.5.5 / iOS HIG 기준 44x44. **보이는 크기는 건드리지 않는다** —
+   ::after는 레이아웃을 밀지 않으므로 기존 배치가 그대로 유지된다.
+   .save/.plclk는 이미 position:absolute라 relative를 다시 걸면 배치가 깨진다 → 제외.
+   .aib는 카드 위에서만 absolute라(275행) 그 경우를 아래에서 되돌려준다.
+   .rmx는 제외 — .ord는 28px 폭 세로 컬럼에 grip/위/아래/삭제 4개가 25px 간격으로 쌓여 있어
+   44px로 넓히면 ‘아래로 이동’을 누르려다 ‘스톱 삭제’가 눌린다. 레이아웃 개편 전까지 보류. */
+.aib,.prl,.pgo,.sec .more,.sbx,.cx,.pfol .flat{position:relative}
+.rc .ph>.aib,.rcx .ph>.aib{position:absolute}
+.aib::after,.prl::after,.pgo::after,.plclk::after,.sec .more::after,
+.save::after,.sbx::after,.cx::after,.pfol .flat::after{
+  content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:max(100%,44px);height:max(100%,44px)}
+/* 입력에는 ::after를 붙일 수 없다 — 입력 자체를 컨테이너 높이만큼 늘린다.
+   .srch는 padding 10px + 내용 27px = 47px였다. 높이는 그대로 두고 입력이 그 높이를 먹게 한다. */
+.srch{padding:0 13px;min-height:48px}
+.srch input{align-self:stretch}
 </style>
 </head>
 <body>
@@ -3413,7 +3430,7 @@ function routeCard(r,mode,i){
   if(pills.length<2) pills.push(`<span class="pill">${IC[t.ic]}${t.label}</span>`);
   if(pills.length<2) pills.push(`<span class="pill">${IC.users}${plabel(r.people)}명</span>`);
   return `<div class="rc ${mode==="wide"?"wide":""}${mode==="big"?" wide big":""} rise" style="--d:${Math.min(i||0,6)*45}ms">
-    ${r.by==="나"?"":`<button class="save ${S.saved.has(r.id)?"on":""}" onclick="event.stopPropagation();toggleSave('${r.id}')">
+    ${r.by==="나"?"":`<button class="save ${S.saved.has(r.id)?"on":""}" aria-label="이 루트 저장" aria-pressed="${S.saved.has(r.id)}" onclick="event.stopPropagation();toggleSave('${r.id}')">
       <i class="off">${IC.bmk}</i><i class="onn">${IC.bmkF}</i></button>`}
     <button style="display:block;width:100%" onclick="go('route','${r.id}')">
     ${ph(hp.img,CT[hp.c]||"park",r.id.charCodeAt(1)*7,"",`${aiTag(r)}<div class="ov">${pills.slice(0,2).join("")}</div>`)}
@@ -3509,7 +3526,7 @@ function home(){
       <p>자주 가는 곳을 눌러두면 근처 루트를 먼저 보여줘요</p></div></div>
     <div class="areas">${areaList.map((a,i)=>{const f=S.favs.has(a.id);
       return `<div class="area rise ${f?"fav":""}" style="--d:${i*30}ms">
-        <button onclick="toggleFav('${a.id}')"
+        <button onclick="toggleFav('${a.id}')" aria-label="${a.n} 자주 가는 곳으로 지정" aria-pressed="${f}"
           style="display:block">${ph(a.img,a.tone,a.n.length*3)}
           <span class="st">${f?IC.star:IC.starO}</span></button>
         <div class="nm">${a.n}</div></div>`;}).join("")}</div>
@@ -3590,9 +3607,9 @@ function placesView(){
       <h1>장소로 보기</h1>
       <div class="note">${rows.length}곳 · 누르면 그 장소가 들어간 루트를 모아 보여드려요</div></div>
     <div class="searchbar" style="padding:12px 20px 0;box-shadow:none;background:transparent">
-      <input id="pqbox" placeholder="장소 이름으로 찾기" autocomplete="off"
+      <input id="pqbox" aria-label="장소 이름으로 찾기" placeholder="장소 이름으로 찾기" autocomplete="off"
         value="${(S.placeQ||"").replace(/"/g,"&quot;")}" oninput="S.placeQ=this.value;paintPlaces()" aria-label="장소 검색">
-      <button class="flat sbx" onclick="S.placeQ='';document.getElementById('pqbox').value='';paintPlaces()">✕</button>
+      <button class="flat sbx" aria-label="장소 검색어 지우기" onclick="S.placeQ='';document.getElementById('pqbox').value='';paintPlaces()">✕</button>
     </div>
     <div class="chips">
       <button class="chip2 one flat ${S.placeCat?"":"on"}" onclick="S.placeCat='';S.placeN=40;render()">전체</button>
@@ -3640,7 +3657,7 @@ function routeView(){
   }).join("");
   return `<div class="hero">${ph(hp.img,CT[hp.c]||"park",r.id.charCodeAt(1)*7)}
       <div class="grad"></div>
-      <div class="nav"><button onclick="back()"><span>${IC.back}</span></button>
+      <div class="nav"><button onclick="back()" aria-label="뒤로"><span>${IC.back}</span></button>
         <button onclick="shareCard('${r.id}')" aria-label="이 루트 공유"><span>${IC.share}</span></button></div>
       <div class="txt"><span class="pill">${IC[t.ic]}${t.label} · ${AREAS.find(a=>a.id===r.area).n}</span>${aiTag(r)}
         <h1>${r.title}</h1></div></div>
@@ -3693,7 +3710,7 @@ function placeView(){
   const list=(S.placeTab==="transit"?bus:car).sort((a,b)=>saveCount(b)-saveCount(a)||rerouteCount(b)-rerouteCount(a));
   return `<div class="hero" style="height:220px">${ph(p.img,CT[p.c]||"park",p.n.length)}
       <div class="grad"></div>
-      <div class="nav"><button onclick="back()"><span>${IC.back}</span></button></div>
+      <div class="nav"><button onclick="back()" aria-label="뒤로"><span>${IC.back}</span></button></div>
       <div class="txt"><span class="pill">${p.c}${been?" · 다녀온 곳":""}</span><h1 style="font-size:22px">${p.n}</h1></div></div>
     <div class="card summary rise"><div class="kv" style="margin:0;padding:0;box-shadow:none">
       <div><div class="k">영업</div><div class="v">${p.open?`${hm(toMin(p.open))}–${hm(toMin(p.close))}`:"알 수 없음"}</div></div>
@@ -3838,20 +3855,20 @@ function pickView(){
   if(!hasL()&&!S.pickPt) S.pickPt={...S.nearCenter};
   return `<div class="pickwrap">
     <div class="picktop">
-      <button class="flat pkback" onclick="back()">${IC.back}</button>
-      <input id="pqbox" placeholder="장소·주소로 지도 옮기기" autocomplete="off"
+      <button class="flat pkback" aria-label="뒤로" onclick="back()">${IC.back}</button>
+      <input id="pqbox" aria-label="장소·주소로 지도 옮기기" placeholder="장소·주소로 지도 옮기기" autocomplete="off"
         value="${S.q.replace(/"/g,'&quot;')}"
         onkeydown="if(event.key==='Enter'){S.q=this.value;pickJump(this.value)}">
-      <button class="flat pkgo" onclick="S.q=document.getElementById('pqbox').value;pickJump(S.q)">${IC.search}</button>
+      <button class="flat pkgo" aria-label="입력한 위치로 지도 옮기기" onclick="S.q=document.getElementById('pqbox').value;pickJump(S.q)">${IC.search}</button>
     </div>
     <div class="pickmapbox">
       ${hasL()?`<div class="lmap" id="pickmap2" style="height:100%"></div>`:pickMapSVG(pickCands())}
       <div class="centerpin"><span class="cpdot"></span><span class="cpstem"></span></div>
-      <button class="flat pklocate" onclick="pickLocate()">${IC.pin}</button>
+      <button class="flat pklocate" aria-label="내 위치로 이동" onclick="pickLocate()">${IC.pin}</button>
     </div>
     <div class="picksheet">
       <div class="pickaddr" id="pickAddr">지도를 움직여 위치를 맞춰주세요</div>
-      <input class="ta" id="newName" style="min-height:0;padding:13px;margin-top:9px"
+      <input class="ta" id="newName" aria-label="새 장소 이름" style="min-height:0;padding:13px;margin-top:9px"
         placeholder="여기 이름 (예: 우리집 앞 붕어빵)" value="${S.q.replace(/"/g,'&quot;')}"
         oninput="this.dataset.touched=1">
       <div class="recent" style="margin-top:9px">
@@ -3987,9 +4004,9 @@ function createView(){
         onclick="S.draft.people=${n};render()">${plabel(n)}</button>`).join("")}</div></div></div>
 
     <div class="step"><div class="no">STEP 3</div><h3>어디를 가나요?</h3><div class="box">
-      <div class="srch">${IC.search}<input id="qbox" placeholder="장소 이름 · 주소 · 좌표"
+      <div class="srch">${IC.search}<input id="qbox" aria-label="장소 이름 · 주소 · 좌표로 찾기" placeholder="장소 이름 · 주소 · 좌표"
         value="${S.q.replace(/"/g,'&quot;')}" oninput="onSearch(this.value)">
-        <button class="flat" onclick="S.q='';render()" style="color:var(--dim);font-weight:700;padding:4px 6px">✕</button></div>
+        <button class="flat" aria-label="검색어 지우기" onclick="S.q='';render()" style="color:var(--dim);font-weight:700;padding:4px 6px">✕</button></div>
       <div id="resZone">${searchZone()}</div>
       ${d.stops.length?`<div class="divline"></div><div id="stopList">${stopRows()}</div>`:""}
       ${d.stops.length>=2?`<div style="font-size:12px;color:var(--dim);font-weight:600;margin-top:8px;line-height:1.5">
@@ -4006,7 +4023,7 @@ function createView(){
 
     <div class="step"><div class="no">STEP 5</div><h3>루트 이름을 정해주세요</h3><div class="box">
       <div class="tawrap">
-        <input class="ta one" maxlength="${TITLE_MAX}" placeholder="예: 서울숲만 걸어도 반나절"
+        <input class="ta one" aria-label="루트 제목" maxlength="${TITLE_MAX}" placeholder="예: 서울숲만 걸어도 반나절"
           oninput="onTitle(this.value)" value="${d.title.replace(/"/g,"&quot;")}">
         <span class="tacount ${titleLen()<TITLE_MIN?"bad":""}" id="titleCount">${titleLen()}/${TITLE_MAX}</span>
       </div></div></div>
@@ -4122,7 +4139,7 @@ function previewView(){
   }).join("");
   return `<div class="hero">${ph(hp.img,CT[hp.c]||"park",7)}
       <div class="grad"></div>
-      <div class="nav"><button onclick="back()"><span>${IC.back}</span></button></div>
+      <div class="nav"><button onclick="back()" aria-label="뒤로"><span>${IC.back}</span></button></div>
       <div class="txt"><span class="pill">${IC[t.ic]}${t.label} · ${AREAS.find(a=>a.id===r.area).n}</span>${aiTag(r)}
         <h1>${r.title}</h1></div></div>
     <div class="card summary rise">
@@ -4284,7 +4301,7 @@ function stopRows(){
           <span class="grip" onpointerdown="dragStart(event,${i})">${IC.grip}</span>
           <button ${i===0?"disabled":""} onclick="swapStop(${i},-1)">↑</button>
           <button ${i===d.stops.length-1?"disabled":""} onclick="swapStop(${i},1)">↓</button>
-          <button class="rmx" onclick="removeStop(${i})">✕</button>
+          <button class="rmx" aria-label="${v.n} 스톱 빼기" onclick="removeStop(${i})">✕</button>
         </div></div></div>`;}).join("");
 }
 const swapStop=(i,k)=>moveStop(i,k);
@@ -4655,7 +4672,7 @@ function searchResults(){
       <button class="more flat" onclick="S.rsearch=[];render()">모두 지우기</button></div>
       <div class="chips">${S.rsearch.map(t=>`<span class="chip2">
         <button class="flat" onclick="doSearch('${t}')">${t}</button>
-        <button class="flat cx" onclick="S.rsearch=S.rsearch.filter(x=>x!=='${t}');render()">✕</button></span>`).join("")}</div>`:""}
+        <button class="flat cx" aria-label="${t} 검색어 빼기" onclick="S.rsearch=S.rsearch.filter(x=>x!=='${t}');render()">✕</button></span>`).join("")}</div>`:""}
     <div class="sec"><div><h2 style="font-size:16px">추천 검색어</h2></div></div>
     <div class="chips">${SUGGEST.map(t=>`<button class="chip2 one flat" onclick="doSearch('${t}')">${t}</button>`).join("")}</div>
     ${rankBlock()}`;
@@ -4670,10 +4687,10 @@ function searchResults(){
 }
 function searchView(){
   return `<div class="searchbar">
-      <button class="flat sbback" onclick="back()">${IC.back}</button>
-      <input id="sqbox" placeholder="장소·지역·루트 이름으로 검색" autocomplete="off"
+      <button class="flat sbback" aria-label="뒤로" onclick="back()">${IC.back}</button>
+      <input id="sqbox" aria-label="장소·지역·루트 이름으로 검색" placeholder="장소·지역·루트 이름으로 검색" autocomplete="off"
         value="${S.sq.replace(/"/g,'&quot;')}" oninput="onRouteSearch(this.value)">
-      <button class="flat sbx" onclick="S.sq='';document.getElementById('sqbox').value='';paintSearch()">✕</button>
+      <button class="flat sbx" aria-label="검색어 지우기" onclick="S.sq='';document.getElementById('sqbox').value='';paintSearch()">✕</button>
     </div>
     <div id="sres">${searchResults()}</div>`;
 }
