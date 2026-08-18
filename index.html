@@ -53,7 +53,7 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
   /* 경고색도 브랜드 핫핑크 계열로 — 이전 크림슨(#e11d48)은 포인트색과 부딪혔다 */
   --warn:#c2184b; --warn-2:#ffe1ec; --warn-dk:#bd0043; --warn-ink:#ffffff;
   --ok:#141200; --ok-2:#d4ff00; --chip:#efedf7; --chip-2:#e3dff2;
-  --img-line:rgba(23,20,42,.10);
+  --img-line:rgba(0,0,0,.10);
   --ink:#14121f; --ink-fg:#f6f4ff; --g-dk:#c6c1da;
   --veil:#17142a; --veil-fg:#ffffff;
   --sh:rgba(31,26,58,.18);
@@ -80,7 +80,7 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
   --point:#ff007a; --point-ink:#ffffff; --point-2:#380a2b; --point-dk:#a30050;
   --warn:#ff5c95; --warn-2:#3d1028; --warn-dk:#a3004a; --warn-ink:#2b0715;
   --ok:#141200; --ok-2:#d4ff00; --chip:#231e3a; --chip-2:#2f294c;
-  --img-line:rgba(255,255,255,.12);
+  --img-line:rgba(255,255,255,.10);
   --ink:#0b0a12; --ink-fg:#f6f4ff; --g-dk:#14111f;
   --veil:rgba(18,20,26,.94); --veil-fg:#ffffff;
   --sh:rgba(0,0,0,.55);
@@ -116,7 +116,7 @@ button.flat:active,a.flat:active{transform:none;opacity:.6}
 }
 /* iOS 사파리는 입력 글자가 16px보다 작으면 포커스할 때 화면을 확대해버린다.
    모바일 앱들이 입력만 16px로 두는 이유가 이것. 줄이면 안 된다. */
-input,select,textarea{font:inherit;font-size:16px}
+input,select,textarea{font:inherit;font-size:17px}
 svg{display:block}
 
 .ph{position:relative;overflow:hidden;background:var(--chip)}
@@ -130,24 +130,24 @@ svg{display:block}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .anim .rise{animation:rise .42s var(--ease) both;animation-delay:var(--d,0s)}
 
-.top{position:sticky;top:0;z-index:25;padding:16px 24px 10px;background:var(--bg);
+.top{position:sticky;top:0;z-index:25;padding:16px 24px 8px;background:var(--bg);
   transition-property:box-shadow,background-color;transition-duration:.2s;transition-timing-function:var(--ease)}
 .top.stuck{background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.6);
   box-shadow:0 1px 0 var(--line)}
-.top h1{font-size:23px;font-weight:700;letter-spacing:-.042em;line-height:1.26}
+.top h1{font-size:25px;font-weight:700;letter-spacing:-.042em;line-height:1.26}
 .top .note{font-size:13px;color:var(--sub);margin-top:4px}
 
 .cond{margin:4px 24px 0;background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:12px}
 .cond .r{display:flex;gap:8px;align-items:center}
 .cond .r+.r{margin-top:8px}
-.cond .lab{font-size:11.5px;color:var(--dim);width:46px;flex:0 0 46px;font-weight:600}
+.cond .lab{font-size:12px;color:var(--dim);width:46px;flex:0 0 46px;font-weight:600}
 .cond input[type=date],.cond input[type=time]{flex:1;min-width:0;background:var(--chip);border:0;
-  border-radius:var(--r-m);padding:11px 10px;color:var(--fg);font-weight:600;font-size:14px}
-.now{flex:0 0 auto;background:var(--accent-2);color:var(--accent-tx);font-weight:700;font-size:12.5px;
-  border-radius:var(--r-m);padding:11px 12px;white-space:nowrap;min-height:42px}
+  border-radius:var(--r-m);padding:12px 8px;color:var(--fg);font-weight:600;font-size:15px}
+.now{flex:0 0 auto;background:var(--accent-2);color:var(--accent-tx);font-weight:700;font-size:13px;
+  border-radius:var(--r-m);padding:12px 12px;white-space:nowrap;min-height:42px}
 .seg{display:flex;gap:6px;flex:1}
-.seg button{flex:1;background:var(--chip);border-radius:var(--r-m);padding:11px 4px;font-size:13px;
-  color:var(--sub);text-align:center;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;min-height:42px}
+.seg button{flex:1;background:var(--chip);border-radius:var(--r-m);padding:12px 4px;font-size:13px;
+  color:var(--sub);text-align:center;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px;min-height:42px}
 .seg button.on{background:var(--accent);color:var(--on-accent)}
 .seg svg{width:15px;height:15px}
 /* 인원을 5칸(1~5+)으로 줄여 라벨과 한 줄에 들어간다 → 위 '언제·어떻게' 행과 왼쪽 정렬이 맞는다.
@@ -156,19 +156,19 @@ svg{display:block}
 /* 인원 — 원형이 행을 고르게 채운다. 고정 크기로 두면 홈은 사이가 벌어지고 만들기는 가운데 떠서
    둘 다 어색했다. flex로 균등 분배하고 aspect-ratio로 원형을 지킨다. */
 .ppl button{flex:1 1 0;min-width:0;max-width:46px;height:auto;aspect-ratio:1;border-radius:50%;
-  background:var(--chip);font-size:13.5px;color:var(--sub);display:grid;place-items:center;font-weight:700;padding:0}
+  background:var(--chip);font-size:13px;color:var(--sub);display:grid;place-items:center;font-weight:700;padding:0}
 .ppl button.on{background:var(--accent);color:var(--on-accent)}
 /* 조건은 '아래 목록을 거르는 장치'라 접힌 한 줄이 기본이다.
    펼친 3행짜리를 홈 최상단에 상주시키면 첫 화면을 조건 설정이 다 먹는다 — 콘텐츠가 먼저다. */
-.condsum{margin:10px 24px 0;background:var(--chip);border-radius:999px;box-shadow:none;
+.condsum{margin:8px 24px 0;background:var(--chip);border-radius:999px;box-shadow:none;
   border:1px solid var(--border);
-  padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;width:calc(100% - 40px)}
+  padding:8px 12px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;width:calc(100% - 40px)}
 .condsum svg{color:var(--accent-tx)}
 /* 펼친 뒤 다시 접을 방법이 없었다 — 펼침은 되는데 되돌릴 수가 없으면 갇힌 느낌이 든다 */
 /* 접기는 값을 고르는 버튼이 아니다 — 칩처럼 생기면 인원 선택과 구분이 안 된다.
    구분선 위 텍스트형으로 두어 '닫기'라는 성격이 드러나게 한다. */
-.condclose{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;
-  margin-top:12px;padding:9px 0 2px;background:none;border-radius:0;
+.condclose{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;
+  margin-top:12px;padding:8px 0 2px;background:none;border-radius:0;
   box-shadow:inset 0 1px 0 var(--border);
   font-size:12px;font-weight:700;color:var(--dim)}
 .condclose svg{width:13px;height:13px}
@@ -179,10 +179,10 @@ svg{display:block}
 .condsum .cg{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .condsum .ar{color:var(--dim);font-size:12px;font-weight:600}
 
-.tgl{display:flex;align-items:center;gap:9px;margin:12px 24px 0;background:var(--card);
-  border-radius:var(--r-l);box-shadow:var(--e1);padding:12px 15px;width:calc(100% - 40px)}
-.tgl .tx{flex:1;min-width:0;font-size:13.5px;font-weight:700}
-.tgl .sm{font-size:11.5px;color:var(--sub);font-weight:600;margin-top:1px}
+.tgl{display:flex;align-items:center;gap:8px;margin:12px 24px 0;background:var(--card);
+  border-radius:var(--r-l);box-shadow:var(--e1);padding:12px 16px;width:calc(100% - 40px)}
+.tgl .tx{flex:1;min-width:0;font-size:13px;font-weight:700}
+.tgl .sm{font-size:12px;color:var(--sub);font-weight:600;margin-top:2px}
 .sw{display:block;width:44px;height:26px;border-radius:999px;background:var(--chip-2);position:relative;flex:0 0 44px;
   transition:background-color .2s var(--ease)}
 .sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
@@ -196,7 +196,7 @@ svg{display:block}
 .areas::-webkit-scrollbar{display:none}
 .area{flex:0 0 74px;text-align:center;position:relative;scroll-snap-align:start}
 .area .ph{width:74px;height:74px;border-radius:var(--r-l);box-shadow:var(--e1)}
-.area .nm{font-size:12.5px;margin-top:7px;font-weight:700;letter-spacing:-.03em}
+.area .nm{font-size:13px;margin-top:6px;font-weight:700;letter-spacing:-.03em}
 .area .st{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;
   background:rgba(0,0,0,.42);backdrop-filter:blur(6px);display:grid;place-items:center;pointer-events:none;color:#fff;z-index:5;
   transition:background-color .2s var(--ease)}
@@ -205,10 +205,10 @@ svg{display:block}
 .area.fav .st{background:var(--point);color:var(--point-ink)}
 
 .sec{padding:26px 24px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.sec .kick{font-size:11.5px;font-weight:700;color:var(--accent-tx)}
-.sec h2{margin-top:3px;font-size:19px;font-weight:700;letter-spacing:-.042em;line-height:1.28}
-.sec p{margin:4px 0 0;font-size:12.5px;color:var(--sub)}
-.sec .more{flex:0 0 auto;font-size:12.5px;color:var(--sub);font-weight:700;padding:8px 0 2px;white-space:nowrap}
+.sec .kick{font-size:12px;font-weight:700;color:var(--accent-tx)}
+.sec h2{margin-top:2px;font-size:20px;font-weight:700;letter-spacing:-.042em;line-height:1.28}
+.sec p{margin:4px 0 0;font-size:13px;color:var(--sub)}
+.sec .more{flex:0 0 auto;font-size:13px;color:var(--sub);font-weight:700;padding:8px 0 2px;white-space:nowrap}
 .rail{display:flex;gap:12px;overflow-x:auto;padding:12px 24px 8px;scroll-padding-inline:24px;scrollbar-width:none;
   scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;
   overscroll-behavior-x:contain}
@@ -222,7 +222,7 @@ svg{display:block}
 
 /* 히어로 카드 — '지금 가장 인기 있는 루트' 하나를 크게 세운다.
    카드 크기를 히어로 > 와이드 > 레일 세 단계로 두어 화면에 위계를 만든다. */
-.hrwrap{margin-top:14px}
+.hrwrap{margin-top:12px}
 /* 가운데 정렬 캐러셀 — 좌우 여백이 (컨테이너 - 카드)/2 여야 첫·마지막 카드도 가운데에 온다.
    레일에 좌우 40px 패딩을 주면 내부 폭 = 화면폭-80 이고, 카드를 flex:0 0 100%로 두면 그 폭에 딱 맞는다.
    ⚠️ 카드 폭을 calc(100% - N)로 쓰면 100%가 이미 패딩을 뺀 값이라 두 번 빠진다. */
@@ -242,17 +242,17 @@ svg{display:block}
 .hdots span.on{background:var(--accent-dk);width:18px;border-radius:999px}
 .rcxov{position:absolute;inset:auto 0 0 0;padding:58px 16px 16px;z-index:3;color:#fff;
   background:linear-gradient(transparent,rgba(6,8,12,.34) 52%,rgba(6,8,12,.93))}
-.rcxrank{display:inline-flex;align-items:center;gap:5px;background:var(--point);color:var(--point-ink);
-  font-size:11px;font-weight:800;padding:5px 11px;border-radius:999px;margin-bottom:10px}
+.rcxrank{display:inline-flex;align-items:center;gap:4px;background:var(--point);color:var(--point-ink);
+  font-size:11px;font-weight:800;padding:4px 12px;border-radius:999px;margin-bottom:8px}
 .rcxrank svg{width:12px;height:12px}
 .rcx h3{font-size:20px;font-weight:700;letter-spacing:-.045em;line-height:1.28;
   text-shadow:0 2px 14px rgba(0,0,0,.45)}
-.rcx p{margin:7px 0 0;font-size:13px;opacity:.9;line-height:1.5;
+.rcx p{margin:6px 0 0;font-size:13px;opacity:.9;line-height:1.5;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.rcxst{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
-.rcxst span{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;
+.rcxst{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.rcxst span{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;
   background:rgba(255,255,255,.17);backdrop-filter:blur(10px);border:.5px solid rgba(255,255,255,.22);
-  border-radius:999px;padding:5px 10px}
+  border-radius:999px;padding:4px 8px}
 .rcxst svg{width:12px;height:12px;opacity:.85}
 .rc{flex:0 0 266px;background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);
   overflow:hidden;width:100%;scroll-snap-align:start;position:relative}
@@ -261,19 +261,19 @@ svg{display:block}
 .rc.big .ph{height:206px}
 .rc .ov{position:absolute;inset:auto 0 0 0;padding:52px 12px 12px;
   background:linear-gradient(transparent,var(--sh) 55%,rgba(0,0,0,.78));
-  display:flex;gap:5px;flex-wrap:wrap;align-items:flex-end;z-index:3}
-.pill{font-size:10.5px;font-weight:700;color:#fff;background:rgba(255,255,255,.16);
-  backdrop-filter:blur(10px);border-radius:999px;padding:4.5px 9px;display:inline-flex;align-items:center;gap:4px;
+  display:flex;gap:4px;flex-wrap:wrap;align-items:flex-end;z-index:3}
+.pill{font-size:11px;font-weight:700;color:#fff;background:rgba(255,255,255,.16);
+  backdrop-filter:blur(10px);border-radius:999px;padding:4px 8px;display:inline-flex;align-items:center;gap:4px;
   border:.5px solid rgba(255,255,255,.16)}
 .pill svg{width:11px;height:11px}
 .pill.bad{background:var(--warn);color:var(--warn-ink);border-color:transparent}
 .pill.hot{background:var(--point);color:var(--point-ink);border-color:transparent}
 .pill.been{background:rgba(28,32,30,.72);border-color:transparent}
-.aib{font-size:9.5px;font-weight:700;letter-spacing:.04em;color:#fff;
+.aib{font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;
   background:rgba(0,0,0,.3);backdrop-filter:blur(8px);border:.5px solid rgba(255,255,255,.2);
-  border-radius:999px;padding:3px 7px;display:inline-flex;align-items:center;opacity:.6}
+  border-radius:999px;padding:2px 6px;display:inline-flex;align-items:center;opacity:.6}
 .rc .ph>.aib,.rcx .ph>.aib{position:absolute;top:12px;left:12px;z-index:4}
-.hero .txt .aib{margin-left:5px;vertical-align:middle}
+.hero .txt .aib{margin-left:4px;vertical-align:middle}
 .save{position:absolute;top:9px;right:9px;width:40px;height:40px;border-radius:50%;
   display:grid;place-items:center;color:#fff;z-index:6}
 .save i{position:absolute;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
@@ -284,23 +284,23 @@ svg{display:block}
 .save i.onn{opacity:0;transform:scale(.25);filter:blur(4px);background:var(--point);color:var(--point-ink)}
 .save.on i.off{opacity:0;transform:scale(.25);filter:blur(4px)}
 .save.on i.onn{opacity:1;transform:scale(1);filter:blur(0)}
-.rc .body{padding:13px 14px 14px}
-.rc .ttl{font-size:15.5px;font-weight:700;letter-spacing:-.042em;line-height:1.36}
-.rc.big .ttl{font-size:18px}
-.rc .mood{font-size:12.5px;color:var(--sub);margin-top:5px;line-height:1.5;
+.rc .body{padding:12px 12px 12px}
+.rc .ttl{font-size:15px;font-weight:700;letter-spacing:-.042em;line-height:1.36}
+.rc.big .ttl{font-size:17px}
+.rc .mood{font-size:13px;color:var(--sub);margin-top:4px;line-height:1.5;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.stat{display:flex;gap:10px;margin-top:11px;font-size:12px;color:var(--sub);flex-wrap:wrap;align-items:center}
+.stat{display:flex;gap:8px;margin-top:12px;font-size:12px;color:var(--sub);flex-wrap:wrap;align-items:center}
 .stat b{color:var(--fg);font-weight:700}
-.stat svg{width:13px;height:13px;margin-right:3px;opacity:.55;display:inline-block;vertical-align:-2px}
-.warnline{margin-top:9px;font-size:11.5px;color:var(--warn);font-weight:700;
-  background:var(--warn-2);border-radius:var(--r-s);padding:7px 9px;line-height:1.45}
-.byl{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:11px;box-shadow:inset 0 1px 0 var(--line)}
+.stat svg{width:13px;height:13px;margin-right:2px;opacity:.55;display:inline-block;vertical-align:-2px}
+.warnline{margin-top:8px;font-size:12px;color:var(--warn);font-weight:700;
+  background:var(--warn-2);border-radius:var(--r-s);padding:6px 8px;line-height:1.45}
+.byl{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;box-shadow:inset 0 1px 0 var(--line)}
 .av{border-radius:50%;display:grid;place-items:center;background:var(--accent-2);flex:0 0 auto}
 .byl .av{width:22px;height:22px;font-size:11px}
 .byl .who{font-size:12px;color:var(--sub);flex:1;min-width:0;overflow:hidden;
   text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .byl .who b{color:var(--fg);font-weight:700}
-.byl .lk{font-size:11.5px;color:var(--sub);font-weight:700;display:flex;align-items:center;gap:3px;
+.byl .lk{font-size:12px;color:var(--sub);font-weight:700;display:flex;align-items:center;gap:2px;
   flex:0 0 auto;white-space:nowrap}
 .byl .lk svg{width:12px;height:12px;opacity:.65}
 
@@ -310,7 +310,7 @@ svg{display:block}
   background:linear-gradient(transparent 18%,rgba(6,8,12,.42) 52%,rgba(6,8,12,.9))}
 /* 아래 요약 카드가 margin-top:-24px로 히어로를 덮는다. 제목이 그 밑에 깔리지 않게 띄운다 */
 .hero .txt{position:absolute;inset:auto 20px 36px;color:#fff;z-index:5}
-.hero h1{margin-top:9px;font-size:25px;font-weight:700;letter-spacing:-.045em;line-height:1.28;
+.hero h1{margin-top:8px;font-size:25px;font-weight:700;letter-spacing:-.045em;line-height:1.28;
   text-shadow:0 2px 18px rgba(0,0,0,.45)}
 /* 뒤로가기가 아이폰 상태바 밑에 깔리지 않게 */
 .hero .nav{position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px;right:12px;
@@ -323,43 +323,43 @@ svg{display:block}
 .card{margin:0 24px;background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:16px}
 .summary{margin-top:-24px;position:relative;z-index:10}
 .hd2{display:flex;gap:12px;align-items:flex-start}
-.summary .av{width:40px;height:40px;font-size:18px}
-.summary .quote{font-size:16px;font-weight:800;letter-spacing:-.038em;line-height:1.45}
+.summary .av{width:40px;height:40px;font-size:17px}
+.summary .quote{font-size:17px;font-weight:800;letter-spacing:-.038em;line-height:1.45}
 .summary .quote::before{content:"“"}
 .summary .quote::after{content:"”"}
 .summary .who{font-size:12px;color:var(--sub);margin-top:6px;font-weight:600}
-.kv{display:grid;grid-template-columns:1fr 1fr;gap:14px 0;margin-top:15px;padding-top:15px;
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:12px 0;margin-top:16px;padding-top:16px;
   box-shadow:inset 0 1px 0 var(--line)}
 .kv .k{font-size:11px;color:var(--dim);font-weight:600}
-.kv .v{font-size:14px;font-weight:700;letter-spacing:-.032em;margin-top:2px;display:flex;align-items:center;gap:5px}
+.kv .v{font-size:15px;font-weight:700;letter-spacing:-.032em;margin-top:2px;display:flex;align-items:center;gap:4px}
 .kv .v svg{width:14px;height:14px}
-.kv .v small{font-weight:600;font-size:11.5px;color:var(--sub)}
-.tipbox{margin-top:14px;padding-top:13px;box-shadow:inset 0 1px 0 var(--line);font-size:12.5px;
-  color:var(--sub);display:flex;gap:9px;font-weight:600;line-height:1.55}
+.kv .v small{font-weight:600;font-size:12px;color:var(--sub)}
+.tipbox{margin-top:12px;padding-top:12px;box-shadow:inset 0 1px 0 var(--line);font-size:13px;
+  color:var(--sub);display:flex;gap:8px;font-weight:600;line-height:1.55}
 .tipbox svg{width:14px;height:14px;flex:0 0 14px;color:var(--accent-tx);margin-top:2px}
 
 
 .map{margin:12px 24px 0;background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);overflow:hidden}
 .map svg.mp{width:100%;height:238px}
-.map .ft{font-size:11.5px;color:var(--sub);padding:11px 15px;box-shadow:inset 0 1px 0 var(--line);font-weight:600}
+.map .ft{font-size:12px;color:var(--sub);padding:12px 16px;box-shadow:inset 0 1px 0 var(--line);font-weight:600}
 
 .tl{margin:12px 24px 0}
-.stp{background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:13px;display:flex;gap:12px}
+.stp{background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:12px;display:flex;gap:12px}
 .stp.x{box-shadow:inset 0 0 0 1.5px var(--warn);background:var(--warn-2)}
 .stp.been{opacity:.66}
 .stp .ph{width:76px;height:76px;border-radius:var(--r-m);flex:0 0 76px}
 .stp .bd{position:absolute;top:0;left:0;width:22px;height:22px;border-bottom-right-radius:11px;
-  background:var(--accent);color:var(--on-accent);font-size:11.5px;font-weight:700;display:grid;place-items:center;z-index:5}
+  background:var(--accent);color:var(--on-accent);font-size:12px;font-weight:700;display:grid;place-items:center;z-index:5}
 .stp.x .bd{background:var(--warn);color:var(--warn-ink)} .stp.been .bd{background:var(--dim);color:var(--card)}
 /* 출발·도착만 포인트 컬러(핫핑크). 화면이 전부 라임이라 루트의 양 끝이 묻혔다 */
-.stp .bd.ep{width:auto;min-width:22px;padding:0 7px;border-bottom-right-radius:12px;
+.stp .bd.ep{width:auto;min-width:22px;padding:0 6px;border-bottom-right-radius:12px;
   background:var(--point);color:var(--point-ink);letter-spacing:-.02em}
 .stp.been .bd.ep{background:var(--point-dk)}
 .stp .in{flex:1;min-width:0}
 /* 좋아요를 사진 아래에 붙여 "이 장소" 정보를 왼쪽 열에 모은다.
    예전엔 버튼 두 개가 본문 아래에 줄지어 붙어 카드가 세로로 길고 산만했다 */
-.stpl{flex:0 0 76px;display:flex;flex-direction:column;gap:7px}
-.stpl .lk{width:76px;justify-content:center;padding:6px 0;min-height:0;font-size:11.5px;gap:4px}
+.stpl{flex:0 0 76px;display:flex;flex-direction:column;gap:6px}
+.stpl .lk{width:76px;justify-content:center;padding:6px 0;min-height:0;font-size:12px;gap:4px}
 .stp .nmrow{display:flex;align-items:baseline;gap:8px}
 /* 스팟 이름 자체가 장소 상세로 가는 버튼이다 (예전엔 옆에 '담긴 루트' 버튼이 따로 있었다).
    버튼이라 브라우저 기본 스타일이 붙으므로 전부 벗겨서 글자로 보이게 한다.
@@ -367,28 +367,28 @@ svg{display:block}
    이기므로, 여기에 font:inherit를 쓰면 크기·굵기가 통째로 죽는다(실제로 15px/400으로 렌더됐다). */
 .stp .nmrow .nm{flex:1;min-width:0;background:none;border:0;padding:0;margin:0;min-height:0;
   text-align:left;color:inherit;font-family:inherit;cursor:pointer;
-  font-size:16.5px;font-weight:700;letter-spacing:-.042em}
+  font-size:17px;font-weight:700;letter-spacing:-.042em}
 .stp .nmrow .nm:active{opacity:.6}
-.stp .tm{font-size:12.5px;color:var(--sub);margin-top:3px;font-weight:600}
-.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-.tg{font-size:11px;background:var(--chip);color:var(--sub);border-radius:var(--r-s);padding:4px 7px;font-weight:700}
+.stp .tm{font-size:13px;color:var(--sub);margin-top:2px;font-weight:600}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.tg{font-size:11px;background:var(--chip);color:var(--sub);border-radius:var(--r-s);padding:4px 6px;font-weight:700}
 .tg.bad{background:var(--warn);color:var(--warn-ink)}
 .tg.warn{background:var(--warn-2);color:var(--warn)}
 /* '다녀온 곳'은 성공 상태가 아니라 이미 소비한 상태 → 강조하지 않고 중성 회색 */
 .tg.ok{background:var(--chip-2);color:var(--sub)}
-.stp .cm{font-size:13.5px;margin-top:8px;line-height:1.55}
-.acts{display:flex;gap:6px;margin-top:11px;flex-wrap:wrap}
-.mini{font-size:12px;background:var(--chip);border-radius:var(--r-m);padding:9px 11px;
-  font-weight:700;display:inline-flex;align-items:center;gap:5px;min-height:36px}
+.stp .cm{font-size:13px;margin-top:8px;line-height:1.55}
+.acts{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.mini{font-size:12px;background:var(--chip);border-radius:var(--r-m);padding:8px 12px;
+  font-weight:700;display:inline-flex;align-items:center;gap:4px;min-height:36px}
 .mini.p{background:var(--accent);color:var(--on-accent)}
 .mini.o{background:var(--chip-2);color:var(--sub)}
 .mini svg{width:13px;height:13px}
-.hop{display:flex;align-items:center;gap:10px;margin-left:26px;padding:9px 0}
+.hop{display:flex;align-items:center;gap:8px;margin-left:26px;padding:8px 0}
 .hop .rl{width:2px;height:26px;background:var(--line);border-radius:2px}
-.hop .tx{font-size:12.5px;color:var(--sub);font-weight:700;display:flex;align-items:center;gap:6px}
+.hop .tx{font-size:13px;color:var(--sub);font-weight:700;display:flex;align-items:center;gap:6px}
 .hop svg{width:14px;height:14px}
 
-.bar{margin:12px 24px 0;border-radius:var(--r-l);padding:13px 15px;font-size:13.5px;font-weight:700;line-height:1.5}
+.bar{margin:12px 24px 0;border-radius:var(--r-l);padding:12px 16px;font-size:13px;font-weight:700;line-height:1.5}
 .bar.x{background:var(--warn-2);color:var(--warn)}
 /* 솔리드 라임은 화면당 하나(주 CTA)만 쓴다. 상태 표시까지 꽉 채우면 둘이 싸워서 위계가 사라진다 */
 .bar.o{background:var(--accent-2);color:var(--accent-tx);box-shadow:inset 0 0 0 1px var(--border)}
@@ -396,7 +396,7 @@ svg{display:block}
 /* 루트 상세 하단 고정 액션 — 저장(작게) · 다녀왔어요(저장 후) · 따라가기(크게).
    이 화면에선 탭바를 숨기므로 바닥에 붙어도 겹치지 않는다(render 참고). */
 .fab{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;z-index:45;
-  display:flex;gap:9px;align-items:center;pointer-events:none;
+  display:flex;gap:8px;align-items:center;pointer-events:none;
   padding:14px 24px calc(12px + max(6px,env(safe-area-inset-bottom)));
   background:linear-gradient(180deg,transparent,var(--bg) 40%)}
 .fab>*{pointer-events:auto}
@@ -406,18 +406,18 @@ svg{display:block}
 .fb svg{width:22px;height:22px}
 .fb.on{background:var(--accent);color:var(--on-accent);box-shadow:0 3px 0 var(--accent-dk)}
 .fgo{flex:1;height:54px;background:var(--accent);color:var(--on-accent);border-radius:var(--r-l);
-  display:grid;place-items:center;font-size:15.5px;font-weight:700;letter-spacing:-.032em;
+  display:grid;place-items:center;font-size:15px;font-weight:700;letter-spacing:-.032em;
   box-shadow:0 4px 0 var(--accent-dk),0 10px 22px -10px rgba(255,0,122,.6)}
 .fgo:active{transform:translateY(3px);box-shadow:0 1px 0 var(--accent-dk)}
 /* 리루트 — 이름 없이 아이콘+숫자만 */
-.rr{gap:6px;padding:9px 12px}
+.rr{gap:6px;padding:8px 12px}
 .rr svg{width:15px;height:15px}
 .rr b{font-weight:700;font-variant-numeric:tabular-nums}
 
 .tabs{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;
   background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(16px) saturate(1.6);
-  box-shadow:inset 0 1px 0 var(--line);display:flex;padding:7px 0 max(7px,env(safe-area-inset-bottom));z-index:40}
-.tabs button{flex:1;padding:6px 0;font-size:10.5px;color:var(--dim);display:grid;gap:3px;
+  box-shadow:inset 0 1px 0 var(--line);display:flex;padding:6px 0 max(7px,env(safe-area-inset-bottom));z-index:40}
+.tabs button{flex:1;padding:6px 0;font-size:11px;color:var(--dim);display:grid;gap:2px;
   justify-items:center;text-align:center;font-weight:700;position:relative;min-height:48px}
 .tabs button.on{color:var(--accent-tx)}
 .tabs .ib{width:30px;height:26px;display:grid;place-items:center;border-radius:999px;
@@ -427,67 +427,67 @@ svg{display:block}
 .tabs .dot{position:absolute;top:3px;right:calc(50% - 17px);width:7px;height:7px;border-radius:50%;
   background:var(--accent);box-shadow:0 0 0 2px var(--card)}
 
-.step{margin:11px 24px 0}
-.step .no{font-size:11.5px;font-weight:700;color:var(--accent-tx)}
+.step{margin:12px 24px 0}
+.step .no{font-size:12px;font-weight:700;color:var(--accent-tx)}
 /* STEP 라벨과 제목을 한 줄로 — 세로로 쌓으면 자리가 남고 괜히 스크롤이 길어진다 */
 .step .no{display:inline}
-.step h3{display:inline;margin:0;font-size:16.5px;font-weight:700;letter-spacing:-.042em}
+.step h3{display:inline;margin:0;font-size:17px;font-weight:700;letter-spacing:-.042em}
 .step .no+h3{margin-left:8px}
 .step .box{margin-top:8px}
 .movesel{background:var(--accent-2);color:var(--accent-tx);border:0;border-radius:999px;
-  padding:6px 10px;font-size:12px;font-weight:700;outline:none;max-width:140px}
+  padding:6px 8px;font-size:12px;font-weight:700;outline:none;max-width:140px}
 .box{background:var(--card);border-radius:var(--r-xl);box-shadow:var(--e2);padding:12px}
-.srch{display:flex;align-items:center;gap:10px;background:var(--chip);border-radius:var(--r-m);padding:10px 13px}
+.srch{display:flex;align-items:center;gap:8px;background:var(--chip);border-radius:var(--r-m);padding:8px 12px}
 .srch svg{width:17px;height:17px;color:var(--sub);flex:0 0 17px}
 .srch input{flex:1;min-width:0;background:none;border:0;outline:none;color:var(--fg);font-weight:600}
-.recent{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
-.recent button{background:var(--chip);border-radius:999px;padding:7px 12px;font-size:12px;color:var(--sub);font-weight:600}
+.recent{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.recent button{background:var(--chip);border-radius:999px;padding:6px 12px;font-size:12px;color:var(--sub);font-weight:600}
 .recent button.on{background:var(--accent);color:var(--on-accent);font-weight:700}
-.custom{margin-top:12px;padding:13px;background:var(--accent-2);border-radius:var(--r-m)}
-.custom .ttl2{font-size:13.5px;font-weight:700;letter-spacing:-.03em;color:var(--accent-tx)}
-.custom .sm2{font-size:11.5px;color:var(--sub);margin-top:2px;font-weight:600}
-.crow{display:flex;gap:7px;margin-top:10px}
+.custom{margin-top:12px;padding:12px;background:var(--accent-2);border-radius:var(--r-m)}
+.custom .ttl2{font-size:13px;font-weight:700;letter-spacing:-.03em;color:var(--accent-tx)}
+.custom .sm2{font-size:12px;color:var(--sub);margin-top:2px;font-weight:600}
+.crow{display:flex;gap:6px;margin-top:8px}
 .crow select{flex:1;min-width:0;background:var(--card);border:0;border-radius:var(--r-s);
-  padding:10px 8px;font-size:12.5px;color:var(--fg);font-weight:600}
+  padding:8px 8px;font-size:13px;color:var(--fg);font-weight:600}
 .crow .mini{flex:0 0 auto}
-.mapbtn{display:flex;align-items:center;gap:8px;width:100%;margin-top:11px;background:var(--accent-2);
-  color:var(--accent-tx);border-radius:var(--r-m);padding:13px;font-size:13.5px;font-weight:700;min-height:48px}
+.mapbtn{display:flex;align-items:center;gap:8px;width:100%;margin-top:12px;background:var(--accent-2);
+  color:var(--accent-tx);border-radius:var(--r-m);padding:12px;font-size:13px;font-weight:700;min-height:48px}
 .mapbtn svg{width:16px;height:16px;flex:0 0 16px}
-.mapbtn .ar2{margin-left:auto;font-size:11.5px;font-weight:600;opacity:.8}
+.mapbtn .ar2{margin-left:auto;font-size:12px;font-weight:600;opacity:.8}
 /* 외부 지도 검색 연결 */
-.srcrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:11px}
-.srclab{font-size:11.5px;color:var(--dim);font-weight:700;width:100%}
+.srcrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.srclab{font-size:12px;color:var(--dim);font-weight:700;width:100%}
 .srcbtn{flex:1;min-width:88px;text-align:center;background:var(--chip);border-radius:var(--r-m);
-  padding:11px 8px;font-size:12.5px;font-weight:700;color:var(--fg);min-height:44px;
+  padding:12px 8px;font-size:13px;font-weight:700;color:var(--fg);min-height:44px;
   display:flex;align-items:center;justify-content:center}
-.minelab{font-size:11.5px;color:var(--dim);font-weight:700;margin-top:14px}
+.minelab{font-size:12px;color:var(--dim);font-weight:700;margin-top:12px}
 /* 라디오형 선택 카드 */
-.opts{display:grid;gap:7px}
-.opt{display:flex;gap:11px;align-items:flex-start;background:var(--card);border-radius:var(--r-l);
+.opts{display:grid;gap:6px}
+.opt{display:flex;gap:12px;align-items:flex-start;background:var(--card);border-radius:var(--r-l);
   box-shadow:var(--e1);padding:12px;width:100%}
 .opt.on{box-shadow:inset 0 0 0 2px var(--accent),var(--e2);background:var(--accent-2)}
-.opt .radio{flex:0 0 20px;width:20px;height:20px;border-radius:50%;margin-top:1px;
+.opt .radio{flex:0 0 20px;width:20px;height:20px;border-radius:50%;margin-top:2px;
   box-shadow:inset 0 0 0 2px var(--dim);transition:box-shadow .18s var(--ease)}
 .opt.on .radio{box-shadow:inset 0 0 0 6px var(--accent)}
 .opt{align-items:center}
-.divline{height:1px;background:var(--line);margin:13px 0 4px}
+.divline{height:1px;background:var(--line);margin:12px 0 4px}
 /* 홈 헤더의 검색 진입 */
 /* 워드마크 — 두꺼운 3D 스티커 배지 */
 .wordmark{display:inline-flex;align-items:center;background:var(--accent);color:var(--on-accent);
-  border-radius:999px;padding:7px 15px 8px;font-size:16px;font-weight:700;letter-spacing:-.05em;
-  margin-bottom:10px;line-height:1;
+  border-radius:999px;padding:6px 16px 8px;font-size:17px;font-weight:700;letter-spacing:-.05em;
+  margin-bottom:8px;line-height:1;
   box-shadow:0 3px 0 var(--accent-dk), 0 8px 18px -6px rgba(212,255,0,.45);
   border:2px solid rgba(0,0,0,.75)}
 /* 스크롤 시 고정되는 건 로고와 검색뿐. 헤드라인은 .headline으로 빠져 같이 흘러간다 */
 .tophead{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .tophead .wordmark{margin-bottom:0}
-.headline{padding:14px 24px 0}
-.headline h1{font-size:23px;font-weight:700;letter-spacing:-.042em;line-height:1.26}
+.headline{padding:12px 24px 0}
+.headline h1{font-size:25px;font-weight:700;letter-spacing:-.042em;line-height:1.26}
 .headline .note{font-size:13px;color:var(--sub);margin-top:4px}
 /* 네이티브 date/time 입력은 표시 형식을 브라우저가 정해서 좁은 화면에서 잘린다.
    → 우리가 그린 텍스트 위에 입력을 투명하게 덮는다. 네이티브 피커는 그대로 열린다 */
 .dfield{position:relative;flex:1;min-width:0;display:flex;align-items:center;gap:6px;
-  background:var(--input);border-radius:var(--r-m);padding:11px 10px;font-weight:600;font-size:14px;
+  background:var(--input);border-radius:var(--r-m);padding:12px 8px;font-weight:600;font-size:15px;
   min-height:42px;overflow:hidden}
 .dfield .dtx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dfield>svg{width:15px;height:15px;color:var(--dim);flex:0 0 15px}
@@ -502,30 +502,30 @@ svg{display:block}
 .searchbar{position:sticky;top:0;z-index:25;display:flex;align-items:center;gap:8px;
   padding:12px 16px;background:var(--bg);box-shadow:0 1px 0 var(--line)}
 .searchbar input{flex:1;min-width:0;background:var(--chip);border:0;border-radius:var(--r-m);
-  padding:13px 14px;color:var(--fg);font-weight:600;outline:none}
+  padding:12px 12px;color:var(--fg);font-weight:600;outline:none}
 .sbback,.sbx{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;color:var(--sub);font-weight:700}
 .sbback svg{width:19px;height:19px}
 .sbico{position:absolute;right:26px;color:var(--dim);pointer-events:none}
 .sbico svg{width:19px;height:19px}
 .chips{display:flex;gap:8px;flex-wrap:wrap;padding:12px 24px 0}
 .chip2{display:inline-flex;align-items:center;gap:2px;background:var(--chip);border-radius:999px;
-  padding:0 6px 0 13px;font-size:13px;font-weight:600;color:var(--fg);min-height:38px}
-.chip2.one{padding:0 15px;justify-content:center}
+  padding:0 6px 0 12px;font-size:13px;font-weight:600;color:var(--fg);min-height:38px}
+.chip2.one{padding:0 16px;justify-content:center}
 .chip2.on{background:var(--accent);color:var(--on-accent);font-weight:700}
 .chip2 .cx{color:var(--dim);padding:0 6px;font-size:12px}
-.rank{padding:10px 24px 0;display:grid;gap:2px}
-.rk{display:flex;align-items:center;gap:11px;padding:11px 4px;min-height:46px}
-.rknum{flex:0 0 18px;font-size:14px;font-weight:700;color:var(--dim);text-align:center}
+.rank{padding:8px 24px 0;display:grid;gap:2px}
+.rk{display:flex;align-items:center;gap:12px;padding:12px 4px;min-height:46px}
+.rknum{flex:0 0 18px;font-size:15px;font-weight:700;color:var(--dim);text-align:center}
 .rknum.top{color:var(--accent-tx)}
-.rkt{flex:1;min-width:0;font-size:14px;font-weight:700;letter-spacing:-.03em;
+.rkt{flex:1;min-width:0;font-size:15px;font-weight:700;letter-spacing:-.03em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rkv{font-size:11.5px;color:var(--dim);font-weight:700}
-.hitlab{font-size:11.5px;font-weight:700;color:var(--accent-tx);margin:2px 0 6px}
+.rkv{font-size:12px;color:var(--dim);font-weight:700}
+.hitlab{font-size:12px;font-weight:700;color:var(--accent-tx);margin:2px 0 6px}
 
 /* ── Leaflet 지도 ── */
 .lmap{height:280px;width:100%;background:var(--ink);z-index:1}
 /* 카카오 지도는 밝은 바탕이라, 위에 얹는 핀·칩은 진한 테두리로 대비를 준다 */
-.lmk{display:flex;flex-direction:column;align-items:center;gap:5px}
+.lmk{display:flex;flex-direction:column;align-items:center;gap:4px}
 .lpin{width:48px;height:48px;border-radius:50%;background:var(--ink);position:relative;
   box-shadow:0 3px 0 var(--sh);display:grid;place-items:center;overflow:visible}
 .lpin::after{content:"";position:absolute;inset:3px;border-radius:50%;
@@ -546,19 +546,19 @@ svg{display:block}
 .lpin.been b{background:var(--dim);color:#fff}
 .ltip{background:var(--ink);color:var(--ink-fg);border:1.4px solid var(--accent);
   border-radius:999px;font-size:11px;font-weight:700;
-  padding:3px 9px;box-shadow:0 2px 0 var(--sh);white-space:nowrap}
+  padding:2px 8px;box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 /* 따라가기 지도 — 이름표는 선택된 핀에만. 흐린(dim) 핀의 이름표를 숨기면 남는 건 선택 핀뿐이다.
    상세 지도는 focus=-1이라 dim이 없어 전부 그대로 보인다. 선택이 바뀌면 playFocus의 dim 토글이 곧 이름표 이동이다 */
 .lpin.dim+.ltip{display:none}
 /* 지도 위 칩은 두 테마 모두 어둡게 — 밝은 지도 위에서 대비가 살아야 한다 */
 .lleg{display:flex;align-items:center;gap:4px;background:var(--ink);border:1.6px solid var(--accent);
-  border-radius:999px;padding:4px 9px;font-size:11px;font-weight:700;color:var(--ink-fg);
+  border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700;color:var(--ink-fg);
   box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 .lleg svg{width:13px;height:13px}
 /* 따라가기: 선택 스팟 앞뒤 구간 칩만 표시 — 리스트(.pleg.far)와 같은 규칙. 상세는 focus=-1이라 안 붙는다 */
 .lleg.far{display:none}
 .lval{display:inline-flex;align-items:center;gap:6px;background:var(--ink);
-  border:1.8px solid var(--accent);border-radius:999px;padding:4px 11px 4px 4px;font-size:11.5px;
+  border:1.8px solid var(--accent);border-radius:999px;padding:4px 12px 4px 4px;font-size:12px;
   font-weight:700;color:var(--accent);box-shadow:0 2px 0 var(--sh);white-space:nowrap}
 .lval img{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:0 0 26px}
 .lval .lvi{width:26px;height:26px;border-radius:50%;background:var(--accent);display:grid;
@@ -575,15 +575,15 @@ svg{display:block}
 .lval.bare{padding:4px;border-radius:50%}
 .lval b{max-width:116px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* 같은 곳에서 출발하는 루트 개수 */
-.lval i{font-style:normal;font-size:11.5px;font-weight:800;padding-right:5px}
+.lval i{font-style:normal;font-size:12px;font-weight:800;padding-right:4px}
 
 /* ── 위치 지정 — 중앙 고정 핀 ── */
 .pickwrap{position:fixed;inset:0;height:100dvh;max-width:480px;margin:0 auto;display:flex;flex-direction:column;
   background:var(--bg);z-index:45}
-.picktop{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:12px 14px;
+.picktop{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:12px 12px;
   padding-top:calc(12px + env(safe-area-inset-top));background:var(--bg);box-shadow:0 1px 0 var(--line)}
 .picktop input{flex:1;min-width:0;background:var(--chip);border:0;border-radius:var(--r-m);
-  padding:13px 14px;color:var(--fg);font-weight:600;outline:none}
+  padding:12px 12px;color:var(--fg);font-weight:600;outline:none}
 .pkback,.pkgo{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;color:var(--sub)}
 .pkback svg,.pkgo svg{width:19px;height:19px}
 .pickmapbox{flex:1;min-height:0;position:relative}
@@ -601,7 +601,7 @@ svg{display:block}
 .pklocate{position:absolute;right:14px;bottom:14px;width:46px;height:46px;border-radius:50%;
   background:var(--card);box-shadow:var(--e2);display:grid;place-items:center;z-index:500;color:var(--accent-tx)}
 .pklocate svg{width:20px;height:20px}
-.picksheet{flex:0 0 auto;background:var(--card);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:16px 18px;
+.picksheet{flex:0 0 auto;background:var(--card);border-radius:var(--r-xl) var(--r-xl) 0 0;padding:16px 16px;
   padding-bottom:calc(16px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px -8px var(--sh)}
 .pickaddr{font-size:13px;font-weight:700;color:var(--accent-tx)}
 
@@ -657,7 +657,7 @@ svg{display:block}
 .lpin{box-shadow:var(--shadow-lg)}
 /* ⚠️ 여기 아이콘에 크기를 안 주면 SVG 기본값(300x150)으로 퍼져서 화면을 잡아먹는다.
    viewBox만 있고 width/height가 없는 인라인 SVG는 반드시 CSS로 크기를 줄 것. */
-.apinote{display:flex;align-items:center;gap:7px;padding:12px 4px;color:var(--sub);font-size:13px;font-weight:600}
+.apinote{display:flex;align-items:center;gap:6px;padding:12px 4px;color:var(--sub);font-size:13px;font-weight:600}
 .apinote svg{width:15px;height:15px;flex:0 0 15px}
 .apinote.err{color:var(--warn)}
 /* 주변 — 지도 + 하단 시트 */
@@ -673,46 +673,46 @@ svg{display:block}
   display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;z-index:8}
 .nearctrl::-webkit-scrollbar{display:none}
 .locbtn,.kmchip{flex:0 0 auto;background:var(--card);box-shadow:var(--e2);border-radius:999px;
-  padding:10px 14px;font-size:12.5px;font-weight:700;min-height:40px;display:flex;
-  align-items:center;gap:5px;white-space:nowrap}
+  padding:8px 12px;font-size:13px;font-weight:700;min-height:40px;display:flex;
+  align-items:center;gap:4px;white-space:nowrap}
 .locbtn svg{width:14px;height:14px;color:var(--accent-tx)}
 .kmchip.on{background:var(--accent);color:var(--on-accent)}
 /* 시트 위에 떠 있어야 해서 화면 기준으로 고정한다 (시트에 가리면 안 됨) */
 .research{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(42dvh + 12px);z-index:30;
-  background:var(--accent);color:var(--on-accent);border-radius:999px;padding:12px 18px;font-size:13px;
-  font-weight:700;box-shadow:var(--e2);display:flex;align-items:center;gap:7px;min-height:46px}
+  background:var(--accent);color:var(--on-accent);border-radius:999px;padding:12px 16px;font-size:13px;
+  font-weight:700;box-shadow:var(--e2);display:flex;align-items:center;gap:6px;min-height:46px}
 .research svg{width:15px;height:15px}
 /* button.flat:active의 transform:none이 가운데 정렬(translateX)까지 지워서 눌릴 때 옆으로 튄다 */
 button.research:active{transform:translateX(-50%);opacity:.6}
 .nearwhere{position:absolute;left:50%;transform:translateX(-50%);top:62px;
-  background:var(--card);box-shadow:var(--e2);border-radius:999px;padding:7px 14px;
-  font-size:12.5px;font-weight:700;z-index:7;pointer-events:none;white-space:nowrap}
+  background:var(--card);box-shadow:var(--e2);border-radius:999px;padding:6px 12px;
+  font-size:13px;font-weight:700;z-index:7;pointer-events:none;white-space:nowrap}
 .nearsheet{position:fixed;top:58dvh;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;z-index:20;
   background:var(--card);border-radius:var(--r-xl) var(--r-xl) 0 0;box-shadow:0 -6px 24px -8px rgba(0,0,0,.18);
   display:flex;flex-direction:column;overflow:hidden;transition:top .22s var(--ease)}
 .nearsheet.full{border-radius:0;padding-top:env(safe-area-inset-top)}
 .sheetgrab{flex:0 0 auto;touch-action:none;cursor:grab;padding-bottom:4px}
 .sheetgrab:active{cursor:grabbing}
-.sheethandle{width:38px;height:4px;border-radius:2px;background:var(--chip-2);margin:9px auto 4px}
-.sheethead{padding:6px 24px 8px;font-size:14px;font-weight:700;color:var(--sub)}
+.sheethandle{width:38px;height:4px;border-radius:2px;background:var(--chip-2);margin:8px auto 4px}
+.sheethead{padding:6px 24px 8px;font-size:15px;font-weight:700;color:var(--sub)}
 .sheethead b{color:var(--fg);font-weight:700}
 .sheetlist{flex:1;min-height:0;overflow-y:auto;padding:4px 24px calc(78px + env(safe-area-inset-bottom))}
 /* 키 입력 */
-.keyrow{display:flex;gap:8px;margin-top:10px}
+.keyrow{display:flex;gap:8px;margin-top:8px}
 .keyrow input{flex:1;min-width:0;background:var(--chip);border:0;border-radius:var(--r-m);
   padding:12px;color:var(--fg);font-weight:600;outline:none}
-.opt .ot{display:block;font-size:14.5px;font-weight:700;letter-spacing:-.03em}
+.opt .ot{display:block;font-size:15px;font-weight:700;letter-spacing:-.03em}
 .opt.on .ot{color:var(--accent-tx)}
-.opt .od{display:block;font-size:12px;color:var(--sub);font-weight:600;margin-top:3px;line-height:1.5}
+.opt .od{display:block;font-size:12px;color:var(--sub);font-weight:600;margin-top:2px;line-height:1.5}
 /* 따라가기 */
 #pickmap text{pointer-events:none}
-.res{margin-top:10px;max-height:268px;overflow-y:auto}
+.res{margin-top:8px;max-height:268px;overflow-y:auto}
 .ri{display:flex;align-items:center;gap:12px;padding:8px 2px;width:100%;min-height:48px}
 .ri .ph{width:46px;height:46px;border-radius:var(--r-m);flex:0 0 46px}
-.ri .nm{font-size:14.5px;font-weight:700;letter-spacing:-.032em}
-.ri .mt{font-size:11.5px;color:var(--sub);margin-top:2px;font-weight:600}
-.ri .add{font-size:19px;color:var(--accent-tx);font-weight:700;padding:0 6px}
-.ri.addnew{background:var(--accent-2);border-radius:var(--r-m);padding:10px 12px;margin-bottom:6px}
+.ri .nm{font-size:15px;font-weight:700;letter-spacing:-.032em}
+.ri .mt{font-size:12px;color:var(--sub);margin-top:2px;font-weight:600}
+.ri .add{font-size:20px;color:var(--accent-tx);font-weight:700;padding:0 6px}
+.ri.addnew{background:var(--accent-2);border-radius:var(--r-m);padding:8px 12px;margin-bottom:6px}
 .ri.addnew .nm{color:var(--accent-tx)}
 .ri .plus{flex:0 0 46px;width:46px;height:46px;border-radius:var(--r-m);background:var(--card);
   display:grid;place-items:center;font-size:20px;font-weight:700;color:var(--accent-tx)}
@@ -722,7 +722,7 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 /* 담은 장소 한 줄 — 좁은 화면에서 글자가 세로로 쪼개지지 않도록 2행 그리드로 짠다 */
 .pk{display:grid;grid-template-columns:24px 24px 44px 1fr auto;grid-template-areas:
   "grip no thumb name rm" ". . . meta meta";
-  align-items:center;gap:4px 9px;padding:12px 0;box-shadow:inset 0 -1px 0 var(--line)}
+  align-items:center;gap:4px 8px;padding:12px 0;box-shadow:inset 0 -1px 0 var(--line)}
 .pk:last-child{box-shadow:none}
 .pk>.grip{grid-area:grip}
 .pk .no2{grid-area:no;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--on-accent);
@@ -731,10 +731,10 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .pk .g{grid-area:name;min-width:0}
 .pk .rm{grid-area:rm;color:var(--dim);font-size:17px;padding:8px 4px;justify-self:end}
 .pk .meta{grid-area:meta;display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
-.pk .nm{font-size:14.5px;font-weight:700;letter-spacing:-.032em;
+.pk .nm{font-size:15px;font-weight:700;letter-spacing:-.032em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pk .sm{font-size:11.5px;color:var(--sub);font-weight:600;white-space:nowrap}
-.pk select{background:var(--chip);border:0;border-radius:var(--r-s);padding:7px 8px;font-size:12px;
+.pk .sm{font-size:12px;color:var(--sub);font-weight:600;white-space:nowrap}
+.pk select{background:var(--chip);border:0;border-radius:var(--r-s);padding:6px 8px;font-size:12px;
   color:var(--fg);font-weight:600;max-width:110px}
 .pk .meta .photo{white-space:nowrap}
 /* STEP 7 사진 목록처럼 2행이 필요 없는 경우 */
@@ -747,45 +747,45 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   box-shadow:inset 0 0 0 1.5px var(--accent)}
 .pk.first .no2{width:26px;height:26px;flex:0 0 26px;font-size:13px}
 .meetbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
-  color:var(--accent-tx);margin-bottom:3px}
+  color:var(--accent-tx);margin-bottom:2px}
 .meetbadge svg{width:12px;height:12px}
 .photo{color:var(--accent-tx);font-weight:700;font-size:11px;text-decoration:underline;text-underline-offset:2px}
 .photo.has{color:var(--accent-tx)}
-.meet{display:flex;align-items:center;gap:9px;margin-top:11px;background:var(--accent-2);
-  border-radius:var(--r-m);padding:12px 13px;font-size:13.5px;font-weight:600;color:var(--accent-tx);line-height:1.5}
+.meet{display:flex;align-items:center;gap:8px;margin-top:12px;background:var(--accent-2);
+  border-radius:var(--r-m);padding:12px 12px;font-size:13px;font-weight:600;color:var(--accent-tx);line-height:1.5}
 .meet svg{width:16px;height:16px;flex:0 0 16px}
 .meet b{font-weight:700}
-.shot{display:flex;align-items:center;gap:9px;font-size:12.5px;background:var(--chip);
-  border-radius:var(--r-m);padding:11px 12px;margin-top:11px;font-weight:700;color:var(--sub);min-height:44px}
+.shot{display:flex;align-items:center;gap:8px;font-size:13px;background:var(--chip);
+  border-radius:var(--r-m);padding:12px 12px;margin-top:12px;font-weight:700;color:var(--sub);min-height:44px}
 .shot svg{width:16px;height:16px}
 .shot .go{color:var(--accent-tx)}
-.ta{width:100%;background:var(--chip);border:0;border-radius:var(--r-m);padding:13px 13px 28px;color:var(--fg);
+.ta{width:100%;background:var(--chip);border:0;border-radius:var(--r-m);padding:12px 12px 28px;color:var(--fg);
   resize:none;outline:none;min-height:66px;font-weight:600}
-.ta.one{min-height:0;padding:13px 62px 13px 13px}
-.optm{font-size:11.5px;font-weight:700;color:var(--dim);vertical-align:2px;margin-left:5px}
+.ta.one{min-height:0;padding:12px 62px 12px 12px}
+.optm{font-size:12px;font-weight:700;color:var(--dim);vertical-align:2px;margin-left:4px}
 .tawrap{position:relative}
-.tacount{position:absolute;right:12px;bottom:9px;font-size:11.5px;font-weight:700;color:var(--dim);
+.tacount{position:absolute;right:12px;bottom:9px;font-size:12px;font-weight:700;color:var(--dim);
   pointer-events:none;font-variant-numeric:tabular-nums}
 .tacount.bad{color:var(--warn)}
 /* 프로필 헤더 — 카드 위쪽에 브랜드 색 띠를 깔고 아바타를 얹는다 */
 .pav{width:58px;height:58px;flex:0 0 58px;border-radius:50%;background:var(--card);
-  display:grid;place-items:center;font-size:27px;box-shadow:0 0 0 3px var(--accent),var(--e1)}
+  display:grid;place-items:center;font-size:25px;box-shadow:0 0 0 3px var(--accent),var(--e1)}
 /* ── 스팟 메모 ── */
-.memo{margin-top:9px;background:var(--accent-2);border-radius:var(--r-m);padding:10px 11px}
+.memo{margin-top:8px;background:var(--accent-2);border-radius:var(--r-m);padding:8px 12px}
 .memohd{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--accent-tx)}
 .memohd svg{width:12px;height:12px}
-.memohd .pv{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:10.5px;
+.memohd .pv{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:11px;
   font-weight:700;color:var(--sub);background:var(--card);border:1px solid var(--border);
-  border-radius:999px;padding:3px 8px}
+  border-radius:999px;padding:2px 8px}
 .memohd .pv.on{color:var(--accent-tx);border-color:var(--accent)}
 .memohd .pv svg{width:11px;height:11px}
-.memo .mtx{font-size:13px;font-weight:600;line-height:1.5;margin-top:5px;white-space:pre-wrap}
+.memo .mtx{font-size:13px;font-weight:600;line-height:1.5;margin-top:4px;white-space:pre-wrap}
 .memo textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r-s);
-  padding:9px 10px;margin-top:6px;resize:none;min-height:56px;outline:none;color:var(--fg);font-weight:600}
-.memoact{display:flex;gap:6px;margin-top:7px}
-.memoadd{margin-top:9px;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;
+  padding:8px 8px;margin-top:6px;resize:none;min-height:56px;outline:none;color:var(--fg);font-weight:600}
+.memoact{display:flex;gap:6px;margin-top:6px}
+.memoadd{margin-top:8px;display:inline-flex;align-items:center;gap:4px;font-size:12px;
   font-weight:700;color:var(--sub);background:var(--chip);border:1px solid var(--border);
-  border-radius:999px;padding:6px 11px}
+  border-radius:999px;padding:6px 12px}
 .memoadd svg{width:12px;height:12px}
 /* 인용 체인 — 마지막 작성자와 이전 작성자들을 함께 보여준다 */
 .chain{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap;font-size:11px;color:var(--dim);font-weight:700}
@@ -798,7 +798,7 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .budhd{display:flex;align-items:baseline;gap:6px}
 .budhd b{font-size:13px;font-weight:800;letter-spacing:-.03em;color:var(--accent-tx)}
 .budhd span{margin-left:auto;font-size:11px;color:var(--dim);font-weight:600}
-.budwrap{position:relative;height:30px;margin-top:7px}
+.budwrap{position:relative;height:30px;margin-top:6px}
 .budtrack{position:absolute;top:13px;left:0;right:0;height:4px;border-radius:999px;background:var(--chip-2)}
 .budfill{position:absolute;top:13px;height:4px;border-radius:999px;background:var(--accent)}
 .budwrap input{position:absolute;top:0;left:0;width:100%;height:30px;margin:0;background:none;
@@ -810,51 +810,51 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .budwrap input:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px var(--ring)}
 /* ── 루트 스펙 6칸 ── */
 /* 카드용 — 사진 카드 안의 시간·거리·비용 한 줄 (routeCard) */
-.stat{display:flex;gap:10px;margin-top:11px;font-size:12px;color:var(--sub);flex-wrap:wrap;align-items:center}
+.stat{display:flex;gap:8px;margin-top:12px;font-size:12px;color:var(--sub);flex-wrap:wrap;align-items:center}
 .stat b{color:var(--fg);font-weight:700}
-.stat svg{width:13px;height:13px;margin-right:3px;opacity:.55;display:inline-block;vertical-align:-2px}
+.stat svg{width:13px;height:13px;margin-right:2px;opacity:.55;display:inline-block;vertical-align:-2px}
 /* 상세용 숫자 3칸 — 채우지 않는다. 인용문 바로 밑이라 색을 깔면 시선이 그리로 먼저 간다.
    위아래 헤어라인과 세로 구분선만으로 칸을 만든다 */
-.rstat{display:grid;grid-template-columns:repeat(3,1fr);margin-top:15px;padding:14px 0 13px;
+.rstat{display:grid;grid-template-columns:repeat(3,1fr);margin-top:16px;padding:12px 0 12px;
   box-shadow:inset 0 1px 0 var(--line),inset 0 -1px 0 var(--line)}
 .rstat>div{text-align:center;position:relative;padding:0 4px}
 .rstat>div+div::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:1px;background:var(--line)}
 .rstat b{display:block;font-size:17px;font-weight:800;letter-spacing:-.045em;line-height:1.15;
   font-variant-numeric:tabular-nums}
-.rstat span{display:block;margin-top:5px;font-size:11px;color:var(--dim);font-weight:600;letter-spacing:-.01em}
+.rstat span{display:block;margin-top:4px;font-size:11px;color:var(--dim);font-weight:600;letter-spacing:-.01em}
 /* 속성 한 줄 — 라벨은 흐리게, 값은 진하게. 아이콘은 시간대 하나만 남긴다
    (우산·불꽃은 13px에서 뜻이 안 읽혀 오히려 방해가 됐다) */
-.meta{display:flex;flex-wrap:wrap;gap:5px 13px;margin-top:12px;font-size:12px;font-weight:700;color:var(--fg)}
+.meta{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:12px;font-size:12px;font-weight:700;color:var(--fg)}
 .meta span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
 .meta em{font-style:normal;color:var(--dim);font-weight:600}
 .meta .mw i{display:grid;place-items:center;color:var(--accent-tx)}
 .meta .mw svg{width:13px;height:13px}
 /* 작성자 한 줄 — 누구인지와 그에 대한 행동을 한 줄에 묶는다 */
-.wline{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:13px;
+.wline{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;
   box-shadow:inset 0 1px 0 var(--line)}
 .wt{flex:1}
-.summary .av{width:34px;height:34px;flex:0 0 34px;font-size:16px}
+.summary .av{width:34px;height:34px;flex:0 0 34px;font-size:17px}
 .wt{min-width:0;flex:1}
 .wt b{display:block;font-size:13px;font-weight:800;letter-spacing:-.03em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wt em{display:block;font-style:normal;font-size:11px;color:var(--dim);font-weight:600;margin-top:2px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wa{display:flex;align-items:center;gap:5px;flex:0 0 auto}
-.wa .mini{padding:8px 10px;min-height:34px;font-size:11.5px}
+.wa{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+.wa .mini{padding:8px 8px;min-height:34px;font-size:12px}
 .ib2{width:34px;height:34px;border-radius:var(--r-m);background:var(--chip);
-  display:inline-flex;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:800}
+  display:inline-flex;align-items:center;justify-content:center;gap:2px;font-size:11px;font-weight:800}
 .ib2 svg{width:15px;height:15px}
 .ib2 b{font-weight:800}
 .ib2.o{background:var(--accent);color:var(--on-accent)}
 /* 실행 정보 — 판단이 끝난 뒤 읽는 값이라 제일 뒤. 점으로 잇지 않고 칸을 띄워 눈이 안 걸리게 */
-.smeta{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:12px;padding-top:12px;
-  box-shadow:inset 0 1px 0 var(--line);font-size:11.5px;color:var(--dim);font-weight:600}
+.smeta{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:12px;padding-top:12px;
+  box-shadow:inset 0 1px 0 var(--line);font-size:12px;color:var(--dim);font-weight:600}
 .smeta b{color:var(--sub);font-weight:800}
 /* 주의사항 — 예전엔 요약 카드 안에 구분선 세 개로 쌓여서 카드가 늘어졌다. 따로 뺀다 */
-.tips{margin-top:12px;padding:14px 16px}
-.tips h3{font-size:12px;font-weight:800;color:var(--dim);letter-spacing:-.02em;margin-bottom:9px}
-.tip{display:flex;gap:9px;font-size:12.5px;color:var(--sub);font-weight:600;line-height:1.55}
-.tip+.tip{margin-top:9px}
+.tips{margin-top:12px;padding:12px 16px}
+.tips h3{font-size:12px;font-weight:800;color:var(--dim);letter-spacing:-.02em;margin-bottom:8px}
+.tip{display:flex;gap:8px;font-size:13px;color:var(--sub);font-weight:600;line-height:1.55}
+.tip+.tip{margin-top:8px}
 .tip svg{width:14px;height:14px;flex:0 0 14px;color:var(--accent-tx);margin-top:2px}
 /* ── 레일 끝 더보기 ── */
 .rmore{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -862,7 +862,7 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .rmore i{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
   background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow-sm);color:var(--accent-tx)}
 .rmore svg{width:17px;height:17px}
-.rmore span{font-size:11.5px;font-weight:700;color:var(--sub);white-space:nowrap}
+.rmore span{font-size:12px;font-weight:700;color:var(--sub);white-space:nowrap}
 .rmore:active i{transform:translateY(1px)}
 /* ── 장소 카드 ── */
 .plgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 24px 0}
@@ -876,57 +876,57 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .plcrm{position:absolute;top:8px;right:8px;z-index:3;width:26px;height:26px;border-radius:50%;
   display:grid;place-items:center;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:800}
 .plcbd{position:absolute;top:8px;left:8px;z-index:3;background:rgba(0,0,0,.72);color:#fff;
-  border-radius:999px;padding:4px 9px;font-size:10.5px;font-weight:800}
+  border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800}
 .plclk{position:absolute;right:8px;bottom:8px;z-index:3;display:inline-flex;align-items:center;gap:4px;
-  background:var(--card);border:1px solid var(--border);border-radius:999px;padding:5px 9px;
+  background:var(--card);border:1px solid var(--border);border-radius:999px;padding:4px 8px;
   font-size:11px;font-weight:800;color:var(--sub);box-shadow:var(--shadow-sm)}
 .plclk i{display:grid;place-items:center}
 .plclk svg{width:12px;height:12px}
 .plclk.on{color:var(--point);border-color:var(--point)}
 .plclk.on svg{fill:currentColor}
-.plb{display:block;width:100%;text-align:left;padding:9px 11px 11px}
-.pln{font-size:13.5px;font-weight:800;letter-spacing:-.03em;line-height:1.3;
+.plb{display:block;width:100%;text-align:left;padding:8px 12px 12px}
+.pln{font-size:13px;font-weight:800;letter-spacing:-.03em;line-height:1.3;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.plm{font-size:11px;color:var(--dim);font-weight:600;margin-top:3px}
-.plr{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;
+.plm{font-size:11px;color:var(--dim);font-weight:600;margin-top:2px}
+.plr{display:inline-flex;align-items:center;gap:2px;font-size:11px;font-weight:700;
   color:var(--accent-tx);margin-top:6px}
 .plr svg{width:11px;height:11px}
 /* ── 주변 시트 필터 ── */
 .nearfil{position:sticky;top:0;z-index:4;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-padding-inline:0;
-  padding:2px 0 10px;background:var(--card);margin-bottom:2px}
+  padding:2px 0 8px;background:var(--card);margin-bottom:2px}
 .nearfil::-webkit-scrollbar{display:none}
 .nearfil button{flex:0 0 auto}
 /* ── 프로필 헤더 (트위터식) ── */
-.phero{margin:10px 24px 0;background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r-xl);box-shadow:var(--shadow-sm);overflow:hidden;padding:0 16px 15px}
+.phero{margin:8px 24px 0;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r-xl);box-shadow:var(--shadow-sm);overflow:hidden;padding:0 16px 16px}
 .pcover{height:62px;margin:0 -16px;background:linear-gradient(112deg,var(--accent-2),var(--point-2))}
 .pheadrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:-29px}
-.pname{margin-top:11px;font-size:20px;font-weight:800;letter-spacing:-.04em;line-height:1.2}
+.pname{margin-top:12px;font-size:20px;font-weight:800;letter-spacing:-.04em;line-height:1.2}
 .phandle{display:inline-flex;align-items:center;gap:4px;margin-top:4px;font-size:12px;
   font-weight:700;color:var(--accent-tx)}
 .phandle svg{width:13px;height:13px}
-.pfol{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:11px;
-  font-size:12.5px;color:var(--dim);font-weight:600}
+.pfol{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;
+  font-size:13px;color:var(--dim);font-weight:600}
 .pfol b{color:var(--fg);font-weight:800;margin-right:4px}
 /* 탭 — 밑줄만으로 현재 위치를 표시한다. 개수는 라벨 안에 붙여 위아래로 흩어지지 않게 */
 .ptabs{display:flex;margin:16px 24px 0;box-shadow:inset 0 -1px 0 var(--border)}
-.ptabs button{flex:1;position:relative;padding:12px 4px 11px;font-size:13px;
+.ptabs button{flex:1;position:relative;padding:12px 4px 12px;font-size:13px;
   font-weight:700;color:var(--dim);text-align:center}
 .ptabs button.on{color:var(--fg)}
 .ptabs button b{font-weight:800}
 .ptabs button.on::after{content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:-1px;
   width:52px;height:3px;border-radius:3px 3px 0 0;background:var(--accent)}
-.plv{margin-top:14px;padding-top:13px;box-shadow:inset 0 1px 0 var(--border)}
-.plvhd{display:flex;align-items:baseline;gap:6px;font-size:12.5px;font-weight:700}
-.plvhd b{font-size:14px;color:var(--accent-tx)}
-.plvhd span{margin-left:auto;font-size:11.5px;color:var(--dim);font-weight:600}
+.plv{margin-top:12px;padding-top:12px;box-shadow:inset 0 1px 0 var(--border)}
+.plvhd{display:flex;align-items:baseline;gap:6px;font-size:13px;font-weight:700}
+.plvhd b{font-size:15px;color:var(--accent-tx)}
+.plvhd span{margin-left:auto;font-size:12px;color:var(--dim);font-weight:600}
 .plvbar{height:7px;border-radius:999px;background:var(--chip-2);margin-top:8px;overflow:hidden}
 .plvbar i{display:block;height:100%;border-radius:999px;background:var(--accent);
   transition:width .5s var(--ease)}
 .pmenu{margin:12px 24px 0;background:var(--card);border:1px solid var(--border);
   border-radius:var(--r-xl);box-shadow:var(--shadow-sm);overflow:hidden}
-.pmi{display:flex;align-items:center;gap:11px;width:100%;padding:14px 15px;min-height:52px;
-  font-size:14px;font-weight:700}
+.pmi{display:flex;align-items:center;gap:12px;width:100%;padding:12px 16px;min-height:52px;
+  font-size:15px;font-weight:700}
 .pmi+.pmi{box-shadow:inset 0 1px 0 var(--border)}
 .pmi>svg{width:18px;height:18px;color:var(--accent-tx);flex:0 0 18px}
 .pmi .pmt{flex:1;min-width:0;text-align:left}
@@ -934,18 +934,18 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .pmi .pmc{color:var(--dim);display:flex;align-items:center}
 .pmi .pmc svg{width:16px;height:16px}
 .pseg{display:flex;gap:6px;flex:0 0 auto}
-.pseg button{background:var(--chip);border-radius:999px;padding:7px 13px;font-size:12px;
+.pseg button{background:var(--chip);border-radius:999px;padding:6px 12px;font-size:12px;
   font-weight:700;color:var(--sub)}
 .pseg button.on{background:var(--accent);color:var(--on-accent);box-shadow:var(--shadow-xs)}
-.pfoot{margin:16px 24px 0;font-size:11.5px;color:var(--dim);line-height:1.7;text-align:center}
+.pfoot{margin:16px 24px 0;font-size:12px;color:var(--dim);line-height:1.7;text-align:center}
 /* 프로필 카운트 — 트위터처럼 숫자를 눌러 이동 */
-.cnts{display:flex;gap:6px;margin-top:14px}
+.cnts{display:flex;gap:6px;margin-top:12px}
 .cnt{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--chip);
-  border-radius:var(--r-m);padding:10px 4px}
+  border-radius:var(--r-m);padding:8px 4px}
 .cnt b{font-size:17px;font-weight:700;letter-spacing:-.03em}
 .cnt span{font-size:11px;font-weight:700;color:var(--sub)}
 /* 따라가기 — 진행 레일. 몇 곳 중 몇 번째인지가 지도를 안 봐도 읽혀야 한다 */
-.prail{display:flex;align-items:center;gap:11px;margin:13px 24px 0}
+.prail{display:flex;align-items:center;gap:12px;margin:12px 24px 0}
 .prls{display:flex;align-items:center;flex:1;min-width:0}
 .prl{width:26px;height:26px;flex:0 0 26px;border-radius:50%;background:var(--chip);color:var(--sub);
   display:grid;place-items:center;font-size:12px;font-weight:700}
@@ -954,17 +954,17 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 /* 현재 항목 표시 — 배경색으로는 '들름'과 구분이 안 돼서 바탕색을 한 겹 끼운 링으로 두른다 */
 .prl.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent-dk)}
 .prld{flex:1;height:2px;background:var(--line);min-width:5px}
-.prp{font-size:11.5px;font-weight:700;color:var(--dim);white-space:nowrap}
+.prp{font-size:12px;font-weight:700;color:var(--dim);white-space:nowrap}
 .prp b{color:var(--fg);font-variant-numeric:tabular-nums}
 /* 따라가기 — 전체 목록. 누른 곳이 지도에서 강조된다 */
-.plst{margin:11px 24px 0;display:flex;flex-direction:column}
+.plst{margin:12px 24px 0;display:flex;flex-direction:column}
 /* ⚠️ 겉을 button으로 두면 안 된다 — 안에 체크 버튼과 길찾기 링크가 들어가는데
    button 안의 button/a는 유효하지 않아 파서가 바깥을 끊고 자식을 형제로 올려버린다.
    겉은 div, 누르는 영역만 .pbody 버튼으로 둔다. */
 .pitem{display:flex;align-items:stretch;width:100%;background:var(--card);overflow:hidden;
   border:1.5px solid var(--line);border-radius:var(--r-l);box-shadow:var(--e1)}
 .pitem.on{border-color:var(--accent);box-shadow:0 3px 0 var(--accent-dk)}
-.pbody{display:flex;align-items:center;gap:11px;flex:1;min-width:0;text-align:left;padding:10px 4px 10px 12px}
+.pbody{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left;padding:8px 4px 8px 12px}
 .pitem .ph{width:52px;height:52px;border-radius:var(--r-m);flex:0 0 52px}
 .pno{width:22px;height:22px;flex:0 0 22px;border-radius:50%;background:var(--chip);color:var(--sub);
   display:grid;place-items:center;font-size:11px;font-weight:700}
@@ -972,65 +972,65 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .pitem.on .pno{background:var(--accent);color:var(--on-accent)}
 .pitem.been .pno{background:var(--accent);color:var(--on-accent)}
 /* 오른쪽 세로 묶음 — 체크(들렀다)와 길찾기(지금 여기서 간다). 밖에서 제일 많이 누르는 둘 */
-.pact{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
-  padding:8px 9px 8px 3px;flex:0 0 auto}
+.pact{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:8px 8px 8px 2px;flex:0 0 auto}
 .pchk{width:34px;height:34px;border-radius:50%;background:var(--chip);color:var(--dim);
   display:grid;place-items:center}
 .pchk svg{width:17px;height:17px}
 .pchk.on{background:var(--accent);color:var(--on-accent)}
-.pgo{display:inline-flex;align-items:center;gap:2px;font-size:10.5px;font-weight:700;
+.pgo{display:inline-flex;align-items:center;gap:2px;font-size:11px;font-weight:700;
   color:var(--accent-tx);white-space:nowrap}
 .pgo svg{width:12px;height:12px}
 /* 스팟 코멘트 — 상세에만 있던 걸 가져왔다. 자르지 않는다.
    밖에서 보는 화면이라 '…' 뒤를 확인할 방법이 없다. 62자 이내라 펼쳐도 세 줄을 안 넘는다. */
-.pq{font-size:11.5px;font-weight:600;color:var(--sub);line-height:1.5;margin-top:3px}
+.pq{font-size:12px;font-weight:600;color:var(--sub);line-height:1.5;margin-top:2px}
 .pitem .tags{margin-top:4px}
 /* 좋아요 팝 — 눌린 게 안 보인다는 피드백(#31). 하트만 한 번 튕긴다.
    prefers-reduced-motion이면 위 전역 규칙이 애니메이션을 꺼준다 */
 @keyframes likepop{0%{transform:scale(1)}45%{transform:scale(1.4)}100%{transform:scale(1)}}
 .likepop svg{animation:likepop .32s var(--ease)}
 /* 끝맺음 — 캘린더 담기와 완주 */
-.pend{margin:14px 24px 0;display:flex;flex-direction:column;gap:10px}
+.pend{margin:12px 24px 0;display:flex;flex-direction:column;gap:8px}
 .pend>.mini{justify-content:center;min-height:46px}
-.pdone{display:flex;align-items:center;gap:10px;background:var(--accent-2);border-radius:var(--r-l);
-  padding:13px 14px;color:var(--accent-tx)}
+.pdone{display:flex;align-items:center;gap:8px;background:var(--accent-2);border-radius:var(--r-l);
+  padding:12px 12px;color:var(--accent-tx)}
 .pdone svg{width:18px;height:18px;flex:0 0 18px}
-.pdone b{display:block;font-size:13.5px;font-weight:700}
-.pdone em{font-style:normal;font-size:11.5px;font-weight:600;opacity:.85}
+.pdone b{display:block;font-size:13px;font-weight:700}
+.pdone em{font-style:normal;font-size:12px;font-weight:600;opacity:.85}
 .pdone .mini{margin-left:auto;flex:0 0 auto}
 .pg{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.pt{font-size:11.5px;font-weight:700;color:var(--accent-tx);font-variant-numeric:tabular-nums}
+.pt{font-size:12px;font-weight:700;color:var(--accent-tx);font-variant-numeric:tabular-nums}
 .pn{font-size:15px;font-weight:700;letter-spacing:-.035em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pc{font-size:11.5px;font-weight:600;color:var(--sub)}
+.pc{font-size:12px;font-weight:600;color:var(--sub)}
 .pmap{flex:0 0 34px;height:34px;border-radius:50%;background:var(--chip);display:grid;place-items:center;color:var(--accent-tx)}
-.pleg{display:flex;align-items:center;gap:7px;margin:6px 0 6px 26px;font-size:12px;font-weight:700;color:var(--sub)}
+.pleg{display:flex;align-items:center;gap:6px;margin:6px 0 6px 26px;font-size:12px;font-weight:700;color:var(--sub)}
 .pleg svg{width:14px;height:14px;color:var(--accent-tx)}
 .pleg .mini{margin-left:auto}
 /* 이동시간은 선택 스팟의 앞뒤 구간만 진하게 — 나머지는 아주 옅게(playFocus가 far를 옮긴다) */
 .pleg.far{display:none}
 /* 담은 목록 한 줄 — 만들기와 미리보기가 같은 모양을 쓴다 */
-.mrow{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
-.mrow select{background:var(--chip);border:0;border-radius:999px;padding:6px 10px;color:var(--fg);
+.mrow{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.mrow select{background:var(--chip);border:0;border-radius:999px;padding:6px 8px;color:var(--fg);
   font-size:12px;font-weight:700;outline:none;max-width:130px}
 /* 담은 목록만 카드형으로 — .pk 그리드는 '다녀온 곳' 목록 등 다른 데서도 쓰므로 건드리지 않는다 */
 .pk.card1{display:block;padding:0;box-shadow:none;margin-bottom:8px;gap:0}
 .pk.card1 .stp{margin:0}
 .ord .rmx{color:var(--warn)}
 /* 좋아요는 스팟에 — 눌린 상태를 분명히 */
-.mini.lk{gap:5px}
+.mini.lk{gap:4px}
 .mini.lk svg{width:14px;height:14px}
 .mini.lk.on{background:var(--point-2);color:var(--point-dk);border-color:var(--point)}
 .mini.lk.on svg{fill:var(--point);color:var(--point)}
 /* 미리보기 순서 바꾸기 — 손잡이로 끌거나 우측 화살표로 */
 .ord{position:absolute;right:9px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;
-  align-items:center;gap:3px;z-index:2}
+  align-items:center;gap:2px;z-index:2}
 .ord button{width:28px;height:22px;border-radius:var(--r-s);background:var(--chip);color:var(--sub);
   font-size:11px;font-weight:700;display:grid;place-items:center}
 .ord button:disabled{opacity:.35}
 .ord .grip{width:28px;height:22px;display:grid;place-items:center;color:var(--dim);cursor:grab;touch-action:none}
 .pvrow.dragging,.pk.dragging{opacity:.6}
 .pvrow .stp .in,.pk .stp .in{padding-right:42px}
-.fldr{display:flex;align-items:center;gap:7px;margin:-4px 24px 12px;padding:9px 13px;
+.fldr{display:flex;align-items:center;gap:6px;margin:-4px 24px 12px;padding:8px 12px;
   background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);
   font-size:12px;font-weight:700;color:var(--sub)}
 .fldr svg{width:14px;height:14px;color:var(--accent-tx)}
@@ -1038,35 +1038,35 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 /* 원작자 링크 — 가져온(리그램) 루트는 원작자를 먼저 보여준다 */
 .lnk{display:inline;padding:0;font:inherit;font-weight:700;color:var(--accent-tx);
   text-decoration:underline;text-underline-offset:2px}
-.rg{display:inline-flex;align-items:center;gap:3px;margin-left:5px;font-size:11px;font-weight:700;
+.rg{display:inline-flex;align-items:center;gap:2px;margin-left:4px;font-size:11px;font-weight:700;
   color:var(--dim)}
 .rg svg{width:11px;height:11px}
-.foldbtn{display:block;width:calc(100% - 48px);margin:10px 24px 0;background:var(--card);
+.foldbtn{display:block;width:calc(100% - 48px);margin:8px 24px 0;background:var(--card);
   border:1px solid var(--line);border-radius:999px;padding:12px;text-align:center;
   font-size:13px;font-weight:700;color:var(--accent-tx)}
-.big{display:block;width:calc(100% - 48px);margin:14px 24px 0;background:var(--accent);color:var(--on-accent);
-  font-weight:700;border-radius:var(--r-l);padding:16px;text-align:center;font-size:15.5px;letter-spacing:-.032em}
+.big{display:block;width:calc(100% - 48px);margin:12px 24px 0;background:var(--accent);color:var(--on-accent);
+  font-weight:700;border-radius:var(--r-l);padding:16px;text-align:center;font-size:15px;letter-spacing:-.032em}
 .big.g{background:var(--chip);color:var(--fg)}
 .big[disabled]{opacity:.36}
-.row2{display:flex;gap:9px;margin:12px 24px 0}
-.row2 button,.row2 a{flex:1;background:var(--chip);border-radius:var(--r-l);padding:14px;text-align:center;
-  font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:7px;min-height:48px;
+.row2{display:flex;gap:8px;margin:12px 24px 0}
+.row2 button,.row2 a{flex:1;background:var(--chip);border-radius:var(--r-l);padding:12px;text-align:center;
+  font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;min-height:48px;
   color:inherit;text-decoration:none}
 .row2 button.on{background:var(--chip-2);color:var(--sub)}
 .row2 svg{width:16px;height:16px}
-.tline{display:flex;gap:7px;margin:13px 24px 0}
+.tline{display:flex;gap:6px;margin:12px 24px 0}
 .tline button{flex:1;background:var(--chip);border-radius:var(--r-l);padding:12px;font-size:13px;
   color:var(--sub);text-align:center;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;min-height:46px}
 .tline button.on{background:var(--accent);color:var(--on-accent)}
 .tline svg{width:15px;height:15px}
 .empty{margin:16px 24px;padding:32px 24px;background:var(--card);border-radius:var(--r-xl);
-  text-align:center;color:var(--sub);font-size:13.5px;box-shadow:var(--e2);line-height:1.65}
+  text-align:center;color:var(--sub);font-size:13px;box-shadow:var(--e2);line-height:1.65}
 .empty .ic{width:44px;height:44px;border-radius:50%;background:var(--chip);display:grid;
   place-items:center;margin:0 auto 12px;color:var(--dim)}
 .empty .ic svg{width:21px;height:21px}
-.hint{margin:12px 24px 0;font-size:11.5px;color:var(--dim);line-height:1.7}
+.hint{margin:12px 24px 0;font-size:12px;color:var(--dim);line-height:1.7}
 #toast{position:fixed;left:50%;bottom:104px;transform:translate(-50%,14px) scale(.96);
-  background:var(--veil);color:var(--veil-fg);font-size:13px;font-weight:700;padding:12px 18px;
+  background:var(--veil);color:var(--veil-fg);font-size:13px;font-weight:700;padding:12px 16px;
   border-radius:999px;z-index:60;opacity:0;pointer-events:none;backdrop-filter:blur(10px);
   transition-property:opacity,transform;transition-duration:.24s;transition-timing-function:var(--ease)}
 #toast.on{opacity:1;transform:translate(-50%,0) scale(1)}
@@ -1085,8 +1085,16 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   width:max(100%,44px);height:max(100%,44px)}
 /* 입력에는 ::after를 붙일 수 없다 — 입력 자체를 컨테이너 높이만큼 늘린다.
    .srch는 padding 10px + 내용 27px = 47px였다. 높이는 그대로 두고 입력이 그 높이를 먹게 한다. */
-.srch{padding:0 13px;min-height:48px}
+.srch{padding:0 12px;min-height:48px}
 .srch input{align-self:stretch}
+/* 동심원 radius — 부모 = 자식 + 패딩. 세 컨테이너 모두 padding:12, 안쪽 요소 radius 8 → 20 */
+.box,.stp{border-radius:20px}
+.box .cond{border-radius:var(--r-m)}
+/* 남은 탭 타겟 44px — 보이는 크기는 그대로, ::after 로 히트 영역만 넓힌다 */
+.nm,.lnk,.mini.lk,.ib2{position:relative}
+.nm::after,.lnk::after,.mini.lk::after,.ib2::after{
+  content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:max(100%,44px);height:max(100%,44px)}
 /* 목록 첫 카드(.rc.big)는 CTA 버튼 클래스 .big과 이름이 겹쳐 배경이 라임이다.
    라이트에선 대비가 나온다(숫자 15.47 / 코멘트 5.76). 다크만 --fg/--sub이 밝은 색으로
    뒤집혀 라임 위에서 1.07까지 떨어지므로, 다크에서만 카드 안 토큰을 되돌린다.
@@ -2894,7 +2902,8 @@ const routeUrl=id=>location.origin+location.pathname+"?r="+encodeURIComponent(id
    나이키런이 달린 경로 + 기록을 한 장으로 뽑아 주는 그 형태다.
    ⚠️ 지도 타일을 캔버스에 그리면 안 된다 — 외부 이미지라 캔버스가 오염돼 toBlob이 막힌다.
       그래서 타일 없이 좌표로 경로만 직접 그린다. 나이키런도 실지도가 아니라 선이다.
-   ⚠️ 텍스트 공유(share/copySpots)와 역할이 다르다 — 이건 자랑·유입, 저건 약속 잡기.
+   ⚠️ 텍스트 공유(share)와 역할이 다르다 — 이건 자랑·유입, 저건 약속 잡기.
+   (2026-08-19: '가게 정보 한 번에 복사' 버튼과 copySpots/legacyCopy 제거 — 공유와 기능이 겹쳤다)
       그래서 버튼을 따로 둔다. 링크는 텍스트 쪽이 들고 가므로 이미지엔 워드마크만 넣는다. */
 /* 정사각(1080)으로 줄였다 — 4:5는 담는 정보에 비해 빈 곳이 많았고, 카톡에서도 정사각이 덜 잘린다 */
 /* 정사각(1080). 지도 영역과 글 영역을 확실히 가른다 —
@@ -3188,24 +3197,6 @@ function spotListText(id){
     +`<상세 정보>\n*자동생성으로 실제 정보 확인이 필요해요!`;
   const body=c.stops.map((s,i)=>`${i+1}. ${s.place.n} (${s.place.c})\n${kakaoPlaceURL(s.place)}`).join("\n\n");
   return `${head}\n\n${body}`;
-}
-/* clipboard API는 보안 컨텍스트 + 문서 포커스가 둘 다 맞아야 한다. 카톡 인앱 브라우저처럼
-   막히는 데가 있어서(24차에 '지도에서 보기'로 한 번 의심했던 그 환경) 옛 방식을 폴백으로 둔다. */
-function legacyCopy(tx){
-  const ta=document.createElement("textarea");
-  ta.value=tx; ta.setAttribute("readonly","");
-  ta.style.cssText="position:fixed;top:0;left:0;opacity:0";
-  document.body.appendChild(ta);
-  ta.select(); ta.setSelectionRange(0,tx.length);
-  let ok=false; try{ ok=document.execCommand("copy"); }catch(_){}
-  document.body.removeChild(ta);
-  return ok;
-}
-function copySpots(id){
-  const tx=spotListText(id); if(!tx) return;
-  const done=()=>toast("복사했어요 — 대화방에 붙여넣으세요");
-  (navigator.clipboard?navigator.clipboard.writeText(tx):Promise.reject())
-    .then(done).catch(()=>legacyCopy(tx)?done():toast("복사에 실패했어요"));
 }
 function toggleSave(id){ S.saved.has(id)?S.saved.delete(id):S.saved.add(id);
   toast(S.saved.has(id)?"루트를 저장했어요":"저장을 해제했어요"); render(); }
@@ -3694,7 +3685,6 @@ function routeView(){
     <div class="map">${hasL()?`<div class="lmap" id="rmap"></div>`:mapSVG(c.stops)}
       <div class="ft">순서대로 ${c.stops.length}곳 · 이동 ${c.distKm.toFixed(1)}km (걷는 거리 ${c.walkKm.toFixed(1)}km)${c.waits?` · 웨이팅 ${c.waits}곳(머무는 시간에 포함)`:""}</div></div>
     <div class="tl">${tl}</div>
-    <button class="foldbtn flat" onclick="copySpots('${r.id}')">${IC.pin}가게 정보 한 번에 복사</button>
     <div class="fabpad"></div>
     <div class="fab">
       ${own?"":`<button class="fb ${saved?"on":""}" onclick="toggleSave('${r.id}')"
