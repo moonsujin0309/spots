@@ -1087,6 +1087,11 @@ button.research:active{transform:translateX(-50%);opacity:.6}
    .srch는 padding 10px + 내용 27px = 47px였다. 높이는 그대로 두고 입력이 그 높이를 먹게 한다. */
 .srch{padding:0 13px;min-height:48px}
 .srch input{align-self:stretch}
+/* 목록 첫 카드(.rc.big)는 CTA 버튼 클래스 .big과 이름이 겹쳐 배경이 라임이다.
+   라이트에선 대비가 나온다(숫자 15.47 / 코멘트 5.76). 다크만 --fg/--sub이 밝은 색으로
+   뒤집혀 라임 위에서 1.07까지 떨어지므로, 다크에서만 카드 안 토큰을 되돌린다.
+   ※ 근본 해결은 카드 클래스명을 .big에서 떼어내는 것(A안). 지금은 보이는 디자인을 유지한다. */
+:root[data-theme="dark"] .rc.big{--fg:#141200;--sub:#3f4a00;--dim:#55600d}
 </style>
 </head>
 <body>
