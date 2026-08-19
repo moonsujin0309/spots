@@ -4553,7 +4553,10 @@ function playToggle(){
     const p=Math.min(1,(now-t0)/PLAY_MS);
     const seg=pathAt(pts,p);
     m.__runner.setPath(traveled.concat(seg.path));
-    if(m.__head&&seg.head) m.__head.setPosition(seg.head);
+    if(seg.head){
+      if(m.__head) m.__head.setPosition(seg.head);
+      m.setCenter(seg.head);   // panTo는 자체 애니메이션이라 매 틱 부르면 서로 밀린다 — 즉시 이동으로 따라간다
+    }
     if(p>=1){
       traveled.push(...pts);
       leg++; t0=now; playFocus(Math.min(leg,m.__pins.length-1));
@@ -4589,6 +4592,8 @@ function playFocus(k){
     if(el) el.classList.toggle("far",n!==k&&n!==k-1);
   });
   const r=S.playRoute; if(!r||!pm) return;
+  // 재생 중이면 화면은 움직이는 머리 점이 잡는다. 여기서 스팟으로 끌고 가면 원이 화면 밖으로 밀린다
+  if(playAnim) return;
   const c=computeRoute(r,`${r.date}T${r.time}:00`), p=c.stops[k].place;
   pm.panTo(LL(p.lat,p.lng));
 }
