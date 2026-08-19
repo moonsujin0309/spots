@@ -274,6 +274,21 @@ svg{display:block}
   border-radius:999px;padding:2px 6px;display:inline-flex;align-items:center;opacity:.6}
 .rc .ph>.aib,.rcx .ph>.aib{position:absolute;top:12px;left:12px;z-index:4}
 .hero .txt .aib{margin-left:4px;vertical-align:middle}
+/* 히어로 첫 줄 — 교통·지역 알약과 AI 마크는 왼쪽, 업데이트 날짜는 오른쪽 구석 */
+.hero .txtrow{display:flex;align-items:center;gap:6px;min-width:0}
+.upd{margin-left:auto;flex:0 0 auto;font-size:11px;font-weight:700;
+  color:rgba(255,255,255,.8);white-space:nowrap;font-variant-numeric:tabular-nums}
+/* 작성자 — 요약 카드에 있던 걸 제목 아래로 올렸다. 카드는 '판단 정보'만 남긴다 */
+.hby{display:flex;align-items:center;gap:5px;margin-top:8px;font-size:12px;
+  color:rgba(255,255,255,.9);min-width:0}
+.hby .av{width:20px;height:20px;flex:0 0 20px;font-size:11px}
+.hby .lnk{color:#fff}
+.hby em{font-style:normal;color:rgba(255,255,255,.72);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.hby .wdot{color:rgba(255,255,255,.5)}
+/* 이어짐 표시도 사진 위라 흰 계열로 */
+.hby .chain{color:rgba(255,255,255,.7)}
+.hby .chain .cw{color:#fff}
 .save{position:absolute;top:9px;right:9px;width:40px;height:40px;border-radius:50%;
   display:grid;place-items:center;color:#fff;z-index:6}
 .save i{position:absolute;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;
@@ -3680,16 +3695,16 @@ function routeView(){
       <div class="grad"></div>
       <div class="nav"><button onclick="back()" aria-label="뒤로"><span>${IC.back}</span></button>
         <button onclick="shareCard('${r.id}')" aria-label="이 루트 공유"><span>${IC.share}</span></button></div>
-      <div class="txt"><span class="pill">${IC[t.ic]}${t.label} · ${AREAS.find(a=>a.id===r.area).n}</span>${aiTag(r)}
-        <h1>${r.title}</h1></div></div>
+      <div class="txt">
+        <div class="txtrow"><span class="pill">${IC[t.ic]}${t.label} · ${AREAS.find(a=>a.id===r.area).n}</span>${aiTag(r)}
+          ${r.posted?`<span class="upd">업데이트: ${r.posted.slice(2)}</span>`:""}</div>
+        <h1>${r.title}</h1>
+        <div class="hby"><span class="av">${r.av}</span>${bylineHTML(r)}${r.plan?"":`<span class="wdot">·</span><em>${r.people}명이 다녀옴</em>`}</div>
+      </div></div>
     <div class="card summary rise">
       ${r.mood&&r.mood!==r.title?`<div class="quote">${r.mood}</div>`:""}
       ${statRow(r,c)}
       ${metaRow(r,c)}
-      <div class="wline">
-        <span class="av">${r.av}</span>
-        <div class="wt">${bylineHTML(r)}<span class="wdot">·</span><em>${r.plan?"아직 안 다녀온 루트":`${r.people}명이 다녀옴`}</em></div>
-      </div>
       <div class="wacts">
         ${own?"":`<button class="wact ${S.reroutes.has(r.id)?"o":""}" onclick="reroute('${r.id}')"
           aria-label="리루트 ${rerouteCount(r)}">${IC.reroute}리루트<b>${rerouteCount(r)}</b></button>
@@ -3697,7 +3712,6 @@ function routeView(){
         <button class="wact ${isFollowing(r.by)?"o":""}" onclick="toggleFollow('${r.by}')">
           ${isFollowing(r.by)?"팔로우 중":"팔로우"}</button>
       </div>
-      ${specMeta(r,c)}
     </div>
     ${(()=>{const tips=[c.been?[IC.check,`${c.been}곳은 이미 다녀오셨어요. 데이트라면 다른 루트가 나을 수도 있어요`]:0,
         pn?[IC.users,pn]:0, r.note?[IC.bulb,r.note]:0].filter(Boolean);
@@ -4469,7 +4483,7 @@ function playView(){
    (실측: 1초에 0회) 재생이 멈춘 채로 버튼만 '멈춤'으로 남는다. setTimeout 은 그런 상황에서도
    느려질 뿐 진행은 한다. 1.1초짜리 선 애니메이션이라 16ms 타이머로도 부드러움 차이가 없다. */
 let playAnim=null;
-const PLAY_MS=1100;               // 구간 하나를 지나는 시간
+const PLAY_MS=2200;               // 구간 하나를 지나는 시간(1100은 너무 빨랐다 — 사용자 피드백 2026-08-19)
 const PLAY_TICK=16;
 function playLines(m,fn){ (m.__legLines||[]).forEach(ls=>(ls||[]).forEach(fn)); }
 function playReset(m,toStart){
