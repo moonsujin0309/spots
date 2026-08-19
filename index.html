@@ -4492,14 +4492,28 @@ let playAnim=null;
 /* 재생 속도는 '구간당 시간'이 아니라 '속도'로 잡는다.
    ⚠️ 예전엔 구간마다 같은 시간(2200ms)을 줬다 — 1632m 구간과 452m 구간이 같은 시간을 먹으니
    긴 구간에서 3.6배 빨라 보였다(사용자 피드백 2026-08-19). 전체 길이에 비례해 시간을 나눈다. */
-const PLAY_SPEED=330;             // m/s — 지도 위 이동 속도(구간 길이와 무관하게 일정)
-const PLAY_MIN=4000, PLAY_MAX=16000;   // 너무 짧은/긴 루트도 볼 만한 시간에 들어오게 가둔다
+/* ⚠️ 속도는 '미터'가 아니라 '픽셀'로 잡아야 한다.
+   지도는 루트 전체가 들어오게 맞춰지므로 짧은 루트는 확대되고 긴 루트는 축소된다.
+   m/s를 고정하면 확대된(짧은) 루트에서는 화면상 빠르고 축소된(긴) 루트에서는 느려 보인다
+   — 사용자가 느끼는 건 화면상 속도다(피드백 2026-08-19). */
+const PLAY_PX_SPEED=85;                // px/s — 화면상 이동 속도. 줌이 달라도 체감이 같다
+const PLAY_MIN=3500, PLAY_MAX=20000;   // 안전망. 경로의 화면상 길이는 뷰포트에 맞춰지므로 거의 안 걸린다
 const PLAY_HOLD=200;              // 스팟에 도착해서 잠시 머무는 시간(길면 늘어진다 — 대신 핀을 튕겨 사건을 만든다)
 /* ⚠️ 틱을 16ms(60fps)로 두면 폰에서 탭이 밀린다 — 매 틱 setPath + setCenter가 도는데
    거기에 구간 길이 재계산까지 얹히면 메인 스레드가 포화된다. 33ms(30fps)로 낮추고
    길이는 재생 시작할 때 한 번만 계산한다(legMeta). 느린 팬이라 30fps로도 매끄럽다. */
 const PLAY_TICK=33;
 function playLines(m,fn){ (m.__legLines||[]).forEach(ls=>(ls||[]).forEach(fn)); }
+/* 현재 줌에서 1px이 몇 m인지. 엘리먼트 크기를 안 쓰고 투영으로 직접 잰다
+   (레벨5에서 4.00 m/px — getBounds 로 잰 값과 일치 확인). 기준선을 길게 잡아 양자화 오차를 없앤다. */
+function mapMPerPx(m){
+  const pj=m.getProjection&&m.getProjection(); if(!pj) return null;
+  const c=m.getCenter();
+  const a=new kakao.maps.LatLng(c.getLat(),c.getLng()), b=new kakao.maps.LatLng(c.getLat(),c.getLng()+0.05);
+  const q1=pj.pointFromCoords(a), q2=pj.pointFromCoords(b);
+  const px=Math.hypot(q2.x-q1.x,q2.y-q1.y);
+  return px?llM(a,b)/px:null;
+}
 /* 0.2초 정지만으로는 '여기 들렀다'가 안 읽힌다 — 시간만 멈추면 그냥 느려진 걸로 보인다.
    도착하는 순간 핀을 한 번 튕겨서 '사건'을 만든다. prefers-reduced-motion이면 전역 규칙이 꺼준다. */
 function playPop(m,k){
@@ -4550,7 +4564,9 @@ function playToggle(){
   if(!metas.length){ toast("그릴 구간이 없어요"); return; }
   // 속도를 고정하고 시간을 길이에서 뽑는다. 전체는 PLAY_MIN~PLAY_MAX 안으로 가둔다
   const grand=metas.reduce((s,L)=>s+L.total,0);
-  const moveMs=Math.min(PLAY_MAX,Math.max(PLAY_MIN,grand/PLAY_SPEED*1000));
+  // 경로를 '화면상 길이(px)'로 환산해 시간을 뽑는다 — 줌이 달라도 체감 속도가 같아진다
+  const mpp=mapMPerPx(m)||4;
+  const moveMs=Math.min(PLAY_MAX,Math.max(PLAY_MIN,grand/mpp/PLAY_PX_SPEED*1000));
   metas.forEach(L=>L.ms=moveMs*(L.total/grand));
   const b=document.getElementById("ftplay");
   if(b){ b.innerHTML=IC.pause; b.setAttribute("aria-label","재생 멈추기"); b.classList.add("on"); }
