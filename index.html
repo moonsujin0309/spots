@@ -868,6 +868,9 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 .ftplay svg{width:14px;height:14px}
 /* 재생 중에는 핫핑크 — '지금 돌아가는 중'이라는 신호는 라임(실행 가능)과 뜻이 다르다 */
 .ftplay.on{background:var(--point);color:var(--point-ink)}
+/* 재생 진행 지점 — 흰 점 + 라임 링. 선만 자라면 어디까지 왔는지 눈이 못 따라간다 */
+.rhead{width:13px;height:13px;border-radius:50%;background:#fff;
+  box-shadow:0 0 0 4px rgba(212,255,0,.6),0 1px 6px rgba(0,0,0,.45)}
 .ftplay::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   width:44px;height:44px}
 .ib2{width:34px;height:34px;border-radius:var(--r-m);background:var(--chip);
@@ -4486,11 +4489,30 @@ let playAnim=null;
 const PLAY_MS=2200;               // 구간 하나를 지나는 시간(1100은 너무 빨랐다 — 사용자 피드백 2026-08-19)
 const PLAY_TICK=16;
 function playLines(m,fn){ (m.__legLines||[]).forEach(ls=>(ls||[]).forEach(fn)); }
+/* ⚠️ 진행을 '정점 개수'로 나누면 안 된다 — 도로 경로는 곡선에 정점이 몰리고 직선은 정점이 거의 없다.
+   실측(s1): 12정점짜리 구간에서 최장 한 칸이 169m로 그 구간 전체의 37%였다. 정점 기준이면
+   3m 칸과 169m 칸이 같은 시간을 먹어서, 선이 안 움직이다가 순간이동하는 것처럼 보인다.
+   → 누적 거리로 잘라 그 지점을 보간한다. 정점이 2개뿐인 직선 구간도 매끄럽게 흐른다. */
+const llM=(a,b)=>{const dy=a.getLat()-b.getLat(),dx=(a.getLng()-b.getLng())*Math.cos(a.getLat()*Math.PI/180);return Math.hypot(dy,dx);};
+const llMid=(a,b,f)=>new kakao.maps.LatLng(a.getLat()+(b.getLat()-a.getLat())*f,a.getLng()+(b.getLng()-a.getLng())*f);
+function pathAt(pts,t){
+  if(!pts||pts.length<2) return {path:(pts||[]).slice(),head:pts&&pts[0]};
+  const seg=[]; let total=0;
+  for(let i=1;i<pts.length;i++){ const d=llM(pts[i-1],pts[i]); seg.push(d); total+=d; }
+  if(!total) return {path:pts.slice(),head:pts[pts.length-1]};
+  let want=total*t, out=[pts[0]], head=pts[0];
+  for(let i=0;i<seg.length;i++){
+    if(want>=seg[i]){ out.push(pts[i+1]); head=pts[i+1]; want-=seg[i]; }
+    else { head=llMid(pts[i],pts[i+1],seg[i]?want/seg[i]:0); out.push(head); break; }
+  }
+  return {path:out,head};
+}
 function playReset(m,toStart){
   if(playAnim){ clearTimeout(playAnim.t); playAnim=null; }
   if(m){
     playLines(m,o=>o.setOptions({strokeOpacity:o.__opa}));      // 흐리게 했던 걸 되돌린다
     if(m.__runner){ m.__runner.setMap(null); m.__runner=null; }
+    if(m.__head){ m.__head.setMap(null); m.__head=null; }
   }
   const b=document.getElementById("ftplay");
   if(b){ b.innerHTML=IC.play; b.setAttribute("aria-label","루트 재생"); b.classList.remove("on"); }
@@ -4508,6 +4530,11 @@ function playToggle(){
   m.__runner=new kakao.maps.Polyline({path:[],strokeColor:"#d4ff00",strokeWeight:8,
     strokeOpacity:1,strokeStyle:"solid",zIndex:70});
   m.__runner.setMap(m);
+  // 선만 자라면 '어디까지 왔나'가 안 읽힌다 — 진행 지점에 점을 하나 달아 움직임을 보이게 한다
+  const hd=document.createElement("div"); hd.innerHTML='<div class="rhead"></div>';
+  m.__head=new kakao.maps.CustomOverlay({position:(m.__legPts.find(Boolean)||[])[0],
+    content:hd,xAnchor:.5,yAnchor:.5,zIndex:75});
+  m.__head.setMap(m);
   playFocus(0);
   // 모션을 줄이는 설정이면 끝 상태만 보여주고 멈춘다
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){
@@ -4524,8 +4551,9 @@ function playToggle(){
     const pts=m.__legPts[leg]||[];
     if(pts.length<2){ leg++; t0=now; if(leg>=m.__legPts.length){ playReset(m,false); return; } playAnim.t=setTimeout(()=>step(performance.now()),PLAY_TICK); return; }
     const p=Math.min(1,(now-t0)/PLAY_MS);
-    const n=Math.max(1,Math.floor(p*(pts.length-1)));
-    m.__runner.setPath(traveled.concat(pts.slice(0,n+1)));
+    const seg=pathAt(pts,p);
+    m.__runner.setPath(traveled.concat(seg.path));
+    if(m.__head&&seg.head) m.__head.setPosition(seg.head);
     if(p>=1){
       traveled.push(...pts);
       leg++; t0=now; playFocus(Math.min(leg,m.__pins.length-1));
