@@ -4486,24 +4486,37 @@ function playView(){
    (실측: 1초에 0회) 재생이 멈춘 채로 버튼만 '멈춤'으로 남는다. setTimeout 은 그런 상황에서도
    느려질 뿐 진행은 한다. 1.1초짜리 선 애니메이션이라 16ms 타이머로도 부드러움 차이가 없다. */
 let playAnim=null;
-const PLAY_MS=2200;               // 구간 하나를 지나는 시간(1100은 너무 빨랐다 — 사용자 피드백 2026-08-19)
-const PLAY_TICK=16;
+/* 재생 속도는 '구간당 시간'이 아니라 '속도'로 잡는다.
+   ⚠️ 예전엔 구간마다 같은 시간(2200ms)을 줬다 — 1632m 구간과 452m 구간이 같은 시간을 먹으니
+   긴 구간에서 3.6배 빨라 보였다(사용자 피드백 2026-08-19). 전체 길이에 비례해 시간을 나눈다. */
+const PLAY_SPEED=330;             // m/s — 지도 위 이동 속도(구간 길이와 무관하게 일정)
+const PLAY_MIN=4000, PLAY_MAX=16000;   // 너무 짧은/긴 루트도 볼 만한 시간에 들어오게 가둔다
+const PLAY_HOLD=700;              // 스팟에 도착해서 잠시 머무는 시간
+/* ⚠️ 틱을 16ms(60fps)로 두면 폰에서 탭이 밀린다 — 매 틱 setPath + setCenter가 도는데
+   거기에 구간 길이 재계산까지 얹히면 메인 스레드가 포화된다. 33ms(30fps)로 낮추고
+   길이는 재생 시작할 때 한 번만 계산한다(legMeta). 느린 팬이라 30fps로도 매끄럽다. */
+const PLAY_TICK=33;
 function playLines(m,fn){ (m.__legLines||[]).forEach(ls=>(ls||[]).forEach(fn)); }
 /* ⚠️ 진행을 '정점 개수'로 나누면 안 된다 — 도로 경로는 곡선에 정점이 몰리고 직선은 정점이 거의 없다.
    실측(s1): 12정점짜리 구간에서 최장 한 칸이 169m로 그 구간 전체의 37%였다. 정점 기준이면
    3m 칸과 169m 칸이 같은 시간을 먹어서, 선이 안 움직이다가 순간이동하는 것처럼 보인다.
    → 누적 거리로 잘라 그 지점을 보간한다. 정점이 2개뿐인 직선 구간도 매끄럽게 흐른다. */
-const llM=(a,b)=>{const dy=a.getLat()-b.getLat(),dx=(a.getLng()-b.getLng())*Math.cos(a.getLat()*Math.PI/180);return Math.hypot(dy,dx);};
+const llM=(a,b)=>{const dy=a.getLat()-b.getLat(),dx=(a.getLng()-b.getLng())*Math.cos(a.getLat()*Math.PI/180);return Math.hypot(dy,dx)*111320;};
 const llMid=(a,b,f)=>new kakao.maps.LatLng(a.getLat()+(b.getLat()-a.getLat())*f,a.getLng()+(b.getLng()-a.getLng())*f);
-function pathAt(pts,t){
-  if(!pts||pts.length<2) return {path:(pts||[]).slice(),head:pts&&pts[0]};
+// 구간 길이는 재생 시작 때 한 번만 잰다 — 매 틱 다시 재면 폰에서 탭이 밀린다
+function legMeta(pts){
   const seg=[]; let total=0;
-  for(let i=1;i<pts.length;i++){ const d=llM(pts[i-1],pts[i]); seg.push(d); total+=d; }
-  if(!total) return {path:pts.slice(),head:pts[pts.length-1]};
-  let want=total*t, out=[pts[0]], head=pts[0];
-  for(let i=0;i<seg.length;i++){
-    if(want>=seg[i]){ out.push(pts[i+1]); head=pts[i+1]; want-=seg[i]; }
-    else { head=llMid(pts[i],pts[i+1],seg[i]?want/seg[i]:0); out.push(head); break; }
+  for(let i=1;i<(pts||[]).length;i++){ const d=llM(pts[i-1],pts[i]); seg.push(d); total+=d; }
+  return {pts:pts||[],seg,total,ms:0};
+}
+function pathAt(L,t){
+  const pts=L.pts;
+  if(pts.length<2) return {path:pts.slice(),head:pts[0]};
+  if(!L.total) return {path:pts.slice(),head:pts[pts.length-1]};
+  let want=L.total*t, out=[pts[0]], head=pts[0];
+  for(let i=0;i<L.seg.length;i++){
+    if(want>=L.seg[i]){ out.push(pts[i+1]); head=pts[i+1]; want-=L.seg[i]; }
+    else { head=llMid(pts[i],pts[i+1],L.seg[i]?want/L.seg[i]:0); out.push(head); break; }
   }
   return {path:out,head};
 }
@@ -4522,8 +4535,12 @@ function playToggle(){
   const m=LM.pmap;
   if(!m){ toast("지도를 불러오지 못해 재생할 수 없어요"); return; }
   if(playAnim){ playReset(m,true); return; }        // 멈춤 → 끝내고 처음으로
-  const legs=(m.__legPts||[]).filter(Boolean);
-  if(!legs.length){ toast("그릴 구간이 없어요"); return; }
+  const metas=(m.__legPts||[]).map(legMeta).filter(L=>L.pts.length>=2&&L.total>0);
+  if(!metas.length){ toast("그릴 구간이 없어요"); return; }
+  // 속도를 고정하고 시간을 길이에서 뽑는다. 전체는 PLAY_MIN~PLAY_MAX 안으로 가둔다
+  const grand=metas.reduce((s,L)=>s+L.total,0);
+  const moveMs=Math.min(PLAY_MAX,Math.max(PLAY_MIN,grand/PLAY_SPEED*1000));
+  metas.forEach(L=>L.ms=moveMs*(L.total/grand));
   const b=document.getElementById("ftplay");
   if(b){ b.innerHTML=IC.pause; b.setAttribute("aria-label","재생 멈추기"); b.classList.add("on"); }
   playLines(m,o=>o.setOptions({strokeOpacity:o.__opa*0.22}));   // 기본 선은 반투명으로 눕힌다
@@ -4532,40 +4549,45 @@ function playToggle(){
   m.__runner.setMap(m);
   // 선만 자라면 '어디까지 왔나'가 안 읽힌다 — 진행 지점에 점을 하나 달아 움직임을 보이게 한다
   const hd=document.createElement("div"); hd.innerHTML='<div class="rhead"></div>';
-  m.__head=new kakao.maps.CustomOverlay({position:(m.__legPts.find(Boolean)||[])[0],
-    content:hd,xAnchor:.5,yAnchor:.5,zIndex:75});
+  m.__head=new kakao.maps.CustomOverlay({position:metas[0].pts[0],content:hd,xAnchor:.5,yAnchor:.5,zIndex:75});
   m.__head.setMap(m);
   playFocus(0);
   // 모션을 줄이는 설정이면 끝 상태만 보여주고 멈춘다
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){
-    const all=[]; (m.__legPts||[]).forEach(pp=>(pp||[]).forEach(q=>all.push(q)));
-    m.__runner.setPath(all); playFocus((m.__legPts||[]).filter(Boolean).length);
+    const all=[]; metas.forEach(L=>L.pts.forEach(q=>all.push(q)));
+    m.__runner.setPath(all); playFocus(metas.length);
     setTimeout(()=>playReset(m,false),700); return;
   }
   const traveled=[];
-  let leg=0, t0=performance.now();
+  let leg=0, hold=false, t0=performance.now();
   playAnim={t:0};
   const step=now=>{
     // 화면이 바뀌었거나 지도가 다시 만들어졌으면 조용히 끝낸다
     if(S.view!=="play"||LM.pmap!==m){ playReset(null,false); return; }
-    const pts=m.__legPts[leg]||[];
-    if(pts.length<2){ leg++; t0=now; if(leg>=m.__legPts.length){ playReset(m,false); return; } playAnim.t=setTimeout(()=>step(performance.now()),PLAY_TICK); return; }
-    const p=Math.min(1,(now-t0)/PLAY_MS);
-    const seg=pathAt(pts,p);
-    m.__runner.setPath(traveled.concat(seg.path));
-    if(seg.head){
-      if(m.__head) m.__head.setPosition(seg.head);
-      m.setCenter(seg.head);   // panTo는 자체 애니메이션이라 매 틱 부르면 서로 밀린다 — 즉시 이동으로 따라간다
-    }
-    if(p>=1){
-      traveled.push(...pts);
-      leg++; t0=now; playFocus(Math.min(leg,m.__pins.length-1));
-      if(leg>=m.__legPts.length){ setTimeout(()=>playReset(m,false),900); return; }
+    const L=metas[leg];
+    if(hold){                                  // 스팟에 도착해 잠시 머무는 중
+      if(now-t0>=PLAY_HOLD){
+        leg++; hold=false; t0=now;
+        if(leg>=metas.length){ setTimeout(()=>playReset(m,false),600); return; }
+      }
+    }else{
+      const p=Math.min(1,(now-t0)/(L.ms||1));
+      const seg=pathAt(L,p);
+      m.__runner.setPath(traveled.concat(seg.path));
+      if(seg.head){
+        if(m.__head) m.__head.setPosition(seg.head);
+        m.setCenter(seg.head);   // panTo는 자체 애니메이션이라 매 틱 부르면 서로 밀린다 — 즉시 이동으로 따라간다
+      }
+      if(p>=1){
+        traveled.push(...L.pts);
+        hold=true; t0=now; playFocus(Math.min(leg+1,m.__pins.length-1));
+      }
     }
     playAnim.t=setTimeout(()=>step(performance.now()),PLAY_TICK);
   };
   playAnim.t=setTimeout(()=>step(performance.now()),PLAY_TICK);
 }
+
 /* 지도를 다시 만들지 않고 강조만 옮긴다. 새로 만들면 화면이 '툭' 끊긴다. */
 function playFocus(k){
   S.playIdx=k;
