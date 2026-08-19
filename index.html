@@ -1022,6 +1022,9 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 /* 좋아요 팝 — 눌린 게 안 보인다는 피드백(#31). 하트만 한 번 튕긴다.
    prefers-reduced-motion이면 위 전역 규칙이 애니메이션을 꺼준다 */
 @keyframes likepop{0%{transform:scale(1)}45%{transform:scale(1.4)}100%{transform:scale(1)}}
+/* 재생 중 스팟 도착 — 핀을 한 번 튕긴다. 0.2초 정지만으로는 들른 게 안 읽힌다 */
+@keyframes pinpop{0%{transform:scale(1)}38%{transform:scale(1.26)}100%{transform:scale(1)}}
+.lpin.pop{animation:pinpop .36s var(--ease)}
 .likepop svg{animation:likepop .32s var(--ease)}
 /* 끝맺음 — 캘린더 담기와 완주 */
 .pend{margin:12px 24px 0;display:flex;flex-direction:column;gap:8px}
@@ -4491,12 +4494,20 @@ let playAnim=null;
    긴 구간에서 3.6배 빨라 보였다(사용자 피드백 2026-08-19). 전체 길이에 비례해 시간을 나눈다. */
 const PLAY_SPEED=330;             // m/s — 지도 위 이동 속도(구간 길이와 무관하게 일정)
 const PLAY_MIN=4000, PLAY_MAX=16000;   // 너무 짧은/긴 루트도 볼 만한 시간에 들어오게 가둔다
-const PLAY_HOLD=700;              // 스팟에 도착해서 잠시 머무는 시간
+const PLAY_HOLD=200;              // 스팟에 도착해서 잠시 머무는 시간(길면 늘어진다 — 대신 핀을 튕겨 사건을 만든다)
 /* ⚠️ 틱을 16ms(60fps)로 두면 폰에서 탭이 밀린다 — 매 틱 setPath + setCenter가 도는데
    거기에 구간 길이 재계산까지 얹히면 메인 스레드가 포화된다. 33ms(30fps)로 낮추고
    길이는 재생 시작할 때 한 번만 계산한다(legMeta). 느린 팬이라 30fps로도 매끄럽다. */
 const PLAY_TICK=33;
 function playLines(m,fn){ (m.__legLines||[]).forEach(ls=>(ls||[]).forEach(fn)); }
+/* 0.2초 정지만으로는 '여기 들렀다'가 안 읽힌다 — 시간만 멈추면 그냥 느려진 걸로 보인다.
+   도착하는 순간 핀을 한 번 튕겨서 '사건'을 만든다. prefers-reduced-motion이면 전역 규칙이 꺼준다. */
+function playPop(m,k){
+  const o=m.__pins&&m.__pins[k]; if(!o) return;
+  const el=o.getContent().querySelector(".lpin"); if(!el) return;
+  el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop");   // 리플로우로 애니메이션을 다시 태운다
+  setTimeout(()=>el.classList.remove("pop"),420);
+}
 /* ⚠️ 진행을 '정점 개수'로 나누면 안 된다 — 도로 경로는 곡선에 정점이 몰리고 직선은 정점이 거의 없다.
    실측(s1): 12정점짜리 구간에서 최장 한 칸이 169m로 그 구간 전체의 37%였다. 정점 기준이면
    3m 칸과 169m 칸이 같은 시간을 먹어서, 선이 안 움직이다가 순간이동하는 것처럼 보인다.
@@ -4580,7 +4591,9 @@ function playToggle(){
       }
       if(p>=1){
         traveled.push(...L.pts);
-        hold=true; t0=now; playFocus(Math.min(leg+1,m.__pins.length-1));
+        hold=true; t0=now;
+        const k=Math.min(leg+1,m.__pins.length-1);
+        playFocus(k); playPop(m,k);
       }
     }
     playAnim.t=setTimeout(()=>step(performance.now()),PLAY_TICK);
