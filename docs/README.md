@@ -10,6 +10,8 @@
 | [루트-작성-지침서.md](./루트-작성-지침서.md) | 알바 작성자용. 규격 · 코멘트 기준 · 반려 기준 · 계약 사항 |
 | [route-template.csv](./route-template.csv) | 루트 제출 양식 (한 줄 = 스팟 하나) |
 | [기존루트-개선대상.md](./기존루트-개선대상.md) | 자동 검수로 걸러낸 기존 루트 81건 — 알바 첫 작업 목록 |
+| [이용약관-초안.md](./이용약관-초안.md) | 서비스 약관 초안 (검토 필요) |
+| [개인정보처리방침-초안.md](./개인정보처리방침-초안.md) | 처리방침 초안 (검토 필요) |
 | `seed.sql` | 생성물. 커밋하지 않는다 — `tools/seed-export.js` 로 언제든 다시 뽑는다 |
 
 런칭 체크리스트(실행 순서 · 법적 사항 · 사업 판단)는 이 저장소가 public 이므로 로컬에만 둔다.
@@ -22,13 +24,33 @@ node tools/seed-export.js --official <공식계정_uuid>
 
 # 알바 제출물 검수 + SQL 변환 (반려 있으면 종료코드 1)
 node tools/route-import.js 제출물.csv --author <작성자_uuid>
+
+# 사진 50장을 base64 에서 파일로 빼낸다 (index.html 2.4MB → 448KB)
+node tools/photo-extract.js                        # 추출만
+node tools/photo-extract.js --apply <사진 주소>     # 추출 + index.html 교체
 ```
 
 두 스크립트 모두 `index.html`을 진실 소스로 읽는다. 데이터를 고칠 일이 있으면
 `index.html`을 고치고 스크립트를 다시 돌린다 — 생성된 SQL을 손으로 고치지 않는다.
+
+## 서버 연동 켜는 법
+
+`index.html` 의 `SB_URL` / `SB_ANON` 두 줄에 Supabase 값을 넣으면 켜진다.
+비어 있으면 아무 요청도 보내지 않고 지금까지처럼 동작한다 — 카카오 키가 없을 때
+Photon 으로 넘어가는 것과 같은 방식이다.
+
+```js
+const SB_URL  = "https://xxxxxxxx.supabase.co";
+const SB_ANON = "eyJhbGciOi...";     // anon public 키. RLS 가 막으므로 노출돼도 된다
+```
+
+⚠️ service_role 키는 절대 넣지 말 것. 공개 저장소라 즉시 노출된다.
 
 ## 검증 상태 (2026-09-01)
 
 - `schema.sql` — PostgreSQL 16에 오류 없이 적용됨 (Supabase `auth` 스키마는 스텁으로 대체)
 - `seed.sql` — 지역 24 · 장소 191 · 루트 136 · 스팟 560 적재 확인, 참조 무결성 이상 없음, 재실행 멱등
 - `route-import.js` — 시드 136개 전량 검수 통과(규칙 오류 0), 산출 SQL이 스키마에 적재됨
+- 서버 연동 — 설정이 빈 상태에서 앱이 예전과 동일하게 동작함(JS 예외 0), 서버를 켠 상태의
+  로그인·차단·저장 분기를 실제 브라우저에서 확인
+- `photo-extract.js` — 사본에 `--apply` 적용 후 사진 44장 전부 로드, 예외 0

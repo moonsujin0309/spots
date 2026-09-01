@@ -12,5 +12,8 @@
 !docs/route-template.csv
 !docs/루트-작성-지침서.md
 !docs/기존루트-개선대상.md
+# 약관·처리방침은 어차피 서비스에 게시되는 문서다
+!docs/이용약관-초안.md
+!docs/개인정보처리방침-초안.md
 !tools/
 !tools/*.js
