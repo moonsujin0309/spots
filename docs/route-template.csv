@@ -1,0 +1,5 @@
+route_key,title,mood,note,area_id,transport,people,seq,place_id,place_name,place_cat,lat,lng,cost_lo,cost_hi,stay_min,comment
+예시-성수-01,서울숲만 걸어도 반나절,내리자마자 걷기 시작해서 끝까지 걸어요,서울숲역 4번 출구에서 시작. 그늘이 적은 편이라 여름엔 모자가 필요해요,seongsu,transit,2,0,seoulforest,,,,,,,70,서울숲역 4번 출구 바로 앞이에요. 사슴방사장 끼고 한 바퀴가 딱 40분
+예시-성수-01,,,,,,,1,understand,,,,,,,50,컨테이너 116개를 쌓아 만든 골목이에요. 2층 테라스가 앉기 좋아요
+예시-성수-01,,,,,,,2,yeonbang,,,,,,,60,1층 소품샵 3층 옥상 카페예요. 사진은 옥상에서 찍고 내려오면 돼요
+예시-성수-01,,,,,,,3,onion,,,,,,,60,공장 천장을 그대로 둔 곳이에요. 조용히 얘기하려면 2층 구석 자리요

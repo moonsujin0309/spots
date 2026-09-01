@@ -1,5 +1,16 @@
-# 공개 저장소에는 프로토타입(index.html)만 올린다.
-# 기획·리서치 문서(STATUS·설계서·리서치 등)와 작업 파일은 전부 로컬에만 둔다.
+# 공개 저장소에는 프로토타입(index.html)과 아래 예외만 올린다.
+# 기획·리서치 문서(STATUS·설계서·런칭 체크리스트·리서치 등)와 작업 파일은 전부 로컬에만 둔다.
 *
 !index.html
 !.gitignore
+
+# 런칭 준비 — 코드(스키마·도구)와 작성자용 지침만 올린다.
+# 사업 판단이 담긴 문서와 생성물(seed.sql)은 위 원칙대로 로컬에 남긴다.
+!docs/
+!docs/README.md
+!docs/schema.sql
+!docs/route-template.csv
+!docs/루트-작성-지침서.md
+!docs/기존루트-개선대상.md
+!tools/
+!tools/*.js
