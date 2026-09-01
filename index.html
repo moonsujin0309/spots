@@ -797,6 +797,22 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   font-weight:700;color:var(--sub);background:var(--chip);border:1px solid var(--border);
   border-radius:999px;padding:6px 12px}
 .memoadd svg{width:12px;height:12px}
+/* ── 사진 올리기 ── */
+.phrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:7px}
+.phth{position:relative;width:52px;height:52px;border-radius:var(--r-s);overflow:hidden;
+  border:1px solid var(--img-line);flex:0 0 auto}
+.phth img{width:100%;height:100%;object-fit:cover;display:block}
+.phth .rmx{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;
+  background:var(--veil);color:var(--veil-fg);font-size:10px;line-height:18px;text-align:center;padding:0}
+.phadd{display:inline-flex;align-items:center;gap:4px;height:52px;padding:0 12px;
+  border:1px dashed var(--border);border-radius:var(--r-s);font-size:12px;font-weight:700;color:var(--sub)}
+.phadd svg{width:13px;height:13px}
+/* ── 탈퇴 ── */
+.rpt.wd{border-color:var(--warn)}
+.wdl{margin:9px 0 0;padding-left:18px;font-size:13px;font-weight:600;line-height:1.9;color:var(--fg)}
+.wdl b{color:var(--warn)}
+.mini.wdgo{background:var(--warn);color:var(--warn-ink);font-weight:800}
+.mini.wdgo:disabled{opacity:.5}
 /* ── 제보 · 신고 ──
    별도 모달을 만들지 않고 상태로 그 자리에 편다. 스팟 메모(.memo)와 같은 방식이다 —
    반쯤 잠긴 손으로 쓰는 화면이 아니라 오히려 밖에서 급히 쓰는 화면이라, 페이지를
@@ -1159,6 +1175,9 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 </style>
 </head>
 <body>
+<!-- 사진 고르기 — 화면 어디서든 pickPhoto(스팟키) 로 연다. capture 를 안 붙여야
+     카메라와 앨범을 둘 다 고를 수 있다(붙이면 기기에 따라 카메라만 열린다). -->
+<input type="file" id="photoin" accept="image/*" multiple hidden onchange="onPhotoPick(this)">
 <div id="app"></div>
 <div class="tabs" id="tabs"></div>
 <div id="toast"></div>
@@ -2926,7 +2945,9 @@ const S={view:"home",routeId:null,placeId:null,listKey:null,
   myRoutes:[],                // 내가 만들거나 리그램한 루트
   budLo:0,budHi:30,weather:"",ptab:"routes",placeCat:"",placeQ:"",placeN:40,
   stack:[],scrollMem:{},memos:{},memoEdit:null,reroutes:new Set(),
-  reportFor:null,reportKind:"",reportBody:""};   // 제보·신고 폼
+  reportFor:null,reportKind:"",reportBody:"",   // 제보·신고 폼
+  blocks:new Set(),          // 차단한 작성자 이름 — 신고와 달리 나에게만 적용된다
+  withdraw:false};
 const iso=()=>`${S.date}T${S.time}:00`;
 /* 다녀온 곳은 브라우저에 남긴다 — 안 그러면 '다녀왔어요'가 새로고침 한 번에 지워져 버튼이 죽는다.
    저장하는 건 **장소 키뿐**이다. 좌표·주소는 안 넣는다(3절 제약 1) — 다녀온 표시는 지도에
@@ -4132,8 +4153,6 @@ function onTitle(v){
   const b=document.getElementById("previewBtn");
   if(b) b.disabled=!(S.draft.stops.length>=2&&n>=TITLE_MIN);
 }
-function delPhoto(p){ if(S.draft.photos) delete S.draft.photos[p]; render(); }
-const photoCount=()=>Object.values(S.draft.photos||{}).reduce((a,b)=>a+b,0);
 /* 초안을 루트 객체로. 미리보기와 저장이 같은 모양을 쓰게 한다. */
 function draftRoute(id){
   const d=S.draft;
@@ -4247,8 +4266,10 @@ function publish(){
   go("route",id);
   /* 서버가 켜져 있으면 올린다. 실패해도 화면에는 남는다 — 만든 걸 눈앞에서 지우지 않는다.
      성공하면 route id 가 서버 id 로 바뀌어 공유 링크가 남에게도 열린다. */
-  if(dbOn()&&dbMe()) dbPublish(d,id).then(sid=>{
-    if(sid) render(); else toast("올리지 못했어요. 이 기기에만 저장돼 있어요");
+  if(dbOn()&&dbMe()) dbPublish(d,id).then(async sid=>{
+    if(!sid){ toast("올리지 못했어요. 이 기기에만 저장돼 있어요"); return; }
+    if(photoCount()) await dbUploadPhotos(sid, d.photos);
+    render();
   });
 }
 let myN=0;
@@ -4340,7 +4361,9 @@ function authorView(){
           <div style="font-size:12px;color:var(--sub);margin-top:5px;font-weight:600">
             루트 ${mine.length} · 받은 리루트 ${totalRegram}</div></div></div>
       <button class="big" style="width:100%;margin:12px 0 0" onclick="toggleFollow('${name}')">
-        ${isFollowing(name)?"팔로우 중":"팔로우"}</button></div>
+        ${isFollowing(name)?"팔로우 중":"팔로우"}</button>
+      <button class="rptopen flat" style="padding:12px 0 2px" onclick="toggleBlock('${name}')">
+        ${isBlocked(name)?"차단 풀기":"이 사람 루트 그만 보기"}</button></div>
     <div class="sec"><div><h2>루트 ${mine.length}</h2></div></div>
     <div class="col">${mine.map((r,i)=>routeCard(r,"wide",i)).join("")}</div>`;
 }
@@ -4377,7 +4400,8 @@ function stopRows(){
                 ${CATS.map(c=>`<option ${v.c===c?"selected":""}>${c}</option>`).join("")}</select>`:""}
             ${v.approx?`<button class="flat photo" onclick="S.q='${v.n}';S.fixKey='${s.p}';go('pick')">위치 잡기</button>`:""}
             <a class="photo" href="${kakaoPlaceURL(v)}" target="_blank" rel="noopener">지도</a>
-          </div></div>
+          </div>
+          ${photoRow(s.p)}</div>
         <div class="ord">
           <span class="grip" onpointerdown="dragStart(event,${i})">${IC.grip}</span>
           <button ${i===0?"disabled":""} onclick="swapStop(${i},-1)">↑</button>
@@ -4388,11 +4412,6 @@ function stopRows(){
 const swapStop=(i,k)=>moveStop(i,k);
 function removeStop(i){ const p=S.draft.stops[i].p; S.draft.stops.splice(i,1);
   if(S.draft.photos) delete S.draft.photos[p]; render(); }
-function addPhoto(p){
-  S.draft.photos=S.draft.photos||{};
-  S.draft.photos[p]=(S.draft.photos[p]||0)+1;
-  toast("사진을 넣었어요 (프로토타입이라 카메라는 안 열려요)"); render();
-}
 function setPlan(v){
   if(v===1 && photoCount()>0){ toast("사진을 모두 지워야 계획으로 되돌릴 수 있어요"); return; }
   S.draft.plan=v; render();
@@ -5156,9 +5175,16 @@ function profileView(){
           <button class="flat ${theme()==="light"?"on":""}" onclick="setTheme('light')">밝게</button>
           <button class="flat ${theme()==="dark"?"on":""}" onclick="setTheme('dark')">어둡게</button>
         </span></div>
+      ${S.blocks.size?`<div class="pmi" style="align-items:flex-start">${IC.user}
+        <span class="pmt">차단한 사람 ${S.blocks.size}</span></div>
+        <div class="chips" style="padding:0 0 10px">
+          ${[...S.blocks].map(n=>`<button class="chip2 one flat" onclick="toggleBlock('${n}')">
+            ${n} · 풀기</button>`).join("")}</div>`:""}
       ${dbMe()?`<button class="pmi flat" style="width:100%" onclick="signOut()">
         ${IC.user}<span class="pmt">로그아웃</span></button>`:""}
     </div>
+    ${dbMe()?(S.withdraw?withdrawCard()
+      :`<button class="rptopen flat" onclick="openWithdraw()">회원 탈퇴</button>`):""}
     <div class="pfoot">스팟스 프로토타입 · 지도와 장소 검색은 카카오<br>사진 출처: 위키미디어 공용</div>
     <div style="height:20px"></div>`;
 }
@@ -5682,16 +5708,18 @@ async function dbLoadRoutes(){
 /* 저장함·좋아요·팔로우·다녀온 곳을 서버에서 되돌려 받는다.
    지금까지는 새로고침 한 번에 전부 사라지던 값들이다. */
 async function dbLoadMyState(){
-  const [sv, lk, fl, vs] = await Promise.all([
+  const [sv, lk, fl, vs, bk] = await Promise.all([
     sb.from("route_saves").select("route_id,folder:folders(name)").eq("user_id",ME.id),
     sb.from("place_likes").select("place_id").eq("user_id",ME.id),
     sb.from("follows").select("followee:profiles!follows_followee_id_fkey(id,nick)").eq("follower_id",ME.id),
     sb.from("visits").select("place_id").eq("user_id",ME.id),
+    sb.from("blocks").select("blocked:profiles!blocks_blocked_id_fkey(id,nick)").eq("blocker_id",ME.id),
   ]);
   (sv.data||[]).forEach(r=>{ S.saved.add(r.route_id); if(r.folder) S.folderOf[r.route_id]=r.folder.name; });
   (lk.data||[]).forEach(r=>{ if(PLACES[r.place_id]) S.likes.add(r.place_id); });
   (fl.data||[]).forEach(r=>{ if(r.followee){ S.follows.add(r.followee.nick); AUTHOR_ID[r.followee.nick]=r.followee.id; } });
   (vs.data||[]).forEach(r=>{ if(PLACES[r.place_id]) S.visited.add(r.place_id); });
+  (bk.data||[]).forEach(r=>{ if(r.blocked){ S.blocks.add(r.blocked.nick); AUTHOR_ID[r.blocked.nick]=r.blocked.id; } });
   saveVisited();
 }
 
@@ -5842,6 +5870,161 @@ async function submitReport(){
     ? await dbReportPlace(f.id, S.reportKind, S.reportBody)
     : await dbReportContent(f.type, f.id, S.reportKind, S.reportBody);
   if(ok) closeReport();
+}
+
+/* ═════ 사진 올리기 ═════
+   원본을 그대로 올리면 4MB 짜리가 그대로 들어와 목록 화면이 죽는다.
+   브라우저에서 미리 줄여서 올린다 — 긴 변 1080px, JPEG 품질 0.82.
+   서버가 꺼져 있어도 고르고 미리보기까지는 된다. 올라가는 건 게시할 때다. */
+const PHOTO_MAX_EDGE = 1080, PHOTO_Q = 0.82, PHOTO_PER_STOP = 3;
+
+function pickPhoto(p){
+  const el = document.getElementById("photoin");
+  if(!el) return;
+  el.dataset.place = p;
+  el.value = "";        // 같은 파일을 다시 골라도 change 가 뜨게
+  el.click();
+}
+
+async function onPhotoPick(input){
+  const p = input.dataset.place;
+  const files = [...input.files].slice(0, PHOTO_PER_STOP);
+  if(!p || !files.length) return;
+  S.draft.photos = S.draft.photos || {};
+  const cur = S.draft.photos[p] || [];
+  const room = PHOTO_PER_STOP - cur.length;
+  if(room <= 0){ toast(`스팟당 사진은 ${PHOTO_PER_STOP}장까지예요`); return; }
+  toast("사진을 넣는 중이에요");
+  for(const f of files.slice(0, room)){
+    try{ cur.push(await shrinkImage(f)); }
+    catch(_){ toast("이 사진은 못 읽었어요"); }
+  }
+  S.draft.photos[p] = cur;
+  render();
+}
+
+/* 긴 변을 기준으로 줄인다. 원본이 이미 작으면 그대로 둔다(늘리면 화질만 나빠진다). */
+function shrinkImage(file){
+  return new Promise((ok, no)=>{
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = ()=>{
+      const scale = Math.min(1, PHOTO_MAX_EDGE / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(img, 0, 0, w, h);
+      cv.toBlob(b=>{
+        URL.revokeObjectURL(url);
+        b ? ok({ url: cv.toDataURL("image/jpeg", 0.6), blob: b, w, h }) : no();
+      }, "image/jpeg", PHOTO_Q);
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); no(); };
+    img.src = url;
+  });
+}
+
+function delPhotoAt(p, i){
+  const a = (S.draft.photos||{})[p]; if(!a) return;
+  a.splice(i,1); if(!a.length) delete S.draft.photos[p];
+  render();
+}
+const photosOf = p => (S.draft.photos||{})[p] || [];
+const photoCount = () => Object.values(S.draft.photos||{}).reduce((a,b)=>a+b.length,0);
+
+/* 스팟 카드 안의 사진 줄 — 버튼 하나와 썸네일들 */
+function photoRow(p){
+  const list = photosOf(p);
+  return `<div class="phrow">
+    ${list.map((x,i)=>`<span class="phth"><img src="${x.url}" alt="">
+      <button class="rmx" aria-label="사진 빼기" onclick="delPhotoAt('${p}',${i})">✕</button></span>`).join("")}
+    ${list.length < PHOTO_PER_STOP
+      ? `<button class="phadd flat" onclick="pickPhoto('${p}')">${IC.pen}사진</button>` : ""}</div>`;
+}
+
+/* 게시할 때 한꺼번에 올린다. 실패한 장은 건너뛴다 — 사진 한 장 때문에 루트를 잃지 않는다. */
+async function dbUploadPhotos(routeId, photos){
+  if(!dbOn() || !ME || !photos) return 0;
+  let n = 0;
+  for(const [placeId, list] of Object.entries(photos)){
+    for(let i = 0; i < list.length; i++){
+      const path = `${ME.id}/${routeId}/${placeId}-${i}.jpg`;
+      const { error } = await sb.storage.from("route-photos")
+        .upload(path, list[i].blob, { contentType:"image/jpeg", upsert:true });
+      if(error) continue;
+      const { error:e2 } = await sb.from("route_photos")
+        .insert({ route_id:routeId, place_id:placeId, seq:i, path });
+      if(!e2) n++;
+    }
+  }
+  return n;
+}
+
+/* ═════ 차단 ═════
+   신고와 다르다. 신고는 운영자가 판단할 때까지 시간이 걸리고 모두에게 적용되지만,
+   차단은 내가 지금 정하고 나에게만 적용된다. 둘 다 있어야 한다 —
+   판단을 기다리는 동안에도 그 사람 루트가 홈에 계속 뜨면 아무 의미가 없다. */
+const isBlocked = n => S.blocks.has(n);
+
+async function toggleBlock(nick){
+  if(!needLogin("차단하")) return;
+  const on = !isBlocked(nick);
+  on ? S.blocks.add(nick) : S.blocks.delete(nick);
+  if(on){
+    /* 로컬 목록에서도 즉시 걷어낸다. 서버는 RLS 가 막아 다음 로드부터 안 오지만,
+       이미 받아 온 것은 화면에 남아 "차단했는데 그대로네"가 된다. */
+    for(let i = ROUTES.length - 1; i >= 0; i--) if(ROUTES[i].by === nick) ROUTES.splice(i,1);
+    S.follows.delete(nick);
+    if(S.view === "author" && S.authorId === nick) back();
+  }
+  toast(on ? `${nick}님의 루트를 더 보지 않아요` : `${nick}님 차단을 풀었어요`);
+  const id = AUTHOR_ID[nick];
+  if(dbOn() && ME && id){
+    const q = on
+      ? sb.from("blocks").upsert({ blocker_id:ME.id, blocked_id:id }, { onConflict:"blocker_id,blocked_id" })
+      : sb.from("blocks").delete().eq("blocker_id",ME.id).eq("blocked_id",id);
+    q.then(({error})=>{ if(error){ on?S.blocks.delete(nick):S.blocks.add(nick); render(); } });
+  }
+  render();
+}
+
+/* ═════ 회원 탈퇴 ═════
+   개인정보 보호법상 필수이고 되돌릴 수 없다. 그래서 무엇이 사라지는지 숫자로 먼저 보여준다.
+   실제 삭제는 DB 함수 delete_my_account() 하나가 한다 — 클라이언트가 직접 지우게 하면
+   RLS 로 막을 수 없는 구멍이 생긴다. */
+function openWithdraw(){ S.withdraw = true; render(); }
+function closeWithdraw(){ S.withdraw = false; render(); }
+
+async function withdrawConfirm(){
+  if(!dbOn() || !ME) return;
+  const btn = document.getElementById("wdbtn");
+  if(btn){ btn.disabled = true; btn.textContent = "처리 중…"; }
+  const { error } = await sb.rpc("delete_my_account");
+  if(error){
+    if(btn){ btn.disabled = false; btn.textContent = "탈퇴합니다"; }
+    toast("탈퇴 처리가 안 됐어요. 잠시 뒤 다시 해주세요");
+    return;
+  }
+  try{ await sb.auth.signOut(); }catch(_){}
+  try{ localStorage.removeItem(VKEY); }catch(_){}
+  location.replace(location.origin + location.pathname);
+}
+
+function withdrawCard(){
+  const mine = myRoutes().length;
+  return `<div class="rpt wd rise">
+    <h3>정말 탈퇴하시겠어요?</h3>
+    <div class="rsub">되돌릴 수 없어요. 아래가 모두 사라집니다.</div>
+    <ul class="wdl">
+      <li>내가 만든 루트 <b>${mine}</b>개${mine?" (사진 포함)":""}</li>
+      <li>저장한 루트 <b>${S.saved.size}</b>개 · 폴더 <b>${S.folders.length}</b>개</li>
+      <li>좋아요 <b>${S.likes.size}</b>개 · 팔로우 <b>${S.follows.size}</b>명</li>
+      <li>다녀온 곳 표시 <b>${S.visited.size}</b>곳</li>
+    </ul>
+    <div class="rsub" style="margin-top:8px">다른 분이 이어 만든 루트는 그분 것으로 남고,
+      거기서 제 이름과 출처 표시만 없어져요.</div>
+    <div class="rptact">
+      <button class="mini flat" onclick="closeWithdraw()">그만두기</button>
+      <button class="mini wdgo" id="wdbtn" onclick="withdrawConfirm()">탈퇴합니다</button></div></div>`;
 }
 
 /* ═════ 렌더 ═════ */

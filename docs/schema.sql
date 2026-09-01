@@ -59,7 +59,7 @@ create table places (
   kakao_place_id text,                         -- 있으면 카카오 장소 상세로 보낸다
   no_kakao    boolean not null default false,  -- 카카오 검색으로 안 찾아지는 곳(골목·산책로 등)
 
-  created_by  uuid references profiles,        -- null = 운영 시드, 값 있음 = 유저가 담은 커스텀
+  created_by  uuid references profiles on delete set null,  -- null = 운영 시드 또는 담은 사람이 탈퇴
   approx      boolean not null default false,  -- 좌표가 대략치 (addQuick 으로 담긴 경우)
   status      text not null default 'active'
               check (status in ('active','pending','closed','hidden')),
@@ -67,7 +67,7 @@ create table places (
 
   -- 유저 제보 기반 갱신의 축. 오래된 순으로 뽑아 알바팀이 돌린다.
   verified_at timestamptz,
-  verified_by uuid references profiles,
+  verified_by uuid references profiles on delete set null,
 
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
@@ -81,7 +81,7 @@ create index on places using gin (to_tsvector('simple', name));
 -- ════════════════════════════════════════════════════════════
 create table routes (
   id          uuid primary key default gen_random_uuid(),
-  author_id   uuid not null references profiles,
+  author_id   uuid not null references profiles on delete cascade,
   area_id     text not null references areas,
   title       text not null check (char_length(title) between 4 and 40),
   mood        text,                            -- 한 줄 요약
@@ -92,7 +92,9 @@ create table routes (
   plan        boolean not null default true,   -- true=계획 루트, false=다녀온 루트
   fame        text,                            -- '드라마 촬영지' 등 배지
   ai_assisted boolean not null default false,  -- 기존 ai 플래그. 표시 정책 필요
-  via_route_id uuid references routes,         -- 리그램/인용 원본. 체인으로 거슬러 올라간다
+  /* 인용 원본. 원본이 사라지면(작성자 탈퇴 등) 출처 표시만 없어지고
+     인용한 쪽 루트는 자기 route_stops 를 갖고 있어 그대로 산다 */
+  via_route_id uuid references routes on delete set null,
 
   status      text not null default 'public'
               check (status in ('draft','public','private','hidden','deleted')),
@@ -119,6 +121,19 @@ create table route_stops (
   primary key (route_id, seq)
 );
 create index on route_stops (place_id);
+
+/* 스팟 사진 — 스팟당 최대 3장. 파일은 Storage 에 두고 여기엔 경로만 남긴다.
+   route_stops 에 컬럼으로 붙이지 않는 이유는 한 스팟에 여러 장이 붙기 때문이다. */
+create table route_photos (
+  id        uuid primary key default gen_random_uuid(),
+  route_id  uuid not null references routes on delete cascade,
+  place_id  text not null references places,
+  seq       smallint not null default 0,
+  path      text not null,                     -- storage 오브젝트 경로
+  created_at timestamptz not null default now(),
+  unique (route_id, place_id, seq)
+);
+create index on route_photos (route_id);
 
 -- ════════════════════════════════════════════════════════════
 -- 4. 상호작용
@@ -182,7 +197,7 @@ create table route_memos (
 create table comments (
   id        uuid primary key default gen_random_uuid(),
   route_id  uuid not null references routes on delete cascade,
-  author_id uuid not null references profiles,
+  author_id uuid references profiles on delete set null,  -- null = 탈퇴한 사용자
   parent_id uuid references comments on delete cascade,   -- 대댓글 1단계까지만
   body      text not null check (char_length(body) between 1 and 1000),
   status    text not null default 'visible'
@@ -200,14 +215,14 @@ create index on comments (route_id, created_at);
 create table place_reports (
   id          uuid primary key default gen_random_uuid(),
   place_id    text not null references places on delete cascade,
-  reporter_id uuid references profiles,        -- 비로그인 제보 허용 시 null
+  reporter_id uuid references profiles on delete set null,  -- 비로그인 제보 또는 탈퇴
   kind        text not null
               check (kind in ('closed','hours','price','location','duplicate','other')),
   body        text check (char_length(body) <= 500),
   suggested   jsonb,                           -- {"open_at":"10:00","close_at":"21:00"} 제안값
   status      text not null default 'open'
               check (status in ('open','accepted','rejected','duplicate')),
-  handled_by  uuid references profiles,
+  handled_by  uuid references profiles on delete set null,
   handled_at  timestamptz,
   created_at  timestamptz not null default now()
 );
@@ -220,14 +235,14 @@ create table content_reports (
   id          uuid primary key default gen_random_uuid(),
   target_type text not null check (target_type in ('route','comment','profile')),
   target_id   text not null,                   -- uuid를 문자열로. 대상 테이블이 셋이라 FK 대신
-  reporter_id uuid not null references profiles,
+  reporter_id uuid references profiles on delete set null,   -- 탈퇴해도 신고 기록은 남는다
   reason      text not null
               check (reason in ('spam','abuse','sexual','copyright','false_info','privacy','other')),
   body        text check (char_length(body) <= 1000),
   status      text not null default 'open'
               check (status in ('open','reviewing','actioned','rejected')),
   action      text,                            -- 실제 조치 내용 (숨김/삭제/경고/계정정지)
-  handled_by  uuid references profiles,
+  handled_by  uuid references profiles on delete set null,
   handled_at  timestamptz,
   created_at  timestamptz not null default now()
 );
@@ -274,6 +289,7 @@ alter table route_memos     enable row level security;
 alter table comments        enable row level security;
 alter table place_reports   enable row level security;
 alter table content_reports enable row level security;
+alter table route_photos    enable row level security;
 alter table blocks          enable row level security;
 
 -- 공개 읽기 — 지역·장소·프로필은 누구나
@@ -282,8 +298,12 @@ create policy read_places   on places   for select using (status = 'active');
 create policy read_profiles on profiles for select using (deleted_at is null);
 
 -- 루트: 공개된 것 + 내 것 전부
+/* 차단한 사람의 루트는 아예 내려오지 않는다.
+   클라이언트에서 거르면 이미 받아 온 뒤라 목록 개수가 어긋나고, 링크로는 그대로 열린다. */
 create policy read_routes on routes for select
-  using (status = 'public' or author_id = auth.uid());
+  using ((status = 'public' or author_id = auth.uid())
+         and not exists (select 1 from blocks b
+                         where b.blocker_id = auth.uid() and b.blocked_id = author_id));
 create policy write_routes on routes for all
   using (author_id = auth.uid()) with check (author_id = auth.uid());
 
@@ -291,6 +311,12 @@ create policy read_stops on route_stops for select
   using (exists (select 1 from routes r where r.id = route_id
                  and (r.status = 'public' or r.author_id = auth.uid())));
 create policy write_stops on route_stops for all
+  using (exists (select 1 from routes r where r.id = route_id and r.author_id = auth.uid()));
+
+create policy read_photos on route_photos for select
+  using (exists (select 1 from routes r where r.id = route_id
+                 and (r.status = 'public' or r.author_id = auth.uid())));
+create policy write_photos on route_photos for all
   using (exists (select 1 from routes r where r.id = route_id and r.author_id = auth.uid()));
 
 -- 개인 데이터: 본인만. 저장함·방문기록·폴더가 남에게 보이면 안 된다.
@@ -328,6 +354,43 @@ create policy read_own_content_report on content_reports for select
   using (reporter_id = auth.uid());
 
 create policy own_blocks on blocks for all using (blocker_id = auth.uid());
+
+-- ════════════════════════════════════════════════════════════
+-- 9. 회원 탈퇴
+-- ════════════════════════════════════════════════════════════
+/* 탈퇴는 개인정보 보호법상 필수이고, 되돌릴 수 없다.
+   클라이언트가 직접 delete 를 날리게 하면 RLS 로 막을 수 없는 구멍이 생기므로
+   함수 하나로만 열어 둔다. SECURITY DEFINER 라 auth.users 까지 지울 수 있다.
+
+   ⚠️ 삭제 순서가 아니라 **외래키의 on delete 규칙**이 실제 동작을 정한다.
+      auth.users 를 지우면 profiles 가 cascade 로 지워지고, 그때
+        · 내 루트·저장·좋아요·팔로우·방문·메모·폴더·차단 → cascade 로 함께 삭제
+        · 내가 담은 장소(created_by), 내 신고 기록(reporter_id), 내 댓글(author_id) → set null
+      이 규칙이 없으면 "routes 가 참조 중"이라며 삭제가 통째로 막힌다.
+
+   남이 인용한 내 루트도 지운다. 인용한 쪽 루트는 자기 route_stops 를 갖고 있어
+   내용이 깨지지 않고, via_route_id 가 null 이 되면서 출처 표시만 사라진다
+   (약관 제5조 3항 — 인용한 부분은 그 회원의 게시물로 남는다). */
+create or replace function delete_my_account()
+returns void
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare uid uuid := auth.uid();
+begin
+  if uid is null then raise exception '로그인 상태가 아닙니다'; end if;
+
+  -- 내가 올린 댓글은 내용을 지우고 자리만 남긴다(스레드가 끊기지 않게).
+  -- author_id 는 아래 cascade 에서 null 이 된다.
+  update comments set body = '(삭제된 댓글)', status = 'deleted' where author_id = uid;
+
+  -- 여기 한 줄이 나머지 전부를 끌고 간다. 위 주석의 규칙대로 퍼진다.
+  delete from auth.users where id = uid;
+end $$;
+
+revoke all on function delete_my_account() from public;
+grant execute on function delete_my_account() to authenticated;
 
 -- 운영자는 service_role 키로 접근한다(RLS 우회). 관리자 화면은 서버 함수 경유.
 -- ⚠️ service_role 키를 클라이언트에 절대 넣지 말 것 — 공개 저장소다.

@@ -9,6 +9,7 @@
 !docs/
 !docs/README.md
 !docs/schema.sql
+!docs/storage.sql
 !docs/route-template.csv
 !docs/루트-작성-지침서.md
 !docs/기존루트-개선대상.md
