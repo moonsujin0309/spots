@@ -797,6 +797,41 @@ button.research:active{transform:translateX(-50%);opacity:.6}
   font-weight:700;color:var(--sub);background:var(--chip);border:1px solid var(--border);
   border-radius:999px;padding:6px 12px}
 .memoadd svg{width:12px;height:12px}
+/* ── 사진 올리기 ── */
+.phrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:7px}
+.phth{position:relative;width:52px;height:52px;border-radius:var(--r-s);overflow:hidden;
+  border:1px solid var(--img-line);flex:0 0 auto}
+.phth img{width:100%;height:100%;object-fit:cover;display:block}
+.phth .rmx{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;
+  background:var(--veil);color:var(--veil-fg);font-size:10px;line-height:18px;text-align:center;padding:0}
+.phadd{display:inline-flex;align-items:center;gap:4px;height:52px;padding:0 12px;
+  border:1px dashed var(--border);border-radius:var(--r-s);font-size:12px;font-weight:700;color:var(--sub)}
+.phadd svg{width:13px;height:13px}
+/* ── 탈퇴 ── */
+.rpt.wd{border-color:var(--warn)}
+.wdl{margin:9px 0 0;padding-left:18px;font-size:13px;font-weight:600;line-height:1.9;color:var(--fg)}
+.wdl b{color:var(--warn)}
+.mini.wdgo{background:var(--warn);color:var(--warn-ink);font-weight:800}
+.mini.wdgo:disabled{opacity:.5}
+/* ── 제보 · 신고 ──
+   별도 모달을 만들지 않고 상태로 그 자리에 편다. 스팟 메모(.memo)와 같은 방식이다 —
+   반쯤 잠긴 손으로 쓰는 화면이 아니라 오히려 밖에서 급히 쓰는 화면이라, 페이지를
+   벗어나지 않는 편이 낫다. */
+.rpt{margin:12px 16px;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:14px;box-shadow:var(--e1)}
+.rpt h3{font-size:14px;font-weight:800;margin-bottom:4px}
+.rpt .rsub{font-size:12px;color:var(--sub);font-weight:600;line-height:1.5}
+.rpt .chips{margin:10px 0 0;padding:0}
+.rpt textarea{width:100%;background:var(--card2);border:1px solid var(--border);
+  border-radius:var(--r-m);padding:9px 10px;margin-top:9px;resize:none;min-height:64px;
+  outline:none;color:var(--fg);font-weight:600;font-size:14px}
+.rpt textarea:focus{border-color:var(--ring)}
+.rptact{display:flex;gap:8px;margin-top:10px}
+.rptact .mini{flex:1;justify-content:center}
+/* 여는 버튼 — 눈에 띄면 안 된다. 필요한 사람만 찾으면 되는 자리다 */
+.rptopen{display:block;width:100%;text-align:center;font-size:12px;font-weight:700;
+  color:var(--dim);padding:14px 0}
+.rptopen:active{opacity:.6}
 /* 인용 체인 — 마지막 작성자와 이전 작성자들을 함께 보여준다 */
 .chain{display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap;font-size:11px;color:var(--dim);font-weight:700}
 .chain svg{width:11px;height:11px}
@@ -1140,6 +1175,9 @@ button.research:active{transform:translateX(-50%);opacity:.6}
 </style>
 </head>
 <body>
+<!-- 사진 고르기 — 화면 어디서든 pickPhoto(스팟키) 로 연다. capture 를 안 붙여야
+     카메라와 앨범을 둘 다 고를 수 있다(붙이면 기기에 따라 카메라만 열린다). -->
+<input type="file" id="photoin" accept="image/*" multiple hidden onchange="onPhotoPick(this)">
 <div id="app"></div>
 <div class="tabs" id="tabs"></div>
 <div id="toast"></div>
@@ -2503,7 +2541,7 @@ const ROUTES=[
           {p:"benseojae",stay:45,c:"빵집인데 전시장에서 길 하나만 건너면 돼요. 앉을 자리가 있는지까지는 아직 몰라요"},
           {p:"onpo",stay:80,c:"회랑 초밥을 하는 곳이라 저녁에 뒀어요. 같은 블록에 일일미미라는 중국집도 있어서 문이 닫혔으면 그쪽으로 돌려요"}]},
   {id:"gs2",area:"magok",transport:"transit",hot:0,likes:31,visits:0,people:2,plan:1,ai:1,by:"강서산책러",av:"🚶",checked:"2026.08",
-   title:"백반집 옆에 카페 옆에 쌀국수집, 서울식물원 가는 길",mood:"밥집 쪽을 먼저 정하고 식물원을 끼워 넣었어요",
+   title:"백반집 옆 카페 옆 쌀국수집, 그리고 식물원",mood:"밥집 쪽을 먼저 정하고 식물원을 끼워 넣었어요",
    note:"식물원 온실은 월요일 휴관이에요. 밥집 두 곳은 영업시간을 모르는 채로 담았으니 저녁은 대안을 하나 봐두는 게 나아요",
    stops:[{p:"bongibap",stay:70,c:"백반집이에요. 바로 옆이 카페우드진이라 밥 먹고 커피까지 골목 밖으로 안 나가도 돼요"},
           {p:"woodjin",stay:40,c:"봉이밥에서 60미터라 사실상 같은 골목이에요. 식물원까지 걸을 채비를 여기서 하고 나가면 되고요"},
@@ -2518,7 +2556,7 @@ const ROUTES=[
           {p:"sonapat",stay:45,c:"빵집이에요. 몰에서 나와 조금 걸어야 하고, 닫혀 있으면 근처 굴리도 같은 빵집이에요"},
           {p:"vivana",stay:80,c:"피자집이라 마지막에 뒀어요. 몰 쪽으로 되돌아 걷는 자리예요"}]},
   {id:"gs4",area:"magok",transport:"transit",hot:0,likes:17,visits:0,people:2,plan:1,ai:1,by:"강서산책러",av:"🚶",checked:"2026.08",
-   title:"전시 하나 보려고 그 옆 세 곳을 같이 담았어요",mood:"스페이스K 반경 300미터에서 안 나가요",
+   title:"전시 하나 보려고 그 옆 세 곳까지",mood:"스페이스K 반경 300미터에서 안 나가요",
    note:"월요일은 스페이스K가 쉬는 날이라 이 순서가 통째로 어그러져요. 식당 세 곳은 문 여는 시간을 못 찾았어요",
    stops:[{p:"laura",stay:70,c:"경양식으로 등록된 집이라 점심 자리로 골랐어요. 전시장까지 300미터라 먹고 바로 올라가면 되고요"},
           {p:"spacek",stay:70,c:"월요일 휴무가 확실한 곳은 이 루트에서 여기뿐이에요. 무슨 전시가 걸려 있는지는 그때그때 달라지고요"},
@@ -2906,7 +2944,10 @@ const S={view:"home",routeId:null,placeId:null,listKey:null,
   folderTab:"전체",
   myRoutes:[],                // 내가 만들거나 리그램한 루트
   budLo:0,budHi:30,weather:"",ptab:"routes",placeCat:"",placeQ:"",placeN:40,
-  stack:[],scrollMem:{},memos:{},memoEdit:null,reroutes:new Set()};
+  stack:[],scrollMem:{},memos:{},memoEdit:null,reroutes:new Set(),
+  reportFor:null,reportKind:"",reportBody:"",   // 제보·신고 폼
+  blocks:new Set(),          // 차단한 작성자 이름 — 신고와 달리 나에게만 적용된다
+  withdraw:false};
 const iso=()=>`${S.date}T${S.time}:00`;
 /* 다녀온 곳은 브라우저에 남긴다 — 안 그러면 '다녀왔어요'가 새로고침 한 번에 지워져 버튼이 죽는다.
    저장하는 건 **장소 키뿐**이다. 좌표·주소는 안 넣는다(3절 제약 1) — 다녀온 표시는 지도에
@@ -2914,7 +2955,9 @@ const iso=()=>`${S.date}T${S.time}:00`;
    PLACES에 없는 키는 버린다 — 유저가 담았다가 사라진 커스텀 장소가 쌓이지 않게. */
 const VKEY="spots.visited";
 try{ JSON.parse(localStorage.getItem(VKEY)||"[]").filter(k=>PLACES[k]).forEach(k=>S.visited.add(k)); }catch(_){}
-function saveVisited(){ try{ localStorage.setItem(VKEY,JSON.stringify([...S.visited])); }catch(_){} }
+function saveVisited(){ try{ localStorage.setItem(VKEY,JSON.stringify([...S.visited])); }catch(_){}
+  /* 서버에도 남긴다 — 기기를 바꿔도 '다녀온 곳'이 따라오게. 좌표는 안 보낸다(장소 키뿐) */
+  if(typeof dbVisit==="function") dbVisit([...S.visited]); }
 let ANIM=true;
 const memKey=()=>S.view+(S.routeId||"")+(S.placeId||"")+(S.listKey||"");
 function go(v,id){
@@ -3242,7 +3285,10 @@ function spotListText(id){
   const body=c.stops.map((s,i)=>`${i+1}. ${s.place.n} (${s.place.c})\n${kakaoPlaceURL(s.place)}`).join("\n\n");
   return `${head}\n\n${body}`;
 }
-function toggleSave(id){ S.saved.has(id)?S.saved.delete(id):S.saved.add(id);
+function toggleSave(id){
+  if(!needLogin("저장")) return;
+  S.saved.has(id)?S.saved.delete(id):S.saved.add(id);
+  dbSave(id,S.saved.has(id));
   toast(S.saved.has(id)?"루트를 저장했어요":"저장을 해제했어요"); render(); }
 function markRouteVisited(id){
   const r=ROUTES.find(x=>x.id===id), all=r.stops.every(s=>S.visited.has(s.p));
@@ -3259,7 +3305,9 @@ const likeCount=k=>Math.round((PLACES[k].pop||50)*1.4)+(S.likes.has(k)?1:0);
 const saveCount=r=>Math.round((r.likes||0)*.6)+(S.saved.has(r.id)?1:0);
 const rerouteCount=r=>Math.round((r.likes||0)*.15)+(r.regrams||0);
 function toggleLike(k){
+  if(!needLogin("좋아요를 누르")) return;
   S.likes.has(k)?S.likes.delete(k):S.likes.add(k);
+  dbLike(k,S.likes.has(k));
   // 화면 전체를 다시 그리면 지도가 새로 만들어져 끊긴다 — 이 버튼만 고친다
   const b=document.getElementById("lk-"+k);
   if(b){ b.classList.toggle("on",S.likes.has(k)); b.querySelector("b").textContent=likeCount(k);
@@ -3730,6 +3778,7 @@ function routeView(){
     <div class="map">${hasL()?`<div class="lmap" id="rmap"></div>`:mapSVG(c.stops)}
       <div class="ft">순서대로 ${c.stops.length}곳 · 이동 ${c.distKm.toFixed(1)}km (걷기 ${walkText(c.walkKm)})${c.waits?` · 웨이팅 ${c.waits}곳(머무는 시간에 포함)`:""}</div></div>
     <div class="tl">${tl}</div>
+    ${own?"":reportForm("route",r.id)}
     <div class="fabpad"></div>
     <div class="fab">
       ${own?"":`<button class="fb ${saved?"on":""}" onclick="toggleSave('${r.id}')"
@@ -3768,7 +3817,8 @@ function placeView(){
       <button class="flat ${S.placeTab==="car"?"on":""}" onclick="S.placeTab='car';render()">${IC.car}차 ${car.length}</button></div>
     <div class="col">${list.length?list.map((r,i)=>routeCard(r,"wide",i)).join("")
       :`<div class="empty" style="margin:0"><div class="ic">${IC.pin}</div>
-        이 조건으로는 아직 루트가 없어요.<br>첫 번째로 만들어보실래요?</div>`}</div>`;
+        이 조건으로는 아직 루트가 없어요.<br>첫 번째로 만들어보실래요?</div>`}</div>
+    ${reportForm("place",S.placeId)}`;
 }
 
 /* ═════ 저장함 ═════ */
@@ -4103,8 +4153,6 @@ function onTitle(v){
   const b=document.getElementById("previewBtn");
   if(b) b.disabled=!(S.draft.stops.length>=2&&n>=TITLE_MIN);
 }
-function delPhoto(p){ if(S.draft.photos) delete S.draft.photos[p]; render(); }
-const photoCount=()=>Object.values(S.draft.photos||{}).reduce((a,b)=>a+b,0);
 /* 초안을 루트 객체로. 미리보기와 저장이 같은 모양을 쓰게 한다. */
 function draftRoute(id){
   const d=S.draft;
@@ -4206,6 +4254,7 @@ function previewView(){
 }
 function publish(){
   const d=S.draft;
+  if(!needLogin("루트를 올리")) return;
   if(!d.plan){ d.stops.forEach(s=>S.visited.add(s.p)); saveVisited(); }
   const id="my"+(++myN);
   const r=draftRoute(id);
@@ -4215,6 +4264,13 @@ function publish(){
   S.stack=[];                                   // 미리보기·만들기로 되돌아가지 않게 흐름을 끊는다
   toast(d.plan?"계획 루트로 저장했어요":"저장했어요");
   go("route",id);
+  /* 서버가 켜져 있으면 올린다. 실패해도 화면에는 남는다 — 만든 걸 눈앞에서 지우지 않는다.
+     성공하면 route id 가 서버 id 로 바뀌어 공유 링크가 남에게도 열린다. */
+  if(dbOn()&&dbMe()) dbPublish(d,id).then(async sid=>{
+    if(!sid){ toast("올리지 못했어요. 이 기기에만 저장돼 있어요"); return; }
+    if(photoCount()) await dbUploadPhotos(sid, d.photos);
+    render();
+  });
 }
 let myN=0;
 
@@ -4223,7 +4279,9 @@ let myN=0;
    via가 있으면 인용해서 이어 만든 루트다 — 작성자는 나이고, 이전 작성자들을 체인으로 보여준다. */
 const isFollowing=n=>S.follows.has(n);
 function toggleFollow(n){
+  if(!needLogin("팔로우하")) return;
   isFollowing(n)?S.follows.delete(n):S.follows.add(n);
+  dbFollow(n,isFollowing(n));
   toast(isFollowing(n)?`${n}님을 팔로우해요`:`${n}님 팔로우를 취소했어요`);
   render();
 }
@@ -4303,7 +4361,9 @@ function authorView(){
           <div style="font-size:12px;color:var(--sub);margin-top:5px;font-weight:600">
             루트 ${mine.length} · 받은 리루트 ${totalRegram}</div></div></div>
       <button class="big" style="width:100%;margin:12px 0 0" onclick="toggleFollow('${name}')">
-        ${isFollowing(name)?"팔로우 중":"팔로우"}</button></div>
+        ${isFollowing(name)?"팔로우 중":"팔로우"}</button>
+      <button class="rptopen flat" style="padding:12px 0 2px" onclick="toggleBlock('${name}')">
+        ${isBlocked(name)?"차단 풀기":"이 사람 루트 그만 보기"}</button></div>
     <div class="sec"><div><h2>루트 ${mine.length}</h2></div></div>
     <div class="col">${mine.map((r,i)=>routeCard(r,"wide",i)).join("")}</div>`;
 }
@@ -4340,7 +4400,8 @@ function stopRows(){
                 ${CATS.map(c=>`<option ${v.c===c?"selected":""}>${c}</option>`).join("")}</select>`:""}
             ${v.approx?`<button class="flat photo" onclick="S.q='${v.n}';S.fixKey='${s.p}';go('pick')">위치 잡기</button>`:""}
             <a class="photo" href="${kakaoPlaceURL(v)}" target="_blank" rel="noopener">지도</a>
-          </div></div>
+          </div>
+          ${photoRow(s.p)}</div>
         <div class="ord">
           <span class="grip" onpointerdown="dragStart(event,${i})">${IC.grip}</span>
           <button ${i===0?"disabled":""} onclick="swapStop(${i},-1)">↑</button>
@@ -4351,11 +4412,6 @@ function stopRows(){
 const swapStop=(i,k)=>moveStop(i,k);
 function removeStop(i){ const p=S.draft.stops[i].p; S.draft.stops.splice(i,1);
   if(S.draft.photos) delete S.draft.photos[p]; render(); }
-function addPhoto(p){
-  S.draft.photos=S.draft.photos||{};
-  S.draft.photos[p]=(S.draft.photos[p]||0)+1;
-  toast("사진을 넣었어요 (프로토타입이라 카메라는 안 열려요)"); render();
-}
 function setPlan(v){
   if(v===1 && photoCount()>0){ toast("사진을 모두 지워야 계획으로 되돌릴 수 있어요"); return; }
   S.draft.plan=v; render();
@@ -5028,6 +5084,12 @@ function sheetDrag(grab){
 }
 
 /* ═════ 프로필 ═════ */
+/* 카카오는 아바타로 이미지 URL 을 준다. 시드 작성자는 이모지 한 글자를 쓴다 — 둘 다 받는다 */
+function avatarOf(me){
+  const v = me && me.avatar;
+  if(!v) return "🙂";
+  return /^https?:/.test(v) ? `<img src="${v}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover">` : v;
+}
 function myRoutes(){ return S.myRoutes.map(id=>ROUTES.find(r=>r.id===id)).filter(Boolean); }
 /* 활동 배지 — 점수는 저장하지 않고 매번 계산한다(설계서 4장). 숫자 대신 구간으로만 보여준다 */
 const BADGES=[{n:"새싹",min:0},{n:"탐험가",min:6},{n:"길잡이",min:18},{n:"동네 마스터",min:40}];
@@ -5084,10 +5146,14 @@ function profileView(){
   return `<div class="top"><h1>내 프로필</h1></div>
     <div class="phero rise">
       <div class="pcover"></div>
-      <div class="pheadrow"><span class="pav">🙂</span>
-        <button class="mini p" onclick="go('create')">${IC.pen}루트 만들기</button></div>
-      <div class="pname">나</div>
+      <div class="pheadrow"><span class="pav">${avatarOf(dbMe())}</span>
+        ${dbOn()&&!dbMe()
+          ? `<button class="mini p" onclick="signIn()">카카오로 로그인</button>`
+          : `<button class="mini p" onclick="go('create')">${IC.pen}루트 만들기</button>`}</div>
+      <div class="pname">${dbMe()?dbMe().nick:"나"}</div>
       <div class="phandle">${IC.star}${cur.n}</div>
+      ${dbOn()&&!dbMe()?`<div class="hint" style="margin:10px 0 0">로그인하면 저장한 루트와 다녀온 곳이
+        기기를 바꿔도 그대로 남아요. 지금은 이 브라우저에만 있어요</div>`:""}
       <div class="pfol">
         <button class="flat" onclick="S.folLab=S.folLab?'':'팔로잉';render()"><b>${S.follows.size}</b>팔로잉</button>
         <button class="flat"><b>0</b>팔로워</button>
@@ -5109,7 +5175,16 @@ function profileView(){
           <button class="flat ${theme()==="light"?"on":""}" onclick="setTheme('light')">밝게</button>
           <button class="flat ${theme()==="dark"?"on":""}" onclick="setTheme('dark')">어둡게</button>
         </span></div>
+      ${S.blocks.size?`<div class="pmi" style="align-items:flex-start">${IC.user}
+        <span class="pmt">차단한 사람 ${S.blocks.size}</span></div>
+        <div class="chips" style="padding:0 0 10px">
+          ${[...S.blocks].map(n=>`<button class="chip2 one flat" onclick="toggleBlock('${n}')">
+            ${n} · 풀기</button>`).join("")}</div>`:""}
+      ${dbMe()?`<button class="pmi flat" style="width:100%" onclick="signOut()">
+        ${IC.user}<span class="pmt">로그아웃</span></button>`:""}
     </div>
+    ${dbMe()?(S.withdraw?withdrawCard()
+      :`<button class="rptopen flat" onclick="openWithdraw()">회원 탈퇴</button>`):""}
     <div class="pfoot">스팟스 프로토타입 · 지도와 장소 검색은 카카오<br>사진 출처: 위키미디어 공용</div>
     <div style="height:20px"></div>`;
 }
@@ -5500,6 +5575,456 @@ function mountMaps(){
            if(el) el.scrollIntoView({behavior:"smooth",block:"center"}); },1);
   if(S.view==="nearby") mountNearMap();
   if(S.view==="pick") mountPickMap();
+}
+
+/* ═════ 서버 (Supabase) ═════
+   설정 두 줄이 비어 있으면 **아무 요청도 보내지 않고 지금까지처럼 동작한다.**
+   카카오 키가 없을 때 Photon 으로 넘어가는 것과 같은 방식이다 — 서버가 없어도 앱은 돈다.
+
+   켜는 법: 아래 SB_URL / SB_ANON 에 Supabase 프로젝트 값을 넣는다.
+   anon 키는 페이지에 노출돼도 되는 종류다 — RLS 가 DB 쪽에서 막기 때문이다.
+   ⚠️ service_role 키는 절대 여기 넣지 말 것. 공개 저장소라 즉시 노출된다.
+
+   설계
+   1. 서버는 **기존 하드코딩 데이터를 대체하지 않고 얹는다.** 시드 136개는 그대로 두고
+      서버 루트를 앞에 붙인다. 서버가 죽어도 화면이 비지 않는다.
+   2. 쓰기는 전부 '화면 먼저, 서버 나중'이다. 서버 응답을 기다리면 버튼이 굼떠 보인다.
+      실패하면 토스트로 알리고 화면 상태는 되돌린다.
+   3. 로그인하지 않아도 읽기는 된다. 저장·좋아요·만들기에서만 로그인을 요구한다. */
+const SB_URL  = "";   // 예: https://xxxxxxxx.supabase.co
+const SB_ANON = "";   // 예: eyJhbGciOi... (anon public 키)
+
+let sb = null;        // Supabase 클라이언트
+let ME = null;        // 내 프로필 {id,nick,avatar,role}
+const AUTHOR_ID = {}; // 작성자 닉네임 → uuid (팔로우가 이름 기준이라 필요하다)
+const dbOn = () => !!sb;
+const dbMe = () => ME;
+
+(function loadSupabase(){
+  if(!SB_URL || !SB_ANON) return;                 // 설정 없음 → 지금까지처럼
+  const s = document.createElement("script");
+  s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
+  s.onload = () => { try{
+    sb = window.supabase.createClient(SB_URL, SB_ANON, {auth:{persistSession:true, detectSessionInUrl:true}});
+    dbBoot();
+  }catch(e){ sb = null; } };
+  s.onerror = () => {};                            // 로드 실패 → 로컬 동작 그대로
+  document.head.appendChild(s);
+})();
+
+/* ── 부팅 — 세션 복원 → 내 프로필 → 서버 데이터 → 다시 그린다 ── */
+async function dbBoot(){
+  try{
+    const { data:{ session } } = await sb.auth.getSession();
+    if(session) await dbLoadMe(session.user);
+    await dbLoadPlaces();                          // 루트보다 먼저 — 루트가 장소를 참조한다
+    await dbLoadRoutes();
+    if(ME) await dbLoadMyState();
+    if(booted) render();
+  }catch(e){ /* 서버가 어떤 이유로든 막히면 로컬 데이터로 계속 간다 */ }
+  sb.auth.onAuthStateChange((ev)=>{ if(ev==="SIGNED_IN"||ev==="SIGNED_OUT") location.reload(); });
+}
+
+/* ── 로그인 ──
+   카카오 하나만 쓴다. 지도 SDK 때문에 개발자 계정이 이미 있고,
+   타겟(20~30대)의 계정 보유율이 사실상 100%다. */
+async function signIn(){
+  if(!dbOn()){ toast("아직 로그인을 쓸 수 없어요"); return; }
+  await sb.auth.signInWithOAuth({ provider:"kakao", options:{ redirectTo: location.origin+location.pathname } });
+}
+async function signOut(){ if(dbOn()) await sb.auth.signOut(); }
+/* 로그인이 필요한 자리에서 부른다. 로그인 안 됐으면 false 를 주고 안내한다. */
+function needLogin(what){
+  if(!dbOn() || ME) return true;                   // 서버가 꺼져 있으면 예전처럼 그냥 통과
+  toast(`${what}하려면 로그인이 필요해요`);
+  return false;
+}
+
+/* 첫 로그인이면 프로필을 만든다. 카카오 비즈앱 전환 전에는 이메일을 못 받으므로
+   닉네임·프로필사진만으로 가입이 끝나야 한다. */
+async function dbLoadMe(user){
+  const { data } = await sb.from("profiles").select("id,nick,avatar,role").eq("id", user.id).maybeSingle();
+  if(data){ ME = data; return; }
+  const m = user.user_metadata || {};
+  let nick = (m.name || m.full_name || m.preferred_username || "여행자").slice(0,20);
+  for(let i=0;i<5;i++){
+    const { data:made, error } = await sb.from("profiles")
+      .insert({ id:user.id, nick, avatar: m.avatar_url || "🙂" })
+      .select("id,nick,avatar,role").single();
+    if(!error){ ME = made; return; }
+    if(error.code !== "23505") return;              // 중복(23505)이 아니면 포기
+    nick = (m.name || "여행자").slice(0,16) + Math.floor(Math.random()*9000+1000);
+  }
+}
+
+/* ── 읽기 ── */
+const toHm = t => t ? String(t).slice(0,5) : null;
+
+async function dbLoadPlaces(){
+  const { data, error } = await sb.from("places")
+    .select("id,name,cat,area_id,lat,lng,open_at,close_at,closed_days,cost_lo,cost_hi,parking,wait,popularity,photo_key,outdoor,kakao_place_id,no_kakao")
+    .eq("status","active").limit(2000);
+  if(error || !data) return;
+  for(const p of data){
+    if(!AREAS.some(a=>a.id===p.area_id)) continue;  // 모르는 지역의 장소는 화면에 못 그린다
+    /* 서버는 '영업시간 모름'을 null 로 두고, 앱은 00:00~23:59 를 그 뜻으로 쓴다 */
+    PLACES[p.id] = { n:p.name, c:p.cat, area:p.area_id, lat:p.lat, lng:p.lng,
+      open: toHm(p.open_at) || "00:00", close: toHm(p.close_at) || "23:59",
+      closed: p.closed_days || [], cost:[p.cost_lo||0, p.cost_hi||0],
+      park: p.parking?1:0, wait: p.wait?1:0, pop: p.popularity||50,
+      img: p.photo_key || "", out: p.outdoor?1:0,
+      kid: p.kakao_place_id || undefined, nokakao: p.no_kakao?1:0 };
+  }
+}
+
+async function dbLoadRoutes(){
+  const { data, error } = await sb.from("routes")
+    .select(`id,area_id,title,mood,note,transport,people,plan,fame,ai_assisted,like_count,published_at,
+             author:profiles!routes_author_id_fkey(id,nick,avatar),
+             stops:route_stops(seq,place_id,stay_min,comment)`)
+    .eq("status","public").order("published_at",{ascending:false}).limit(300);
+  if(error || !data) return;
+  const mine = [];
+  for(const r of data){
+    const stops = (r.stops||[]).slice().sort((a,b)=>a.seq-b.seq)
+      .map(s=>({ p:s.place_id, stay:s.stay_min, c:s.comment||"" }));
+    if(stops.length < 2) continue;
+    if(stops.some(s=>!PLACES[s.p])) continue;       // 장소를 못 찾으면 그리다가 깨진다 — 건너뛴다
+    const by = r.author ? r.author.nick : "스팟스";
+    if(r.author) AUTHOR_ID[by] = r.author.id;
+    const row = { id:r.id, area:r.area_id, transport:r.transport||"transit", hot:0,
+      likes:r.like_count||0, visits:0, people:r.people||2, plan:!!r.plan, ai:r.ai_assisted?1:0,
+      by, av:(r.author&&r.author.avatar)||"🙂", fame:r.fame||undefined,
+      title:r.title, mood:r.mood||"", note:r.note||"", stops,
+      posted: r.published_at ? String(r.published_at).slice(0,10).replace(/-/g,".") : undefined,
+      srv:1 };
+    if(ROUTES.some(x=>x.id===row.id)) continue;
+    ROUTES.unshift(row);                            // 서버 루트를 앞에, 시드는 뒤에 남긴다
+    if(ME && r.author && r.author.id===ME.id) mine.push(row.id);
+  }
+  mine.forEach(id=>{ if(!S.myRoutes.includes(id)) S.myRoutes.push(id); });
+}
+
+/* 저장함·좋아요·팔로우·다녀온 곳을 서버에서 되돌려 받는다.
+   지금까지는 새로고침 한 번에 전부 사라지던 값들이다. */
+async function dbLoadMyState(){
+  const [sv, lk, fl, vs, bk] = await Promise.all([
+    sb.from("route_saves").select("route_id,folder:folders(name)").eq("user_id",ME.id),
+    sb.from("place_likes").select("place_id").eq("user_id",ME.id),
+    sb.from("follows").select("followee:profiles!follows_followee_id_fkey(id,nick)").eq("follower_id",ME.id),
+    sb.from("visits").select("place_id").eq("user_id",ME.id),
+    sb.from("blocks").select("blocked:profiles!blocks_blocked_id_fkey(id,nick)").eq("blocker_id",ME.id),
+  ]);
+  (sv.data||[]).forEach(r=>{ S.saved.add(r.route_id); if(r.folder) S.folderOf[r.route_id]=r.folder.name; });
+  (lk.data||[]).forEach(r=>{ if(PLACES[r.place_id]) S.likes.add(r.place_id); });
+  (fl.data||[]).forEach(r=>{ if(r.followee){ S.follows.add(r.followee.nick); AUTHOR_ID[r.followee.nick]=r.followee.id; } });
+  (vs.data||[]).forEach(r=>{ if(PLACES[r.place_id]) S.visited.add(r.place_id); });
+  (bk.data||[]).forEach(r=>{ if(r.blocked){ S.blocks.add(r.blocked.nick); AUTHOR_ID[r.blocked.nick]=r.blocked.id; } });
+  saveVisited();
+}
+
+/* ── 쓰기 ──
+   전부 '화면 먼저, 서버 나중'이다. 실패하면 되돌리고 알린다. */
+function dbFail(undo, msg){ return e => { if(undo) undo(); toast(msg); render(); }; }
+
+function dbSave(routeId, on){
+  if(!dbOn() || !ME) return;
+  const q = on
+    ? sb.from("route_saves").upsert({ user_id:ME.id, route_id:routeId }, { onConflict:"user_id,route_id" })
+    : sb.from("route_saves").delete().eq("user_id",ME.id).eq("route_id",routeId);
+  q.then(({error})=>{ if(error){ on?S.saved.delete(routeId):S.saved.add(routeId);
+    toast("저장이 안 됐어요. 잠시 뒤 다시 해주세요"); render(); } });
+}
+
+function dbLike(placeId, on){
+  if(!dbOn() || !ME) return;
+  const q = on
+    ? sb.from("place_likes").upsert({ user_id:ME.id, place_id:placeId }, { onConflict:"user_id,place_id" })
+    : sb.from("place_likes").delete().eq("user_id",ME.id).eq("place_id",placeId);
+  q.then(({error})=>{ if(error){ on?S.likes.delete(placeId):S.likes.add(placeId); render(); } });
+}
+
+function dbFollow(nick, on){
+  if(!dbOn() || !ME) return;
+  const id = AUTHOR_ID[nick];
+  if(!id) return;                                   // 시드 작성자처럼 계정이 없는 이름은 로컬로만
+  const q = on
+    ? sb.from("follows").upsert({ follower_id:ME.id, followee_id:id }, { onConflict:"follower_id,followee_id" })
+    : sb.from("follows").delete().eq("follower_id",ME.id).eq("followee_id",id);
+  q.then(({error})=>{ if(error){ on?S.follows.delete(nick):S.follows.add(nick); render(); } });
+}
+
+function dbVisit(placeKeys){
+  if(!dbOn() || !ME || !placeKeys.length) return;
+  sb.from("visits").upsert(placeKeys.map(k=>({user_id:ME.id, place_id:k})), {onConflict:"user_id,place_id"})
+    .then(()=>{});
+}
+
+/* 루트 게시 — 지금까지는 ROUTES 배열에만 넣어서 내 브라우저를 벗어나지 못했다.
+   커스텀 장소를 먼저 올린다. 검수 전이라 status='pending' 으로 들어간다. */
+async function dbPublish(draft, localId){
+  if(!dbOn() || !ME) return null;
+  const custom = draft.stops.map(s=>s.p).filter(k=>PLACES[k] && PLACES[k].custom);
+  if(custom.length){
+    const rows = [...new Set(custom)].map(k=>{ const p=PLACES[k]; return {
+      id:k, name:p.n, cat:p.c, area_id:p.area, lat:p.lat, lng:p.lng,
+      cost_lo:p.cost[0]||0, cost_hi:p.cost[1]||0, approx:!!p.approx,
+      status:"pending", created_by:ME.id, verified_at:new Date().toISOString() }; });
+    const { error } = await sb.from("places").upsert(rows, {onConflict:"id"});
+    if(error) return null;
+  }
+  const { data, error } = await sb.from("routes").insert({
+    author_id:ME.id, area_id:areaOfDraft(draft), title:draft.title.trim(),
+    mood:draft.mood||null, note:draft.note||null, transport:draft.transport||"transit",
+    people:draft.people||2, plan:!!draft.plan, status:"public",
+    published_at:new Date().toISOString() }).select("id").single();
+  if(error || !data) return null;
+  const { error:e2 } = await sb.from("route_stops").insert(
+    draft.stops.map((s,i)=>({ route_id:data.id, seq:i, place_id:s.p, stay_min:s.stay||60, comment:s.c||null })));
+  if(e2){ await sb.from("routes").delete().eq("id",data.id); return null; }
+  /* 서버가 준 id 로 갈아끼운다 — 공유 링크(?r=)가 남에게도 열려야 하기 때문이다 */
+  const r = ROUTES.find(x=>x.id===localId);
+  if(r){ r.id = data.id; r.srv = 1; }
+  const i = S.myRoutes.indexOf(localId);
+  if(i>=0) S.myRoutes[i] = data.id;
+  if(S.routeId===localId) S.routeId = data.id;
+  return data.id;
+}
+/* 루트의 지역 — 스팟이 가장 많이 속한 지역으로 정한다 */
+function areaOfDraft(d){
+  const c = {};
+  d.stops.forEach(s=>{ const p=PLACES[s.p]; if(p) c[p.area]=(c[p.area]||0)+1; });
+  return Object.entries(c).sort((a,b)=>b[1]-a[1])[0]?.[0] || AREAS[0].id;
+}
+
+/* ── 장소 정보 제보 ──
+   유저가 "여기 폐업했어요"를 넣는 자리. 이게 장소 191개를 갱신하는 통로다.
+   자유 댓글보다 먼저 여는 이유: 선택지 + 짧은 서술이라 관리 부담이 작고,
+   원래 목적(갱신)에는 이쪽이 더 정확하다. */
+const REPORT_KINDS = [["closed","문 닫았어요"],["hours","영업시간이 달라요"],
+  ["price","가격이 달라요"],["location","위치가 틀려요"],["other","그 밖에"]];
+async function dbReportPlace(placeId, kind, body){
+  if(!dbOn()) { toast("아직 제보를 받을 수 없어요"); return false; }
+  const { error } = await sb.from("place_reports").insert({
+    place_id:placeId, reporter_id: ME?ME.id:null, kind, body:body||null });
+  if(error){ toast("제보가 안 됐어요. 잠시 뒤 다시 해주세요"); return false; }
+  toast("알려주셔서 고마워요. 확인하고 고칠게요");
+  return true;
+}
+
+/* ── 콘텐츠 신고 ──
+   장소 제보와 다른 테이블을 쓴다. 이쪽은 데이터 품질이 아니라 법적 의무다
+   (정보통신망법 임시조치) — 접수·처리 이력이 남아야 한다. */
+const REPORT_REASONS = [["spam","광고·스팸"],["abuse","욕설·비방"],["sexual","선정적"],
+  ["copyright","저작권 침해"],["false_info","허위 정보"],["privacy","개인정보 노출"],["other","그 밖에"]];
+async function dbReportContent(targetType, targetId, reason, body){
+  if(!dbOn()){ toast("아직 신고를 받을 수 없어요"); return false; }
+  if(!ME){ toast("신고하려면 로그인이 필요해요"); return false; }
+  const { error } = await sb.from("content_reports").insert({
+    target_type:targetType, target_id:String(targetId), reporter_id:ME.id, reason, body:body||null });
+  if(error){ toast("신고가 안 됐어요. 잠시 뒤 다시 해주세요"); return false; }
+  toast("신고를 접수했어요. 확인 후 조치할게요");
+  return true;
+}
+
+/* ═════ 제보 · 신고 폼 ═════
+   두 가지를 한 폼으로 그리되 보내는 곳은 다르다.
+   장소 제보(place)는 데이터 품질, 콘텐츠 신고(route)는 법적 의무다. */
+function openReport(type,id){
+  S.reportFor={type,id}; S.reportKind=""; S.reportBody=""; render();
+  /* 폼이 화면 밖에서 열리면 '눌렀는데 반응이 없다'로 보인다 — 열린 자리로 데려간다 */
+  requestAnimationFrame(()=>{ const el=document.querySelector(".rpt"); if(!el) return;
+    el.scrollIntoView({block:"center",
+      behavior: matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"}); });
+}
+function closeReport(){ S.reportFor=null; S.reportKind=""; S.reportBody=""; render(); }
+function pickReportKind(k){ S.reportFor && (S.reportKind=k, render()); }
+
+function reportForm(type,id){
+  const f=S.reportFor;
+  const isPlace = type==="place";
+  const opts = isPlace?REPORT_KINDS:REPORT_REASONS;
+  if(!f || f.type!==type || String(f.id)!==String(id))
+    return `<button class="rptopen flat" onclick="openReport('${type}','${id}')">${
+      isPlace?"정보가 달라요":"이 루트 신고하기"}</button>`;
+  return `<div class="rpt rise">
+    <h3>${isPlace?"어디가 다른가요?":"무엇이 문제인가요?"}</h3>
+    <div class="rsub">${isPlace
+      ? "확인하고 고칠게요. 폐업이나 시간 변경은 알려주시면 다른 분이 헛걸음하지 않아요"
+      : "확인 후 조치합니다. 신고 내용은 작성자에게 공개되지 않아요"}</div>
+    <div class="chips">${opts.map(([k,l])=>
+      `<button class="chip2 one flat ${S.reportKind===k?"on":""}"
+        onclick="pickReportKind('${k}')">${l}</button>`).join("")}</div>
+    <textarea maxlength="500" placeholder="${isPlace
+      ? "예: 지난주에 갔는데 문 닫았어요. 간판도 없어졌어요"
+      : "어떤 점이 문제인지 적어주세요"}" oninput="S.reportBody=this.value">${S.reportBody}</textarea>
+    <div class="rptact">
+      <button class="mini flat" onclick="closeReport()">취소</button>
+      <button class="mini p" onclick="submitReport()">보내기</button></div></div>`;
+}
+
+async function submitReport(){
+  const f=S.reportFor; if(!f) return;
+  if(!S.reportKind){ toast("무엇이 다른지 골라주세요"); return; }
+  const ok = f.type==="place"
+    ? await dbReportPlace(f.id, S.reportKind, S.reportBody)
+    : await dbReportContent(f.type, f.id, S.reportKind, S.reportBody);
+  if(ok) closeReport();
+}
+
+/* ═════ 사진 올리기 ═════
+   원본을 그대로 올리면 4MB 짜리가 그대로 들어와 목록 화면이 죽는다.
+   브라우저에서 미리 줄여서 올린다 — 긴 변 1080px, JPEG 품질 0.82.
+   서버가 꺼져 있어도 고르고 미리보기까지는 된다. 올라가는 건 게시할 때다. */
+const PHOTO_MAX_EDGE = 1080, PHOTO_Q = 0.82, PHOTO_PER_STOP = 3;
+
+function pickPhoto(p){
+  const el = document.getElementById("photoin");
+  if(!el) return;
+  el.dataset.place = p;
+  el.value = "";        // 같은 파일을 다시 골라도 change 가 뜨게
+  el.click();
+}
+
+async function onPhotoPick(input){
+  const p = input.dataset.place;
+  const files = [...input.files].slice(0, PHOTO_PER_STOP);
+  if(!p || !files.length) return;
+  S.draft.photos = S.draft.photos || {};
+  const cur = S.draft.photos[p] || [];
+  const room = PHOTO_PER_STOP - cur.length;
+  if(room <= 0){ toast(`스팟당 사진은 ${PHOTO_PER_STOP}장까지예요`); return; }
+  toast("사진을 넣는 중이에요");
+  for(const f of files.slice(0, room)){
+    try{ cur.push(await shrinkImage(f)); }
+    catch(_){ toast("이 사진은 못 읽었어요"); }
+  }
+  S.draft.photos[p] = cur;
+  render();
+}
+
+/* 긴 변을 기준으로 줄인다. 원본이 이미 작으면 그대로 둔다(늘리면 화질만 나빠진다). */
+function shrinkImage(file){
+  return new Promise((ok, no)=>{
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = ()=>{
+      const scale = Math.min(1, PHOTO_MAX_EDGE / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(img, 0, 0, w, h);
+      cv.toBlob(b=>{
+        URL.revokeObjectURL(url);
+        b ? ok({ url: cv.toDataURL("image/jpeg", 0.6), blob: b, w, h }) : no();
+      }, "image/jpeg", PHOTO_Q);
+    };
+    img.onerror = ()=>{ URL.revokeObjectURL(url); no(); };
+    img.src = url;
+  });
+}
+
+function delPhotoAt(p, i){
+  const a = (S.draft.photos||{})[p]; if(!a) return;
+  a.splice(i,1); if(!a.length) delete S.draft.photos[p];
+  render();
+}
+const photosOf = p => (S.draft.photos||{})[p] || [];
+const photoCount = () => Object.values(S.draft.photos||{}).reduce((a,b)=>a+b.length,0);
+
+/* 스팟 카드 안의 사진 줄 — 버튼 하나와 썸네일들 */
+function photoRow(p){
+  const list = photosOf(p);
+  return `<div class="phrow">
+    ${list.map((x,i)=>`<span class="phth"><img src="${x.url}" alt="">
+      <button class="rmx" aria-label="사진 빼기" onclick="delPhotoAt('${p}',${i})">✕</button></span>`).join("")}
+    ${list.length < PHOTO_PER_STOP
+      ? `<button class="phadd flat" onclick="pickPhoto('${p}')">${IC.pen}사진</button>` : ""}</div>`;
+}
+
+/* 게시할 때 한꺼번에 올린다. 실패한 장은 건너뛴다 — 사진 한 장 때문에 루트를 잃지 않는다. */
+async function dbUploadPhotos(routeId, photos){
+  if(!dbOn() || !ME || !photos) return 0;
+  let n = 0;
+  for(const [placeId, list] of Object.entries(photos)){
+    for(let i = 0; i < list.length; i++){
+      const path = `${ME.id}/${routeId}/${placeId}-${i}.jpg`;
+      const { error } = await sb.storage.from("route-photos")
+        .upload(path, list[i].blob, { contentType:"image/jpeg", upsert:true });
+      if(error) continue;
+      const { error:e2 } = await sb.from("route_photos")
+        .insert({ route_id:routeId, place_id:placeId, seq:i, path });
+      if(!e2) n++;
+    }
+  }
+  return n;
+}
+
+/* ═════ 차단 ═════
+   신고와 다르다. 신고는 운영자가 판단할 때까지 시간이 걸리고 모두에게 적용되지만,
+   차단은 내가 지금 정하고 나에게만 적용된다. 둘 다 있어야 한다 —
+   판단을 기다리는 동안에도 그 사람 루트가 홈에 계속 뜨면 아무 의미가 없다. */
+const isBlocked = n => S.blocks.has(n);
+
+async function toggleBlock(nick){
+  if(!needLogin("차단하")) return;
+  const on = !isBlocked(nick);
+  on ? S.blocks.add(nick) : S.blocks.delete(nick);
+  if(on){
+    /* 로컬 목록에서도 즉시 걷어낸다. 서버는 RLS 가 막아 다음 로드부터 안 오지만,
+       이미 받아 온 것은 화면에 남아 "차단했는데 그대로네"가 된다. */
+    for(let i = ROUTES.length - 1; i >= 0; i--) if(ROUTES[i].by === nick) ROUTES.splice(i,1);
+    S.follows.delete(nick);
+    if(S.view === "author" && S.authorId === nick) back();
+  }
+  toast(on ? `${nick}님의 루트를 더 보지 않아요` : `${nick}님 차단을 풀었어요`);
+  const id = AUTHOR_ID[nick];
+  if(dbOn() && ME && id){
+    const q = on
+      ? sb.from("blocks").upsert({ blocker_id:ME.id, blocked_id:id }, { onConflict:"blocker_id,blocked_id" })
+      : sb.from("blocks").delete().eq("blocker_id",ME.id).eq("blocked_id",id);
+    q.then(({error})=>{ if(error){ on?S.blocks.delete(nick):S.blocks.add(nick); render(); } });
+  }
+  render();
+}
+
+/* ═════ 회원 탈퇴 ═════
+   개인정보 보호법상 필수이고 되돌릴 수 없다. 그래서 무엇이 사라지는지 숫자로 먼저 보여준다.
+   실제 삭제는 DB 함수 delete_my_account() 하나가 한다 — 클라이언트가 직접 지우게 하면
+   RLS 로 막을 수 없는 구멍이 생긴다. */
+function openWithdraw(){ S.withdraw = true; render(); }
+function closeWithdraw(){ S.withdraw = false; render(); }
+
+async function withdrawConfirm(){
+  if(!dbOn() || !ME) return;
+  const btn = document.getElementById("wdbtn");
+  if(btn){ btn.disabled = true; btn.textContent = "처리 중…"; }
+  const { error } = await sb.rpc("delete_my_account");
+  if(error){
+    if(btn){ btn.disabled = false; btn.textContent = "탈퇴합니다"; }
+    toast("탈퇴 처리가 안 됐어요. 잠시 뒤 다시 해주세요");
+    return;
+  }
+  try{ await sb.auth.signOut(); }catch(_){}
+  try{ localStorage.removeItem(VKEY); }catch(_){}
+  location.replace(location.origin + location.pathname);
+}
+
+function withdrawCard(){
+  const mine = myRoutes().length;
+  return `<div class="rpt wd rise">
+    <h3>정말 탈퇴하시겠어요?</h3>
+    <div class="rsub">되돌릴 수 없어요. 아래가 모두 사라집니다.</div>
+    <ul class="wdl">
+      <li>내가 만든 루트 <b>${mine}</b>개${mine?" (사진 포함)":""}</li>
+      <li>저장한 루트 <b>${S.saved.size}</b>개 · 폴더 <b>${S.folders.length}</b>개</li>
+      <li>좋아요 <b>${S.likes.size}</b>개 · 팔로우 <b>${S.follows.size}</b>명</li>
+      <li>다녀온 곳 표시 <b>${S.visited.size}</b>곳</li>
+    </ul>
+    <div class="rsub" style="margin-top:8px">다른 분이 이어 만든 루트는 그분 것으로 남고,
+      거기서 제 이름과 출처 표시만 없어져요.</div>
+    <div class="rptact">
+      <button class="mini flat" onclick="closeWithdraw()">그만두기</button>
+      <button class="mini wdgo" id="wdbtn" onclick="withdrawConfirm()">탈퇴합니다</button></div></div>`;
 }
 
 /* ═════ 렌더 ═════ */
