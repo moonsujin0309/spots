@@ -74,7 +74,10 @@ const PLACES = loadPlaces();
 const STOPS_MIN = 4, STOPS_MAX = 5;
 const STAY_MIN = 200, STAY_MAX = 360;          // 반려 경계. 360~420은 경고만
 const STAY_WARN = 420;
-const TITLE_MIN = 4, TITLE_MAX = 40;
+/* 상한은 앱의 입력 제한(index.html 의 TITLE_MAX)과 같은 값이어야 한다 —
+   더 길게 잡으면 앱에서 입력조차 못 하는 제목을 통과시킨다.
+   하한은 앱(2자)보다 높다. 두 글자짜리 제목은 통과시킬 이유가 없다. */
+const TITLE_MIN = 4, TITLE_MAX = 25;
 const CMT_MIN = 20, CMT_MAX = 80;              // 하한은 시드보다 높다 — 7자짜리 코멘트가 실제로 부실했다
 
 /* 구간 거리 — '도보 몇 분'이 아니라 거리로 본다.
