@@ -2916,7 +2916,12 @@ const iso=()=>`${S.date}T${S.time}:00`;
       루트만 복원하면 stops가 PLACES를 벗어나 렌더가 깨지므로 그 장소들도 같이 저장한다.
    ⚠️ 좌표는 이 기기 캐시에만 두고 **내보내기에는 넣지 않는다**(3절 제약 1).
       새 장소의 좌표는 받는 쪽에서 공공데이터 상가정보로 채운다(29차 방법). */
-const MKEY="spots.myroutes", NKEY="spots.penname", SKEY="spots.staff";
+const MKEY="spots.myroutes", NKEY="spots.penname", SKEY="spots.staff", MEMOKEY="spots.memos";
+/* 스팟 메모는 "저장했어요" 토스트까지 띄우면서 실제로는 메모리에만 있었다 —
+   새로고침 한 번에 사라지는데 저장했다고 알리는 건 거짓말이라 여기서 붙인다. */
+try{ const _m=JSON.parse(localStorage.getItem(MEMOKEY)||"null");
+     if(_m&&typeof _m==="object") S.memos=_m; }catch(_){}
+function saveMemos(){ try{ localStorage.setItem(MEMOKEY,JSON.stringify(S.memos)); }catch(_){} }
 /* 담을 때의 머문시간 기본값. 전부 60분으로 박아두면 아무도 안 고쳐서 그대로 나간다
    (2026-09-04 파일럿에서 4스톱 전부 60분으로 왔다). 값은 시드 136루트의 분류별 실측 중앙값이다.
    대부분 60~70이라 차이가 크진 않지만 액티비티(150)처럼 튀는 분류가 있다. */
@@ -2984,8 +2989,7 @@ function exportMine(){
   rs.forEach(r=>{
     const t=r.title||"제목 없음";
     const n=r.stops.filter(x=>!(x.c||"").trim()).length;
-    if(n) bad.push(`· ${t} — 스팟 코멘트 ${n}칸이 비었어요`);
-    if(!(r.note||"").trim()) bad.push(`· ${t} — 시작 안내(STEP 7)가 비었어요`);
+    if(n) bad.push(`· ${t} — 스팟 설명 ${n}칸이 비었어요`);
     if(r.stops.every(x=>x.stay===defStay(x.p))) bad.push(`· ${t} — 머문 시간을 하나도 안 고쳤어요`);
   });
   if(bad.length && !confirm("이대로 보내면 반려될 수 있어요.\n\n"+bad.join("\n")+"\n\n그래도 보낼까요?")) return;
@@ -4159,6 +4163,9 @@ function createView(){
         <button class="flat" aria-label="검색어 지우기" onclick="S.q='';render()" style="color:var(--dim);font-weight:700;padding:4px 6px">✕</button></div>
       <div id="resZone">${searchZone()}</div>
       ${d.stops.length?`<div class="divline"></div><div id="stopList">${stopRows()}</div>`:""}
+      ${STAFF&&d.stops.length?`<div style="font-size:12px;color:var(--dim);font-weight:600;margin-top:8px;line-height:1.5">
+        <b>스팟 설명</b>은 루트에 함께 나가는 글이에요 — 루트 상세의 <b>'내 메모'</b>와 다른 것이고,
+        메모는 아무리 적어도 루트에 안 실려요.</div>`:""}
       ${d.stops.length>=2?`<div style="font-size:12px;color:var(--dim);font-weight:600;margin-top:8px;line-height:1.5">
         '이동수단 자동'은 앞 장소와의 거리로 골라요 — 가까우면 도보, 멀면 버스·지하철(차 코스는 차).
         실제로 탄 게 다르면 바꿔주세요.</div>`:""}
@@ -4187,15 +4194,15 @@ function createView(){
       <div style="font-size:12px;color:var(--dim);font-weight:600;margin-top:8px">
         비워둬도 저장돼요. 카드에서 이름 아래 한 줄로 붙어요.</div></div></div>
 
-    ${STAFF?`<div class="step"><div class="no">STEP 7</div><h3>이 루트를 어떻게 시작하나요?</h3><div class="box">
+    ${STAFF?`<div class="step"><div class="no">STEP 7</div><h3>미리 알면 좋은 게 있나요? <span class="optm">선택</span></h3><div class="box">
       <div class="tawrap">
         <textarea class="ta" maxlength="120" aria-label="루트 안내"
-          placeholder="예: 9호선 마곡나루역 3번 출구에서 시작해요. 밥집 두 곳은 문 여는 시간을 확인 못 했고요"
+          placeholder="예: 망원시장은 밤 9시쯤 정리 시작해요. 일요일엔 쉬는 집이 많고요"
           oninput="S.draft.note=this.value">${d.note||""}</textarea>
       </div>
       <div style="font-size:12px;color:var(--dim);font-weight:600;margin-top:8px;line-height:1.5">
-        <b>출발 지점을 꼭 적어주세요.</b> 지하철역은 스팟으로 담지 말고 여기에 씁니다.
-        모르는 것(영업시간 등)이 있으면 모른다고 적어주세요.</div></div></div>`:""}
+<b>스팟 하나에만 해당하지 않는 것</b>을 적어요 — 붐비는 때, 문 여는 시간, 모르는 것.
+        출발 지점은 안 적어도 돼요. <b>첫 스팟이 곧 만나는 곳</b>이라 화면에 이미 나와요.</div></div></div>`:""}
 
     <button class="big" id="previewBtn" ${ready?"":"disabled"} onclick="go('preview')">루트 미리보기</button>`;
 }
@@ -4327,7 +4334,8 @@ function previewView(){
 function publish(){
   const d=S.draft;
   if(!d.plan){ d.stops.forEach(s=>S.visited.add(s.p)); saveVisited(); }
-  let id="my"+(++myN);
+  let id=S.editId||("my"+(++myN));
+  S.editId=null;
   while(ROUTES.some(r=>r.id===id)) id="my"+(++myN);   // 저장분을 복원했을 때 id가 겹치지 않게
   const r=draftRoute(id);
   r.posted=ymd(new Date()).replace(/-/g,'.');   // 올린 날(연.월.일). toISOString은 UTC라 새벽에 올리면 하루 전으로 찍힌다 — ymd는 로컬
@@ -4362,24 +4370,25 @@ function memoSave(rid,pk){
   if(!S.memos[rid]) S.memos[rid]={};
   if(!t) delete S.memos[rid][pk];
   else S.memos[rid][pk]={t,pub:cur?cur.pub:0};
+  saveMemos();
   S.memoEdit=null; render(); toast(t?"메모를 저장했어요":"메모를 지웠어요");
 }
 function memoPub(rid,pk){
   const m=memoOf(rid,pk); if(!m) return;
-  m.pub=m.pub?0:1; render();
+  m.pub=m.pub?0:1; saveMemos(); render();
   toast(m.pub?"이 메모를 공개했어요":"나만 보기로 바꿨어요");
 }
 function memoHTML(rid,pk){
   const m=memoOf(rid,pk), editing=S.memoEdit===rid+"|"+pk;
   if(editing) return `<div class="memo">
-    <div class="memohd">${IC.pen}여기서 뭘 할지</div>
+    <div class="memohd">${IC.pen}내 메모 — 루트에는 안 나가요</div>
     <textarea id="memoin" maxlength="120" placeholder="예: 2층 창가 자리 잡고 커피만 한 잔">${m?m.t:""}</textarea>
     <div class="memoact">
       <button class="mini p" onclick="memoSave('${rid}','${pk}')">저장</button>
       <button class="mini" onclick="memoCancel()">취소</button></div></div>`;
-  if(!m) return `<button class="memoadd flat" onclick="memoEdit('${rid}','${pk}')">${IC.pen}메모 남기기</button>`;
+  if(!m) return `<button class="memoadd flat" onclick="memoEdit('${rid}','${pk}')">${IC.pen}내 메모 남기기</button>`;
   return `<div class="memo">
-    <div class="memohd">${IC.pen}여기서 뭘 할지
+    <div class="memohd">${IC.pen}내 메모
       <button class="pv flat ${m.pub?"on":""}" onclick="memoPub('${rid}','${pk}')"
         aria-label="${m.pub?"공개 메모 - 나만 보기로 바꾸기":"비공개 메모 - 공개로 바꾸기"}">
         ${m.pub?IC.users:IC.lock}${m.pub?"공개":"나만 보기"}</button></div>
@@ -4398,11 +4407,27 @@ function reroute(id){
   toast(`${src.by}님의 루트를 리루트했어요`); render();
 }
 /* 인용 — 원본을 복사해 만들기로 넘긴다. 저장하면 작성자 체인에 원작자들이 남는다 */
+/* 내가 만든 루트를 draft 로 되돌려 만들기 화면에서 고친다.
+   ⚠️ 이게 없으면 한 번 저장한 루트의 스팟 설명을 고칠 방법이 아예 없다 —
+      루트 상세에는 '내 메모'만 있어서, 거기 적고 저장한 줄 알게 된다(2026-09-04 사용자 보고).
+   원본을 빼고 시작해 publish() 가 다시 넣는다. */
+function editMine(id){
+  const r=ROUTES.find(x=>x.id===id); if(!r) return;
+  S.draft={date:r.date||S.date,time:r.time||S.time,transport:r.transport,people:r.people,
+    stops:r.stops.map(s=>({...s})),title:r.title||"",mood:r.mood||"",note:r.note||"",
+    plan:r.plan,photos:{},via:r.via?[...r.via]:undefined,quoteOf:r.quoteOf};
+  const i=ROUTES.indexOf(r); if(i>=0) ROUTES.splice(i,1);
+  S.myRoutes=S.myRoutes.filter(x=>x!==id);
+  S.editId=id;              // publish() 가 이 id 를 그대로 다시 쓴다
+  saveMine();
+  toast("고치고 나서 다시 저장해주세요"); go("create");
+}
 function quote(id){
   const src=ROUTES.find(r=>r.id===id); if(!src) return;
   S.draft={date:S.date,time:S.time,transport:src.transport,people:src.people,
     stops:src.stops.map(s=>({...s})),title:src.title,mood:src.mood||"",plan:1,photos:{},
     via:[...(src.via||[]),src.by], quoteOf:id};
+  S.editId=null;
   toast("고쳐서 내 루트로 만들어보세요"); go("create");
 }
 /* 작성자 표시 — 인용 체인이 있으면 마지막 작성자(=현재)와 이전 작성자들을 같이 보여준다 */
@@ -4464,7 +4489,7 @@ function stopRows(){
             <a class="photo" href="${kakaoPlaceURL(v)}" target="_blank" rel="noopener">지도</a>
           </div>
           ${STAFF?`<textarea class="ta" style="margin-top:7px;min-height:54px" maxlength="80"
-            aria-label="${v.n} 코멘트" placeholder="여기서 뭘 하는지 한 줄 (20~80자)"
+            aria-label="${v.n} 스팟 설명" placeholder="이 스팟 설명 (20~80자)"
             oninput="S.draft.stops[${i}].c=this.value">${s.c||""}</textarea>`:""}
         </div>
         <div class="ord">
@@ -5207,7 +5232,8 @@ function profileView(){
   else body = (STAFF?`<div class="hint" style="text-align:center">작성자 모드예요. 만든 루트는 이 기기에만 저장되니, 다 만들면 아래 버튼으로 보내주세요</div>
        <div style="margin-bottom:11px;text-align:center"><button class="mini p" onclick="exportMine()">${IC.share}루트 데이터 보내기</button></div>`:"")
     + (mine.length
-    ? `<div class="col">${mine.map((r,i)=>routeCard(r,"wide",i)).join("")}</div>`
+    ? `<div class="col">${mine.map((r,i)=>`${routeCard(r,"wide",i)}${STAFF?
+        `<div style="text-align:center;margin:-3px 0 5px"><button class="mini" onclick="editMine('${r.id}')">${IC.pen}이 루트 고치기</button></div>`:""}`).join("")}</div>`
     : empty(IC.pen,"아직 만든 루트가 없어요.",
         `<div style="margin-top:13px"><button class="mini p" onclick="go('create')">루트 만들기</button></div>`));
   return `<div class="top"><h1>내 프로필</h1></div>
