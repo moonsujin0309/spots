@@ -2908,6 +2908,92 @@ const S={view:"home",routeId:null,placeId:null,listKey:null,
   budLo:0,budHi:30,weather:"",ptab:"routes",placeCat:"",placeQ:"",placeN:40,
   stack:[],scrollMem:{},memos:{},memoEdit:null,reroutes:new Set()};
 const iso=()=>`${S.date}T${S.time}:00`;
+/* ═════ 내 루트 저장 · 내보내기 (2026-09-02, 알바 파일럿용) ═════
+   서버가 없어서 publish()가 메모리 ROUTES에만 넣는다 — 새로고침 한 번에 사라진다.
+   친구들에게 시드 루트를 만들게 하려면 최소한 작업 중에 날아가지는 않아야 한다.
+   ⚠️ 저장은 그 기기 안에만 남는다. 회수는 exportMine()이 한다 — 둘은 역할이 다르다.
+   ⚠️ 만들기에서 검색으로 담은 장소(addApiPlace)는 PLACES에 메모리로만 있다.
+      루트만 복원하면 stops가 PLACES를 벗어나 렌더가 깨지므로 그 장소들도 같이 저장한다.
+   ⚠️ 좌표는 이 기기 캐시에만 두고 **내보내기에는 넣지 않는다**(3절 제약 1).
+      새 장소의 좌표는 받는 쪽에서 공공데이터 상가정보로 채운다(29차 방법). */
+const MKEY="spots.myroutes", NKEY="spots.penname", SKEY="spots.staff";
+/* 내보내기는 **알바 전용 도구**다 — 일반 유저의 '공유'(카드 이미지+글)와 목적이 다르다.
+   공유는 약속을 잡으려고 상대에게 보내는 것이고, 내보내기는 앱에 넣을 루트 데이터를 회수하는 것이다.
+   둘을 같은 자리에 두면 유저에게는 뜻 모를 버튼이 하나 더 생길 뿐이라 화면에서 가른다.
+   ?staff=1 로 한 번 열면 그 기기에 켜진 채 남는다 — 알바에게는 그 링크를 준다. */
+let STAFF=false;
+try{ if(new URLSearchParams(location.search).get("staff")==="1") localStorage.setItem(SKEY,"1");
+     STAFF=localStorage.getItem(SKEY)==="1"; }catch(_){}
+const SEEDPK=new Set(Object.keys(PLACES));   // 시드 장소. 이 밖의 것만 따로 챙기면 된다
+function myList(){ return S.myRoutes.map(id=>ROUTES.find(r=>r.id===id)).filter(Boolean); }
+function customStops(rs){
+  const out=[];
+  rs.forEach(r=>r.stops.forEach(s=>{
+    if(SEEDPK.has(s.p)||!PLACES[s.p]||out.some(x=>x.k===s.p)) return;
+    out.push({k:s.p,p:PLACES[s.p]});
+  }));
+  return out;
+}
+function saveMine(){
+  try{
+    const rs=myList(), px={};
+    customStops(rs).forEach(x=>px[x.k]=x.p);
+    localStorage.setItem(MKEY,JSON.stringify({v:1,routes:rs,places:px}));
+  }catch(_){}
+}
+function loadMine(){
+  let d; try{ d=JSON.parse(localStorage.getItem(MKEY)||"null"); }catch(_){ return; }
+  if(!d||!Array.isArray(d.routes)) return;
+  Object.entries(d.places||{}).forEach(([k,v])=>{ if(!PLACES[k]) PLACES[k]=v; });
+  d.routes.forEach(r=>{
+    if(!r||!r.id||!Array.isArray(r.stops)||!r.stops.length) return;
+    if(ROUTES.some(x=>x.id===r.id)) return;
+    if(!r.stops.every(s=>PLACES[s.p])) return;   // 장소가 비면 넣지 않는다 — 화면이 깨진다
+    ROUTES.unshift(r); S.myRoutes.push(r.id);
+  });
+}
+loadMine();
+/* 내보내기 — 친구가 만든 루트를 카톡으로 돌려받는 수단. 공유 시트가 있으면 그쪽으로,
+   없거나 취소되면 클립보드로 떨어뜨린다. */
+function copyText(t){
+  const done=ok=>toast(ok?"복사했어요. 카톡에 붙여넣어 보내주세요":"복사하지 못했어요");
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(()=>done(1)).catch(()=>legacyCopy(t,done)); return; }
+  legacyCopy(t,done);
+}
+function legacyCopy(t,done){
+  const ta=document.createElement("textarea");
+  ta.value=t; ta.style.cssText="position:fixed;top:0;left:0;opacity:0";
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  let ok=false; try{ ok=document.execCommand("copy"); }catch(_){}
+  ta.remove(); done(ok);
+}
+function exportMine(){
+  const rs=myList();
+  if(!rs.length){ toast("내보낼 루트가 없어요"); return; }
+  /* 작성자 이름을 한 번 받는다 — `by`는 앱 안에서 늘 "나"라 누가 만든 건지 데이터에 안 남는다.
+     여러 명이 보내오면 구분이 안 되고, 시드로 넣을 때 작성자를 하나로 몰면 팔로우가 죽는다. */
+  let by=""; try{ by=localStorage.getItem(NKEY)||""; }catch(_){}
+  by=(prompt("보내는 사람 이름을 적어주세요 (루트 작성자로 들어가요)",by)||"").trim();
+  if(!by){ toast("이름을 적어야 보낼 수 있어요"); return; }
+  try{ localStorage.setItem(NKEY,by); }catch(_){}
+  const tx=JSON.stringify({
+    v:1, at:ymd(new Date()), by,
+    /* plan·via·quoteOf 도 같이 넘긴다 — 계획 루트 표시와 인용 크레딧이 여기서 끊기면 복구가 안 된다.
+       stops 의 move(구간 이동수단)는 만들기 화면에서 고를 수 있고 시드 26개 스톱이 쓰는 필드다. */
+    routes:rs.map(r=>({title:r.title,mood:r.mood,note:r.note||"",area:r.area,
+      transport:r.transport,people:r.people,plan:r.plan,via:r.via,quoteOf:r.quoteOf,
+      stops:r.stops.map(s=>({p:s.p,stay:s.stay,c:s.c||"",move:s.move}))})),
+    /* 새 장소는 이름·분류·카카오 id만 넘긴다. 좌표·주소는 넣지 않는다(3절 제약 1) */
+    newPlaces:customStops(rs).map(x=>({key:x.k,name:x.p.n,cat:x.p.c,kid:x.p.kid||""}))
+  },null,1);
+  if(navigator.share){
+    navigator.share({text:tx}).then(()=>toast("보냈어요"))
+      .catch(e=>{ if(!e||e.name!=="AbortError") copyText(tx); });
+    return;
+  }
+  copyText(tx);
+}
 /* 다녀온 곳은 브라우저에 남긴다 — 안 그러면 '다녀왔어요'가 새로고침 한 번에 지워져 버튼이 죽는다.
    저장하는 건 **장소 키뿐**이다. 좌표·주소는 안 넣는다(3절 제약 1) — 다녀온 표시는 지도에
    안 그리므로 키만으로 충분하다. 서버가 없으니 기기·브라우저마다 따로 쌓인다(URL 공유형의 대가).
@@ -4207,10 +4293,12 @@ function previewView(){
 function publish(){
   const d=S.draft;
   if(!d.plan){ d.stops.forEach(s=>S.visited.add(s.p)); saveVisited(); }
-  const id="my"+(++myN);
+  let id="my"+(++myN);
+  while(ROUTES.some(r=>r.id===id)) id="my"+(++myN);   // 저장분을 복원했을 때 id가 겹치지 않게
   const r=draftRoute(id);
   r.posted=ymd(new Date()).replace(/-/g,'.');   // 올린 날(연.월.일). toISOString은 UTC라 새벽에 올리면 하루 전으로 찍힌다 — ymd는 로컬
   ROUTES.unshift(r); S.myRoutes.push(id);      // 실제로 게시된 것처럼 목록에 올린다
+  saveMine();                                  // 서버가 없으니 최소한 이 기기에는 남긴다
   S.draft={title:"",mood:"",transport:"transit",people:2,plan:1,photos:{},date:S.date,time:S.time,stops:[]};
   S.stack=[];                                   // 미리보기·만들기로 되돌아가지 않게 흐름을 끊는다
   toast(d.plan?"계획 루트로 저장했어요":"저장했어요");
@@ -5077,10 +5165,13 @@ function profileView(){
          같은 데를 또 추천받지 않게 하는 표시예요</div>
        <div class="plgrid">${been.map((k,i)=>placeCard(k,i,0,1)).join("")}</div>`
     : empty(IC.pin,"아직 다녀온 곳 표시가 없어요.<br>루트를 따라간 뒤 체크하면 여기에 쌓여요.<br>표시해두면 같은 데를 또 추천받지 않아요.");
-  else body = mine.length
+  /* 작성자 모드 표시는 루트가 0개여도 띄운다 — 안 그러면 알바가 링크를 제대로 열었는지 알 방법이 없다 */
+  else body = (STAFF?`<div class="hint">작성자 모드예요. 만든 루트는 이 기기에만 저장되니, 다 만들면 아래 버튼으로 보내주세요</div>
+       <div style="margin-bottom:11px"><button class="mini p" onclick="exportMine()">${IC.share}루트 데이터 보내기</button></div>`:"")
+    + (mine.length
     ? `<div class="col">${mine.map((r,i)=>routeCard(r,"wide",i)).join("")}</div>`
     : empty(IC.pen,"아직 만든 루트가 없어요.",
-        `<div style="margin-top:13px"><button class="mini p" onclick="go('create')">루트 만들기</button></div>`);
+        `<div style="margin-top:13px"><button class="mini p" onclick="go('create')">루트 만들기</button></div>`));
   return `<div class="top"><h1>내 프로필</h1></div>
     <div class="phero rise">
       <div class="pcover"></div>
