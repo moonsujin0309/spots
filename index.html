@@ -2917,6 +2917,11 @@ const iso=()=>`${S.date}T${S.time}:00`;
    ⚠️ 좌표는 이 기기 캐시에만 두고 **내보내기에는 넣지 않는다**(3절 제약 1).
       새 장소의 좌표는 받는 쪽에서 공공데이터 상가정보로 채운다(29차 방법). */
 const MKEY="spots.myroutes", NKEY="spots.penname", SKEY="spots.staff";
+/* 담을 때의 머문시간 기본값. 전부 60분으로 박아두면 아무도 안 고쳐서 그대로 나간다
+   (2026-09-04 파일럿에서 4스톱 전부 60분으로 왔다). 값은 시드 136루트의 분류별 실측 중앙값이다.
+   대부분 60~70이라 차이가 크진 않지만 액티비티(150)처럼 튀는 분류가 있다. */
+const STAY_BY_CAT={공원:60,복합공간:70,골목:70,전시:70,시장:60,고궁:60,식당:70,카페:60,서점:60,액티비티:150};
+const defStay=k=>(PLACES[k]&&STAY_BY_CAT[PLACES[k].c])||60;
 /* 내보내기는 **알바 전용 도구**다 — 일반 유저의 '공유'(카드 이미지+글)와 목적이 다르다.
    공유는 약속을 잡으려고 상대에게 보내는 것이고, 내보내기는 앱에 넣을 루트 데이터를 회수하는 것이다.
    둘을 같은 자리에 두면 유저에게는 뜻 모를 버튼이 하나 더 생길 뿐이라 화면에서 가른다.
@@ -2973,6 +2978,17 @@ function exportMine(){
   if(!rs.length){ toast("내보낼 루트가 없어요"); return; }
   /* 작성자 이름을 한 번 받는다 — `by`는 앱 안에서 늘 "나"라 누가 만든 건지 데이터에 안 남는다.
      여러 명이 보내오면 구분이 안 되고, 시드로 넣을 때 작성자를 하나로 몰면 팔로우가 죽는다. */
+  /* 보내기 전 검사. 막지는 않고 알려만 준다 — 판단은 사람이 한다.
+     기준은 시드 136루트 실측: 빈 코멘트 0건 · note 빈 루트 0건 · 60분 스톱은 27%뿐. */
+  const bad=[];
+  rs.forEach(r=>{
+    const t=r.title||"제목 없음";
+    const n=r.stops.filter(x=>!(x.c||"").trim()).length;
+    if(n) bad.push(`· ${t} — 스팟 코멘트 ${n}칸이 비었어요`);
+    if(!(r.note||"").trim()) bad.push(`· ${t} — 시작 안내(STEP 7)가 비었어요`);
+    if(r.stops.every(x=>x.stay===defStay(x.p))) bad.push(`· ${t} — 머문 시간을 하나도 안 고쳤어요`);
+  });
+  if(bad.length && !confirm("이대로 보내면 반려될 수 있어요.\n\n"+bad.join("\n")+"\n\n그래도 보낼까요?")) return;
   let by=""; try{ by=localStorage.getItem(NKEY)||""; }catch(_){}
   by=(prompt("보내는 사람 이름을 적어주세요 (루트 작성자로 들어가요)",by)||"").trim();
   if(!by){ toast("이름을 적어야 보낼 수 있어요"); return; }
@@ -3973,7 +3989,7 @@ function placeHere(){
   const key="custom"+(++customN);
   PLACES[key]={n:nm,c:cat,area:a.id,lat:S.pickPt.lat,lng:S.pickPt.lng,
     open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:5,img:"",custom:1};
-  S.pickPt=null; S.q=""; S.draft.stops.push({p:key,stay:60,c:""}); back();
+  S.pickPt=null; S.q=""; S.draft.stops.push({p:key,stay:defStay(key),c:""}); back();
   toast(`'${nm}' 담았어요 · ${a.n}`);
 }
 function pickView(){
@@ -4041,7 +4057,7 @@ function addPasted(){
   const a=nearestArea(pt), key="custom"+(++customN);
   PLACES[key]={n:nm||`${a.n} 새 장소`,c:"복합공간",area:a.id,lat:pt.lat,lng:pt.lng,
     open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:5,img:"",custom:1};
-  S.q=""; S.apiHits=null; S.draft.stops.push({p:key,stay:60,c:""}); render();
+  S.q=""; S.apiHits=null; S.draft.stops.push({p:key,stay:defStay(key),c:""}); render();
   toast(`${a.n} 근처로 담았어요`);
 }
 function searchZone(){
@@ -4055,8 +4071,27 @@ function searchZone(){
     <span class="add">＋</span></button></div>`;
   // 카카오 로컬 API가 붙어 있으면 그 결과가 우선 — 좌표까지 함께 오므로 위치를 따로 잡을 필요가 없다
   // 지도 검색 결과가 있으면 그걸 먼저 보여준다. 실패·없음이면 아래 직접 담기로 자연스럽게 이어진다.
+  /* ⚠️ 앱에 이미 있는 장소를 지도 결과보다 **먼저** 보여준다.
+     지도 결과만 띄우면 이미 등록된 곳을 새 장소로 다시 담게 된다 —
+     2026-09-04 실측 파일럿에서 담은 4곳 중 3곳이 botanic·lgart·tarde 중복이었다.
+     중복이 들어오면 28·29차에 물렸던 '같은 장소 두 번 등록'이 그대로 재발하고,
+     좌표를 공공데이터로 다시 채우는 헛일까지 붙는다. */
+  const picked=new Set(S.draft.stops.map(s=>s.p));
+  const hits=Object.entries(PLACES).filter(([k,v])=>{
+    if(picked.has(k)) return false;
+    const a=AREAS.find(x=>x.id===v.area);
+    return matchKo(v.n+" "+v.c+" "+(a?a.n:""),q);
+  }).sort((a,b)=>b[1].pop-a[1].pop).slice(0,5);
+  const mineHTML=`${hits.map(([k,v])=>{const a=AREAS.find(x=>x.id===v.area);
+      return `<button class="ri flat" onclick="addStop('${k}')">
+        ${ph(v.img,CT[v.c]||"park",v.n.length)}
+        <div style="flex:1;min-width:0"><div class="nm">${v.n}</div>
+          <div class="mt">${v.c} · ${a?a.n:""}</div></div>
+        <span class="add">＋</span></button>`;}).join("")}`;
   if(S.apiState==="loading") return `<div class="apinote">${IC.search}지도에서 찾는 중…</div>`;
   if(S.apiState==="ok"&&S.apiHits&&S.apiHits.length) return `<div class="res">
+    ${mineHTML?`<div class="apinote">${IC.check}앱에 이미 있는 곳 — 맞으면 여기서 담아주세요</div>
+      ${mineHTML}<div class="apinote">${IC.search}지도 검색 결과</div>`:""}
     ${S.apiHits.map((d,i)=>`<button class="ri flat" onclick="addApiPlace(${i})">
       <span class="plus">${IC.pin}</span>
       <div style="flex:1;min-width:0"><div class="nm">${d.n}</div>
@@ -4066,12 +4101,6 @@ function searchZone(){
       <span class="plus">＋</span>
       <div style="flex:1;min-width:0"><div class="nm">'${q}' 직접 담기</div>
         <div class="mt">위에 없으면 이렇게</div></div></button></div>`;
-  const picked=new Set(S.draft.stops.map(s=>s.p));
-  const hits=Object.entries(PLACES).filter(([k,v])=>{
-    if(picked.has(k)) return false;
-    const a=AREAS.find(x=>x.id===v.area);
-    return matchKo(v.n+" "+v.c+" "+(a?a.n:""),q);
-  }).sort((a,b)=>b[1].pop-a[1].pop).slice(0,5);
   return `<div class="res">
     ${S.apiState==="none"?`<div class="apinote">${IC.search}지도 검색엔 '${q}'가 안 나와요 —
       검색어를 짧게 바꿔보시거나, 아래 '지도에서 위치 찍기'로 직접 잡을 수 있어요</div>`
@@ -4081,12 +4110,7 @@ function searchZone(){
       <span class="plus">＋</span>
       <div style="flex:1;min-width:0"><div class="nm">'${q}' 담기</div>
         <div class="mt">위치는 담은 뒤 지도에서 잡을 수 있어요</div></div></button>
-    ${hits.map(([k,v])=>{const a=AREAS.find(x=>x.id===v.area);
-      return `<button class="ri flat" onclick="addStop('${k}')">
-        ${ph(v.img,CT[v.c]||"park",v.n.length)}
-        <div style="flex:1;min-width:0"><div class="nm">${v.n}</div>
-          <div class="mt">${v.c} · ${a?a.n:""}</div></div>
-        <span class="add">＋</span></button>`;}).join("")}
+    ${mineHTML}
     <button class="ri flat" onclick="go('pick')">
       <span class="plus">${IC.pin}</span>
       <div style="flex:1;min-width:0"><div class="nm">지도에서 위치 찍기</div>
@@ -4102,7 +4126,7 @@ function addQuick(){
   PLACES[key]={n:nm,c:"복합공간",area:base.area||base.id,
     lat:base.lat+(Math.random()-.5)*.006,lng:base.lng+(Math.random()-.5)*.006,
     open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:5,img:"",custom:1,approx:1};
-  S.q=""; S.draft.stops.push({p:key,stay:60,c:""}); render();
+  S.q=""; S.draft.stops.push({p:key,stay:defStay(key),c:""}); render();
 }
 function onSearch(v){ S.q=v; runApiSearch(v); paintZone(); }
 
@@ -4163,6 +4187,16 @@ function createView(){
       <div style="font-size:12px;color:var(--dim);font-weight:600;margin-top:8px">
         비워둬도 저장돼요. 카드에서 이름 아래 한 줄로 붙어요.</div></div></div>
 
+    ${STAFF?`<div class="step"><div class="no">STEP 7</div><h3>이 루트를 어떻게 시작하나요?</h3><div class="box">
+      <div class="tawrap">
+        <textarea class="ta" maxlength="120" aria-label="루트 안내"
+          placeholder="예: 9호선 마곡나루역 3번 출구에서 시작해요. 밥집 두 곳은 문 여는 시간을 확인 못 했고요"
+          oninput="S.draft.note=this.value">${d.note||""}</textarea>
+      </div>
+      <div style="font-size:12px;color:var(--dim);font-weight:600;margin-top:8px;line-height:1.5">
+        <b>출발 지점을 꼭 적어주세요.</b> 지하철역은 스팟으로 담지 말고 여기에 씁니다.
+        모르는 것(영업시간 등)이 있으면 모른다고 적어주세요.</div></div></div>`:""}
+
     <button class="big" id="previewBtn" ${ready?"":"disabled"} onclick="go('preview')">루트 미리보기</button>`;
 }
 /* 제목과 한마디는 다른 것이다 — 제목은 루트를 부르는 이름, 한마디는 그 아래 붙는 부연.
@@ -4197,7 +4231,7 @@ function draftRoute(id){
   return {id:id||"draft",area:PLACES[d.stops[0].p].area,transport:d.transport,people:d.people,
     plan:d.plan,by:"나",av:"🙂",likes:0,visits:0,regrams:0,
     via:d.via&&d.via.length?[...d.via]:undefined, quoteOf:d.quoteOf,
-    title:d.title.trim(),mood:d.mood.trim(),note:"",
+    title:d.title.trim(),mood:d.mood.trim(),note:(d.note||"").trim(),
     date:d.date,time:d.time,stops:d.stops.map(s=>({...s}))};
 }
 function moveStop(i,k){
@@ -4423,12 +4457,16 @@ function stopRows(){
                 `<option value="${k}" ${s.move===k?"selected":""}>${MODE[k].label}로 이동</option>`).join("")}
             </select>`:""}
             <select onchange="S.draft.stops[${i}].stay=+this.value;render()">
-              ${[30,60,90,120,180].map(m=>`<option value="${m}" ${s.stay===m?"selected":""}>약 ${dur(m)}</option>`).join("")}</select>
+              ${[30,40,50,60,70,80,90,120,150,180].map(m=>`<option value="${m}" ${s.stay===m?"selected":""}>약 ${dur(m)}</option>`).join("")}</select>
             ${v.custom?`<select class="catsel" onchange="PLACES['${s.p}'].c=this.value;render()">
                 ${CATS.map(c=>`<option ${v.c===c?"selected":""}>${c}</option>`).join("")}</select>`:""}
             ${v.approx?`<button class="flat photo" onclick="S.q='${v.n}';S.fixKey='${s.p}';go('pick')">위치 잡기</button>`:""}
             <a class="photo" href="${kakaoPlaceURL(v)}" target="_blank" rel="noopener">지도</a>
-          </div></div>
+          </div>
+          ${STAFF?`<textarea class="ta" style="margin-top:7px;min-height:54px" maxlength="80"
+            aria-label="${v.n} 코멘트" placeholder="여기서 뭘 하는지 한 줄 (20~80자)"
+            oninput="S.draft.stops[${i}].c=this.value">${s.c||""}</textarea>`:""}
+        </div>
         <div class="ord">
           <span class="grip" onpointerdown="dragStart(event,${i})">${IC.grip}</span>
           <button ${i===0?"disabled":""} onclick="swapStop(${i},-1)">↑</button>
@@ -4491,7 +4529,7 @@ function dragEnd(){
     l.querySelectorAll(".dragging").forEach(el=>el.classList.remove("dragging")); }
   dragI=null; render();
 }
-function addStop(k){ S.draft.stops.push({p:k,stay:60,c:""});
+function addStop(k){ S.draft.stops.push({p:k,stay:defStay(k),c:""});
   const q=S.q.trim(); if(q&&!S.recent.includes(q)) S.recent=[q,...S.recent].slice(0,4);
   S.q=""; render(); }
 // 목록에 없는 곳 추가는 '지도에서 고르기 → 지도에 직접 놓기'로 통합됐다
@@ -4902,7 +4940,7 @@ function addApiPlace(i){
   const d=S.apiHits[i], key="osm_"+d.id, a=nearestArea(d);
   PLACES[key]={n:d.n,c:d.c,area:a.id,lat:d.lat,lng:d.lng,kid:d.kakaoId,
     open:"00:00",close:"23:59",closed:[],cost:[0,0],park:0,wait:0,pop:5,img:"",osmId:d.id};
-  S.q=""; S.apiHits=null; S.draft.stops.push({p:key,stay:60,c:""}); render();
+  S.q=""; S.apiHits=null; S.draft.stops.push({p:key,stay:defStay(key),c:""}); render();
   toast("'"+d.n+"' 담았어요");
 }
 
@@ -5166,8 +5204,8 @@ function profileView(){
        <div class="plgrid">${been.map((k,i)=>placeCard(k,i,0,1)).join("")}</div>`
     : empty(IC.pin,"아직 다녀온 곳 표시가 없어요.<br>루트를 따라간 뒤 체크하면 여기에 쌓여요.<br>표시해두면 같은 데를 또 추천받지 않아요.");
   /* 작성자 모드 표시는 루트가 0개여도 띄운다 — 안 그러면 알바가 링크를 제대로 열었는지 알 방법이 없다 */
-  else body = (STAFF?`<div class="hint">작성자 모드예요. 만든 루트는 이 기기에만 저장되니, 다 만들면 아래 버튼으로 보내주세요</div>
-       <div style="margin-bottom:11px"><button class="mini p" onclick="exportMine()">${IC.share}루트 데이터 보내기</button></div>`:"")
+  else body = (STAFF?`<div class="hint" style="text-align:center">작성자 모드예요. 만든 루트는 이 기기에만 저장되니, 다 만들면 아래 버튼으로 보내주세요</div>
+       <div style="margin-bottom:11px;text-align:center"><button class="mini p" onclick="exportMine()">${IC.share}루트 데이터 보내기</button></div>`:"")
     + (mine.length
     ? `<div class="col">${mine.map((r,i)=>routeCard(r,"wide",i)).join("")}</div>`
     : empty(IC.pen,"아직 만든 루트가 없어요.",
