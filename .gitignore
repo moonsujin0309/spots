@@ -3,3 +3,8 @@
 *
 !index.html
 !.gitignore
+!events.json
+!collect-events.mjs
+!.github/
+!.github/workflows/
+!.github/workflows/events.yml

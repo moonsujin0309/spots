@@ -1,0 +1,34 @@
+name: events
+
+on:
+  schedule:
+    - cron: '0 21 * * *'   # 매일 KST 06:00
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 서울 문화행사 수집
+        run: timeout 300 node collect-events.mjs
+        env:
+          SEOUL_API_KEY: ${{ secrets.SEOUL_API_KEY }}
+
+      # 자동 커밋은 events.json 하나만 — 바뀐 날에만 커밋(= 배포)된다
+      - name: 수집 결과 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add events.json
+          git diff --cached --quiet || git commit -m "events: $(date -u +'%Y-%m-%d') 자동 수집"
+          git push
