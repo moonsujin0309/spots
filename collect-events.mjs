@@ -37,8 +37,8 @@ function toEvent(r) {
     daysUnknown: start !== end, proTime: esc(r.PRO_TIME) || null,
     price: esc(r.USE_FEE) || (r.IS_FREE === "무료" ? "무료" : null),
     officialUrl: url(r.HMPG_ADDR), reserveUrl: url(r.ORG_LINK), desc: esc(r.PROGRAM).slice(0, 160) || null,
-    // 데이터셋 라이선스가 대표 이미지까지 덮는지 미확인 — 확인 전엔 화면에서 숨긴다
-    image: img ? { src: img, source: "서울문화포털", sourceUrl: url(r.HMPG_ADDR), license: "사용 조건 미확인", licenseUrl: null, needsReplacement: true, focalPoint: "50% 50%", fit: "contain" } : null,
+    // 대표 이미지는 데이터셋 필드다 — OA-15486이 공공누리 1유형·제3저작권자 없음으로 공개(2026-10-26 확인)
+    image: img ? { src: img, source: "서울문화포털", sourceUrl: url(r.HMPG_ADDR), license: "공공누리 제1유형", licenseUrl: "https://www.kogl.or.kr/info/licenseType1.do", needsReplacement: false, focalPoint: "50% 50%", fit: "contain" } : null,
     src: "seoul-open-data", checkedAt: today,
   };
 }
