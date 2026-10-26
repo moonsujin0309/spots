@@ -4081,11 +4081,13 @@ function homeEventGroups(date){
 }
 function homeEventSection(){
   const now=seoulParts(new Date()), {today,upcoming}=homeEventGroups(now.date), rows=[...today,...upcoming];
-  if(!rows.length) return `<section class="homeevents" aria-labelledby="home-events-title"><div class="eventtop"><div><h2 id="home-events-title">행사 정보</h2><p>현재 확인 가능한 서울 행사가 없어요</p></div>
-    <button class="eventmore flat" onclick="go('events')">전체 일정</button></div></section>`;
-  return `<section class="homeevents" aria-labelledby="home-events-title"><div class="eventtop"><div><h2 id="home-events-title">행사 정보</h2><p>오늘 여는 행사와 가장 가까운 다음 일정을 모았어요</p></div>
-    <button class="eventmore flat" onclick="go('events')">전체 일정</button></div>
-    <div class="eventgrid" aria-label="행사 카드">${rows.map(x=>eventCard(x.e,x.date)).join("")}</div></section>`;
+  const total=EVENTS.filter(e=>e.end>=now.date&&!e.cancelled).length;
+  if(!rows.length) return `<section class="homeevents" aria-labelledby="home-events-title"><div class="eventtop"><div><h2 id="home-events-title">진행 중인 행사</h2><p>현재 확인 가능한 서울 행사가 없어요</p></div>
+    <button class="eventmore flat" onclick="go('events')">전체 ${total} ›</button></div></section>`;
+  return `<section class="homeevents" aria-labelledby="home-events-title"><div class="eventtop"><div><h2 id="home-events-title">진행 중인 행사</h2><p>오늘 여는 행사와 가장 가까운 다음 일정을 모았어요</p></div>
+    <button class="eventmore flat" onclick="go('events')">전체 ${total} ›</button></div>
+    <div class="eventgrid" aria-label="행사 카드">${rows.map(x=>eventCard(x.e,x.date)).join("")}
+      <button class="rmore flat" aria-label="행사 전체 보기" onclick="go('events')"><i>${IC.next}</i><span>더보기</span></button></div></section>`;
 }
 function openEvent(id,date){ S.eventId=id; if(date) S.eventDate=date; go("event",id); }
 function setEventFilter(v){ S.eventScope=v==="week"?"week":"day"; render(); }
@@ -4131,7 +4133,7 @@ function eventsView(){
   const span=isWeek?spanRows(days[0],days[6]):spanRows(S.eventDate,S.eventDate);
   const resultTitle=isWeek?eventWeekTitle(S.eventDate):eventDateTitle(S.eventDate);
   return `<div class="top"><button class="mini flat" onclick="back()" style="margin-bottom:10px">${IC.back}뒤로</button>
-      <h1>행사 정보</h1><div class="note">서울 날짜 기준으로 실제 운영하는 날을 확인하세요</div></div>
+      <h1>진행 중인 행사</h1><div class="note">서울 날짜 기준으로 실제 운영하는 날을 확인하세요</div></div>
     <div class="evtools"><div class="evscope" aria-label="행사 보기 범위">
         <button class="evfilter ${isWeek?"on":""}" aria-pressed="${isWeek}" onclick="setEventFilter('week')">이번 주 전체</button>
         <button class="evfilter ${!isWeek?"on":""}" aria-pressed="${!isWeek}" onclick="setEventFilter('day')">선택한 날</button></div>
