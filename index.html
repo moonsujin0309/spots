@@ -5982,7 +5982,7 @@ function nearRefresh(){
     });
     EVENTS.filter(e=>{ const pt=evPt(e); return pt&&(e.id===S.nearEv||(eventInRange(e,S.date,S.date)&&haversine(S.nearCenter,pt)<=S.nearKm)); })
       .forEach(e=>{ const pt=evPt(e), on=e.id===S.nearEv;
-        const node=addOv(m,nearOv,pt.lat,pt.lng,evPinHTML(e,on),{zIndex:on?160:110});
+        const node=addOv(m,nearOv,pt.lat,pt.lng,evPinHTML(e,on),{zIndex:on?210:110}); // 고른 핀은 지도 중심 점(200)보다 위
         node.addEventListener("click",()=>{ if(on){ openEvent(e.id); return; } S.nearEv=e.id; S.nearSel=null; nearRefresh(); });
       });
   }
